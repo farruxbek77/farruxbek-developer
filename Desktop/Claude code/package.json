@@ -1,0 +1,12 @@
+{
+    "name": "farruxbek-portfolio",
+    "version": "1.0.0",
+    "description": "Portfolio website",
+    "scripts": {
+        "start": "serve -s .",
+        "build": "echo 'No build needed'"
+    },
+    "dependencies": {
+        "serve": "^14.2.0"
+    }
+}
