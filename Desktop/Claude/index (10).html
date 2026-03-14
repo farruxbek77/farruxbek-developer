@@ -1,0 +1,3444 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BiznesOS — Biznesingizni boshqaring</title>
+<style>
+
+:root{
+  --bg:#07050f;
+  --surface:#0e0b1a;
+  --surface2:#141028;
+  --border:rgba(130, 77, 255, 0.15);
+  --border2:rgba(142, 94, 255, 0.3);
+  --purple:#5d00ff;
+  --purple2:#ae18ee;
+  --neon:#aaff00;
+  --neon2:#ccff00;
+  --white:#e4e1fd;
+  --muted:rgba(240, 238, 255, 0.35);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-serif;
+  background:var(--bg);color:var(--white);overflow-x:hidden;cursor:none;
+}
+
+/* CURSOR */
+#cur-dot{position:fixed;width:6px;height:6px;background:var(--neon);border-radius:50%;pointer-events:none;z-index:9999;transform:translate(-50%,-50%)}
+#cur-ring{position:fixed;width:32px;height:32px;border:1px solid var(--neon);border-radius:50%;pointer-events:none;z-index:9998;transform:translate(-50%,-50%);opacity:0.5;transition:width .25s,height .25s,border-color .25s,opacity .25s}
+body.hov #cur-ring{width:48px;height:48px;border-color:var(--purple2);opacity:0.3}
+
+/* ORBS */
+.orb{position:fixed;border-radius:50%;filter:blur(120px);pointer-events:none;z-index:0;animation:orbdrift 18s ease-in-out infinite}
+.orb1{width:700px;height:700px;background:radial-gradient(circle,rgba(124,58,237,0.35),transparent 70%);top:-200px;right:-200px}
+.orb2{width:600px;height:600px;background:radial-gradient(circle,rgba(196,240,0,0.1),transparent 70%);bottom:-200px;left:-100px;animation-delay:-9s}
+@keyframes orbdrift{0%,100%{transform:translate(0,0)}50%{transform:translate(-25px,18px)}}
+
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;z-index:500;padding:20px 64px;display:flex;align-items:center;justify-content:space-between;transition:all .4s}
+nav.scrolled{background:rgba(7,5,15,0.88);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);padding:14px 64px}
+.nav-logo{font-size:20px;font-weight:800;color:var(--white);text-decoration:none;letter-spacing:-0.5px}
+.nav-logo em{font-style:normal;color:var(--neon)}
+.nav-links{display:flex;align-items:center;gap:36px}
+.nav-links a{font-size:13px;color:var(--muted);text-decoration:none;letter-spacing:0.3px;transition:color .2s;position:relative}
+.nav-links a::after{content:'';position:absolute;bottom:-2px;left:0;width:0;height:1px;background:var(--neon);transition:width .25s}
+.nav-links a:hover{color:var(--white)}
+.nav-links a:hover::after{width:100%}
+.btn-nav{background:var(--neon) !important;color:#07050f !important;padding:9px 20px;border-radius:6px;font-size:13px;font-weight:700;transition:background .2s,transform .2s,box-shadow .2s !important}
+.btn-nav::after{display:none !important}
+.btn-nav:hover{background:var(--neon2) !important;transform:translateY(-1px);box-shadow:0 4px 20px rgba(196,240,0,0.3)}
+
+/* HERO */
+.hero{position:relative;z-index:1;min-height:100vh;display:grid;grid-template-columns:1fr 1fr;align-items:center;gap:80px;padding:140px 64px 80px}
+.hero-eye{display:inline-flex;align-items:center;gap:8px;font-size:11px;font-weight:600;color:var(--neon);letter-spacing:2px;text-transform:uppercase;margin-bottom:28px}
+.eye-dot{width:6px;height:6px;border-radius:50%;background:var(--neon);animation:blink 2s ease-in-out infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0.2}}
+h1{font-size:clamp(44px,5.5vw,72px);font-weight:800;line-height:1.05;letter-spacing:-2.5px;color:var(--white);margin-bottom:28px}
+h1 .neon{color:var(--neon)}
+.hero-desc{font-size:17px;font-weight:300;color:var(--muted);line-height:1.8;max-width:420px;margin-bottom:48px}
+.hero-btns{display:flex;align-items:center;gap:20px;flex-wrap:wrap}
+
+/* LIQUID BTN */
+.lbtn{position:relative;padding:14px 32px;border-radius:100px;font-size:14px;font-weight:700;cursor:none;text-decoration:none;display:inline-flex;align-items:center;gap:10px;overflow:hidden;transition:color .3s,box-shadow .3s;font-family:inherit;border:none}
+.lbtn-p{background:var(--neon);color:#07050f}
+.lbtn-o{background:transparent;color:var(--white);border:1px solid var(--border2)}
+.lbtn .fill{position:absolute;inset:0;border-radius:inherit;background:var(--purple);transform:scale(0);opacity:0;transition:transform .55s cubic-bezier(.19,1,.22,1),opacity .4s;z-index:0}
+.lbtn:hover .fill{transform:scale(1.8);opacity:1}
+.lbtn:hover{color:#fff}
+.lbtn-p:hover{box-shadow:0 6px 24px rgba(124,58,237,0.4)}
+.lbtn-o:hover{border-color:transparent}
+.lbtn span,.lbtn svg{position:relative;z-index:1}
+.lbtn svg{transition:transform .3s}
+.lbtn:hover svg{transform:translateX(4px)}
+
+/* MOCKUP */
+.hero-right{position:relative;height:540px}
+.mock{position:absolute;inset:0;border-radius:16px;background:var(--surface);border:1px solid var(--border2);overflow:hidden;box-shadow:0 0 0 1px var(--border),0 32px 80px rgba(0,0,0,0.5),0 0 100px rgba(124,58,237,0.07)}
+.mock-bar{height:36px;background:var(--surface2);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 16px;gap:6px}
+.mdot{width:10px;height:10px;border-radius:50%}
+.md1{background:#ff5f57}.md2{background:#febc2e}.md3{background:#28c840}
+.mock-scan{position:absolute;top:0;left:-100%;right:-100%;height:1px;background:linear-gradient(90deg,transparent,var(--purple),var(--neon),var(--purple),transparent);animation:scan 4s linear infinite;opacity:0.6;z-index:5}
+@keyframes scan{0%{transform:translateX(-100%)}100%{transform:translateX(100%)}}
+.mock-body{padding:18px;display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.mc{background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:14px 16px}
+.mc-l{font-size:10px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:0.8px;margin-bottom:6px}
+.mc-v{font-size:22px;font-weight:800;color:var(--white);letter-spacing:-0.5px}
+.mc-s{font-size:10px;color:var(--neon);margin-top:3px}
+.mc-full{grid-column:1/-1}
+.bars{display:flex;align-items:flex-end;gap:4px;height:52px;margin-top:10px}
+.b{flex:1;border-radius:3px 3px 0 0;background:var(--surface2)}
+.b.p{background:var(--purple)}.b.n{background:var(--neon)}
+.cl{grid-column:1/-1;background:var(--bg);border:1px solid var(--border);border-radius:10px;overflow:hidden}
+.cl-r{display:flex;align-items:center;justify-content:space-between;padding:9px 14px;border-bottom:1px solid var(--border);font-size:12px}
+.cl-r:last-child{border-bottom:none}
+.cl-n{font-weight:600;color:var(--white)}
+.tag{font-size:10px;padding:2px 8px;border-radius:99px;font-weight:600}
+.t-d{background:rgba(196,240,0,0.1);color:var(--neon)}
+.t-w{background:rgba(124,58,237,0.15);color:var(--purple2)}
+.t-n{background:rgba(255,255,255,0.05);color:var(--muted)}
+
+/* FLOAT CARDS */
+.flt{position:absolute;background:var(--surface);border:1px solid var(--border2);border-radius:12px;box-shadow:0 8px 32px rgba(0,0,0,0.4)}
+.flt1{bottom:50px;left:-70px;width:158px;padding:16px;animation:fl1 7s ease-in-out infinite}
+.flt2{top:60px;left:-50px;width:140px;padding:14px;animation:fl2 9s ease-in-out infinite}
+@keyframes fl1{0%,100%{transform:translateY(0)}50%{transform:translateY(-12px)}}
+@keyframes fl2{0%,100%{transform:translateY(0)}50%{transform:translateY(10px)}}
+.flt-l{font-size:9px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:0.8px;margin-bottom:5px}
+.flt-v{font-size:20px;font-weight:800;color:var(--white);letter-spacing:-0.5px}
+.flt-s{font-size:9px;color:var(--neon);margin-top:2px}
+.mbars{display:flex;align-items:flex-end;gap:2px;height:24px;margin-top:8px}
+.mb{flex:1;background:var(--surface2);border-radius:2px}
+.mb.a{background:var(--neon)}
+
+/* MARQUEE */
+.marquee{border-top:1px solid var(--border);border-bottom:1px solid var(--border);padding:12px 0;overflow:hidden;background:var(--surface);position:relative;z-index:1}
+.mq-track{display:inline-flex;animation:mq 24s linear infinite;white-space:nowrap}
+.mq-i{padding:0 36px;font-size:11px;font-weight:600;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase;border-right:1px solid var(--border);display:inline-flex;align-items:center;gap:10px}
+.mq-dot{width:4px;height:4px;border-radius:50%;background:var(--neon)}
+@keyframes mq{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+
+/* STATS */
+.stats-row{display:grid;grid-template-columns:repeat(4,1fr);position:relative;z-index:1}
+.sc{padding:52px 64px;border-right:1px solid var(--border);border-bottom:1px solid var(--border);position:relative;overflow:hidden;transition:background .3s,transform .2s}
+.sc:hover{background:var(--surface)}
+.sc::after{content:'';position:absolute;bottom:0;left:0;width:0;height:2px;background:var(--neon);transition:width .4s}
+.sc:hover::after{width:100%}
+.sc:last-child{border-right:none}
+.sn{font-size:52px;font-weight:800;color:var(--white);letter-spacing:-3px;line-height:1}
+.sl{font-size:13px;font-weight:300;color:var(--muted);margin-top:10px;line-height:1.6}
+
+/* SECTIONS */
+.section{position:relative;z-index:1;padding:100px 64px;border-bottom:1px solid var(--border)}
+.sec-tag{font-size:11px;font-weight:600;color:var(--neon);letter-spacing:2px;text-transform:uppercase;margin-bottom:16px}
+h2{font-size:clamp(36px,4vw,52px);font-weight:800;letter-spacing:-2px;color:var(--white);line-height:1.06}
+.sec-desc{font-size:15px;font-weight:300;color:var(--muted);line-height:1.8}
+.sec-head{display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:end;margin-bottom:56px}
+
+/* FEATURES */
+.feat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--border)}
+.feat-card{background:var(--bg);padding:36px;transition:background .25s;position:relative;overflow:hidden}
+.feat-card::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at var(--mx,50%) var(--my,50%),rgba(124,58,237,0.1),transparent 55%);opacity:0;transition:opacity .3s}
+.feat-card:hover::before{opacity:1}
+.feat-card:hover{background:var(--surface)}
+.feat-num{font-size:11px;font-weight:600;color:rgba(196,240,0,0.35);letter-spacing:2px;margin-bottom:20px}
+.feat-t{font-size:17px;font-weight:700;color:var(--white);margin-bottom:10px;letter-spacing:-0.3px}
+.feat-d{font-size:13px;font-weight:300;color:var(--muted);line-height:1.75}
+
+/* STEPS */
+.steps-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--border);margin-top:56px}
+.step-card{background:var(--bg);padding:44px 40px;transition:background .25s;position:relative}
+.step-card:hover{background:var(--surface)}
+.step-arrow{position:absolute;top:44px;right:32px;font-size:20px;color:var(--border2);transition:color .3s,transform .3s}
+.step-card:last-child .step-arrow{display:none}
+.step-card:hover .step-arrow{color:var(--neon);transform:translateX(4px)}
+.step-n{font-size:80px;font-weight:800;color:var(--surface2);line-height:1;margin-bottom:24px;letter-spacing:-4px;transition:color .3s}
+.step-card:hover .step-n{color:rgba(124,58,237,0.25)}
+.step-t{font-size:18px;font-weight:700;color:var(--white);margin-bottom:12px;letter-spacing:-0.3px}
+.step-d{font-size:13px;font-weight:300;color:var(--muted);line-height:1.75}
+
+/* PRICING */
+.plans-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-top:56px}
+.plan-card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:36px;transition:border-color .3s,transform .35s cubic-bezier(.19,1,.22,1),box-shadow .3s;position:relative;overflow:hidden}
+.plan-card::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--purple),transparent);opacity:0;transition:opacity .3s}
+.plan-card:hover{border-color:var(--border2);transform:translateY(-6px);box-shadow:0 24px 60px rgba(0,0,0,0.3),0 0 40px rgba(124,58,237,0.07)}
+.plan-card:hover::before{opacity:1}
+.plan-card.pop{border-color:var(--purple);background:linear-gradient(145deg,rgba(124,58,237,0.08),var(--surface))}
+.plan-card.pop::before{opacity:1}
+.p-tag{font-size:10px;font-weight:600;color:var(--neon);letter-spacing:2px;text-transform:uppercase;margin-bottom:16px}
+.p-name{font-size:24px;font-weight:800;color:var(--white);margin-bottom:8px;letter-spacing:-0.5px}
+.p-price{font-size:56px;font-weight:800;color:var(--white);letter-spacing:-3px;line-height:1;margin-bottom:4px}
+.p-price sub{font-size:16px;color:var(--muted);font-weight:300;letter-spacing:0;vertical-align:baseline}
+.p-period{font-size:12px;color:var(--muted);margin-bottom:28px}
+.p-div{height:1px;background:var(--border);margin-bottom:22px}
+.pf{display:flex;align-items:flex-start;gap:10px;font-size:13px;font-weight:300;color:rgba(240,238,255,0.4);margin-bottom:11px;line-height:1.5}
+.pf::before{content:'';width:16px;height:16px;border-radius:50%;border:1px solid var(--border2);flex-shrink:0;margin-top:1px}
+.pf.yes{color:var(--muted)}
+.pf.yes::before{content:'✓';font-size:8px;color:var(--neon);background:rgba(196,240,0,0.08);border-color:rgba(196,240,0,0.2);display:flex;align-items:center;justify-content:center;font-weight:700}
+.p-btn{width:100%;margin-top:28px;padding:13px;border-radius:8px;font-size:13px;font-weight:700;cursor:none;font-family:inherit;transition:all .25s;letter-spacing:0.3px;border:1px solid}
+.pb-n{background:var(--neon);color:#07050f;border-color:var(--neon)}
+.pb-n:hover{background:var(--neon2);box-shadow:0 4px 20px rgba(196,240,0,0.25)}
+.pb-o{background:transparent;color:var(--white);border-color:var(--border2)}
+.pb-o:hover{border-color:var(--purple);background:rgba(124,58,237,0.08)}
+
+/* TESTIMONIALS */
+.testi-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-top:56px}
+.testi-card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:32px;transition:border-color .3s,transform .35s cubic-bezier(.19,1,.22,1)}
+.testi-card:hover{border-color:var(--border2);transform:translateY(-4px)}
+.tq{font-size:40px;color:var(--purple2);line-height:1;margin-bottom:14px;opacity:0.5}
+.tt{font-size:14px;font-weight:300;color:var(--muted);line-height:1.85;margin-bottom:24px}
+.ta{border-top:1px solid var(--border);padding-top:16px}
+.ta-name{font-size:13px;font-weight:600;color:var(--white)}
+.ta-biz{font-size:12px;color:var(--muted);margin-top:2px}
+
+/* CTA */
+.cta{position:relative;z-index:1;padding:140px 64px;text-align:center;border-bottom:1px solid var(--border);overflow:hidden}
+.cta::before{content:'';position:absolute;top:50%;left:50%;width:800px;height:800px;border-radius:50%;background:radial-gradient(circle,rgba(124,58,237,0.1),transparent 70%);transform:translate(-50%,-50%);pointer-events:none}
+.cta h2{font-size:clamp(44px,6vw,78px);font-weight:800;letter-spacing:-3px;color:var(--white);line-height:1.04;margin-bottom:20px;position:relative;z-index:1}
+.cta h2 em{font-style:normal;color:var(--neon)}
+.cta p{font-size:16px;font-weight:300;color:var(--muted);margin-bottom:44px;position:relative;z-index:1}
+.cta-btns{display:flex;justify-content:center;gap:16px;flex-wrap:wrap;position:relative;z-index:1}
+.cta-note{font-size:12px;color:rgba(240,238,255,0.18);margin-top:20px;position:relative;z-index:1}
+
+/* FOOTER */
+footer{position:relative;z-index:1;padding:36px 64px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px}
+.fl{font-size:18px;font-weight:800;color:var(--white)}
+.fl em{font-style:normal;color:var(--neon)}
+footer p{font-size:12px;color:rgba(240,238,255,0.2)}
+.flinks{display:flex;gap:24px}
+.flinks a{font-size:12px;color:rgba(240,238,255,0.2);text-decoration:none;transition:color .2s}
+.flinks a:hover{color:var(--neon)}
+
+/* REVEAL */
+.reveal{opacity:0;transform:translateY(30px);transition:opacity .75s cubic-bezier(.16,1,.3,1),transform .75s cubic-bezier(.16,1,.3,1)}
+.reveal.in{opacity:1;transform:none}
+
+@media(max-width:900px){
+  nav{padding:16px 20px}.nav.scrolled{padding:12px 20px}
+  .nav-links a:not(.btn-nav){display:none}
+  .hero{grid-template-columns:1fr;padding:120px 20px 60px;gap:40px;min-height:auto}
+  .hero-right{height:340px}.flt1,.flt2{display:none}
+  .stats-row{grid-template-columns:1fr 1fr}
+  .sc{padding:30px 20px;border-right:none}
+  .section{padding:60px 20px}
+  .sec-head{grid-template-columns:1fr;gap:16px}
+  .feat-grid,.steps-grid,.plans-grid,.testi-grid{grid-template-columns:1fr}
+  .cta{padding:80px 20px}
+  footer{padding:28px 20px;flex-direction:column;text-align:center}
+}
+
+
+.login-modal-overlay{
+  display:none;
+  position:fixed;
+  inset:0;
+  z-index:2000;
+  align-items:center;
+  justify-content:center;
+  padding:20px;
+  background:rgba(7,5,15,0.85);
+  backdrop-filter:blur(12px);
+}
+.login-modal-overlay.open{
+  display:flex !important;
+  animation:login-fade .25s ease;
+}
+@keyframes login-fade{from{opacity:0}to{opacity:1}}
+
+/* INVEST MODAL */
+.invest-modal-overlay{
+  display:none;
+  position:fixed;
+  inset:0;
+  z-index:3000;
+  align-items:center;
+  justify-content:center;
+  padding:20px;
+  background:rgba(7,5,15,0.88);
+  backdrop-filter:blur(14px);
+}
+.invest-modal-overlay.open{
+  display:flex !important;
+  animation:invest-fade .25s ease;
+}
+.invest-modal-overlay.open > div{
+  animation:invest-slide .3s cubic-bezier(.16,1,.3,1);
+}
+@keyframes invest-fade{from{opacity:0}to{opacity:1}}
+@keyframes invest-slide{from{transform:translateY(20px);opacity:0}to{transform:none;opacity:1}}
+
+
+/* ── BUYURTMA MODAL ── */
+.order-modal-overlay{
+  display:none;position:fixed;inset:0;z-index:4000;
+  align-items:center;justify-content:center;padding:20px;
+  background:rgba(7,5,15,.9);backdrop-filter:blur(16px);
+}
+.order-modal-overlay.open{display:flex;animation:ofade .25s ease}
+@keyframes ofade{from{opacity:0}to{opacity:1}}
+.order-modal-box{
+  background:#0e0b1a;border:1px solid rgba(139,92,246,.35);
+  border-radius:20px;padding:36px;width:100%;max-width:460px;
+  position:relative;box-shadow:0 0 100px rgba(124,58,237,.12);
+  animation:oslide .3s cubic-bezier(.16,1,.3,1);
+  max-height:90vh;overflow-y:auto;
+}
+@keyframes oslide{from{transform:translateY(20px);opacity:0}to{transform:none;opacity:1}}
+.order-modal-close{
+  position:absolute;top:16px;right:18px;background:none;border:none;
+  color:rgba(240,238,255,.3);font-size:24px;cursor:pointer;line-height:1;
+  transition:color .2s;padding:4px 8px;
+}
+.order-modal-close:hover{color:#f0eeff}
+.order-modal-tag{font-size:11px;font-weight:600;color:#c4f000;letter-spacing:2px;text-transform:uppercase;margin-bottom:10px}
+.order-modal-title{font-size:22px;font-weight:800;letter-spacing:-.5px;color:#f0eeff;margin-bottom:6px}
+.order-modal-desc{font-size:13px;color:rgba(240,238,255,.4);margin-bottom:24px;line-height:1.6}
+.order-alert{padding:11px 14px;border-radius:8px;font-size:13px;font-weight:500;margin-bottom:16px}
+.order-alert-success{background:rgba(196,240,0,.08);border:1px solid rgba(196,240,0,.2);color:#c4f000}
+.order-alert-error{background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.2);color:#fca5a5}
+.order-form-group{margin-bottom:14px}
+.order-label{display:block;font-size:11px;font-weight:600;color:rgba(240,238,255,.4);text-transform:uppercase;letter-spacing:.7px;margin-bottom:6px}
+.order-input{width:100%;padding:11px 14px;background:#141028;border:1px solid rgba(139,92,246,.2);border-radius:8px;color:#f0eeff;font-size:14px;font-family:inherit;outline:none;transition:border-color .2s}
+.order-input:focus{border-color:#7c3aed;box-shadow:0 0 0 3px rgba(124,58,237,.1)}
+.order-input option{background:#141028;color:#f0eeff}
+.order-plans{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:6px}
+.order-plan{background:#141028;border:1px solid rgba(139,92,246,.2);border-radius:8px;padding:10px;text-align:center;cursor:pointer;transition:all .2s}
+.order-plan:hover{border-color:rgba(139,92,246,.4)}
+.order-plan-active{border-color:#c4f000;background:rgba(196,240,0,.05)}
+.order-plan-name{font-size:12px;font-weight:600;color:#f0eeff;margin-bottom:3px}
+.order-plan-price{font-size:11px;color:rgba(240,238,255,.4)}
+.order-plan-active .order-plan-price{color:#c4f000}
+.order-submit-btn{
+  width:100%;padding:13px;background:#c4f000;color:#07050f;border:none;
+  border-radius:8px;font-size:14px;font-weight:700;cursor:pointer;
+  font-family:inherit;transition:all .2s;margin-top:8px;
+}
+.order-submit-btn:hover{background:#d4ff20;box-shadow:0 4px 20px rgba(196,240,0,.25)}
+.order-submit-btn:disabled{opacity:.6;cursor:not-allowed}
+.order-note{text-align:center;font-size:12px;color:rgba(240,238,255,.2);margin-top:14px}
+
+/* Floating tugma */
+.order-float-btn{
+  position:fixed;bottom:90px;right:32px;z-index:900;
+  background:#07050f;color:#f0eeff;
+  border:1px solid rgba(139,92,246,.4);
+  padding:12px 22px;border-radius:100px;
+  font-size:13px;font-weight:700;cursor:pointer;
+  font-family:inherit;transition:all .25s;
+  box-shadow:0 4px 20px rgba(0,0,0,.4);
+}
+.order-float-btn:hover{
+  background:#141028;border-color:#7c3aed;color:#c4f000;
+  transform:translateY(-2px);box-shadow:0 8px 28px rgba(124,58,237,.2);
+}
+@media(max-width:768px){
+  .order-float-btn{bottom:80px;right:16px;padding:10px 18px;font-size:12px}
+  .order-modal-box{padding:24px}
+  .order-plans{grid-template-columns:1fr}
+}
+
+
+
+.page{display:none!important}
+.page.active{display:block!important}
+.auth-page.active{display:flex!important}
+.admin-wrap{display:none!important}
+.admin-wrap.active{display:flex!important}
+
+/* login */
+
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+:root{
+  --bg:#07050f;
+  --s1:#0e0b1a;
+  --s2:#141028;
+  --s3:#1a1530;
+  --b1:rgba(139,92,246,.12);
+  --b2:rgba(139,92,246,.25);
+  --b3:rgba(139,92,246,.45);
+  --neon:#c4f000;
+  --neon2:#d4ff20;
+  --purple:#7c3aed;
+  --purple2:#9d5df0;
+  --white:#f0eeff;
+  --muted:rgba(240,238,255,.45);
+  --muted2:rgba(240,238,255,.2);
+  --red:#ef4444;
+  --green:#22c55e;
+  --r:10px;
+  --r2:16px;
+  --r3:24px;
+  --shadow:0 4px 24px rgba(0,0,0,.4);
+  --shadow2:0 8px 48px rgba(0,0,0,.5);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--white);min-height:100vh;font-size:15px;line-height:1.6;-webkit-font-smoothing:antialiased}
+a{text-decoration:none;color:inherit}
+
+/* ORBS */
+.orb{position:fixed;border-radius:50%;filter:blur(130px);pointer-events:none;z-index:0;animation:orb 20s ease-in-out infinite}
+.orb1{width:600px;height:600px;background:radial-gradient(circle,rgba(124,58,237,.28),transparent 70%);top:-180px;right:-120px}
+.orb2{width:500px;height:500px;background:radial-gradient(circle,rgba(196,240,0,.07),transparent 70%);bottom:-120px;left:-80px;animation-delay:-10s}
+@keyframes orb{0%,100%{transform:translate(0,0)}50%{transform:translate(-20px,14px)}}
+
+/* NAV */
+.nav{position:fixed;top:0;left:0;right:0;z-index:500;height:64px;display:flex;align-items:center;padding:0 56px;transition:background .3s,border-color .3s}
+.nav.stuck{background:rgba(7,5,15,.92);backdrop-filter:blur(24px);border-bottom:1px solid var(--b1)}
+.nav-logo{font-size:19px;font-weight:800;letter-spacing:-.5px;color:var(--white)}
+.nav-logo em{font-style:normal;color:var(--neon)}
+.nav-links{display:flex;align-items:center;gap:6px;margin:0 32px}
+.nav-links a{font-size:13px;font-weight:500;color:var(--muted);padding:6px 12px;border-radius:8px;transition:color .2s,background .2s}
+.nav-links a:hover{color:var(--white);background:var(--s2)}
+.nav-links a.active{color:var(--white)}
+.nav-right{margin-left:auto;display:flex;align-items:center;gap:10px}
+.nav-user-link{display:flex;align-items:center;gap:9px}
+.nav-avatar{width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,var(--purple),var(--purple2));display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:#fff;flex-shrink:0}
+.nav-username{font-size:13px;font-weight:600;color:var(--white)}
+.btn-ghost-sm{font-size:13px;font-weight:500;color:var(--muted);padding:7px 14px;border-radius:8px;border:1px solid var(--b2);transition:all .2s;cursor:pointer;background:transparent}
+.btn-ghost-sm:hover{color:var(--white);border-color:var(--b3)}
+.btn-neon-sm{font-size:13px;font-weight:700;color:#07050f;padding:7px 18px;border-radius:8px;background:var(--neon);transition:all .2s;cursor:pointer;border:none}
+.btn-neon-sm:hover{background:var(--neon2);transform:translateY(-1px);box-shadow:0 4px 16px rgba(196,240,0,.3)}
+
+/* BUTTONS */
+.btn{display:inline-flex;align-items:center;gap:8px;padding:12px 24px;border-radius:100px;font-size:14px;font-weight:700;cursor:pointer;border:none;font-family:inherit;transition:all .22s;letter-spacing:.1px;text-decoration:none}
+.btn-neon{background:var(--neon);color:#07050f}
+.btn-neon:hover{background:var(--neon2);transform:translateY(-2px);box-shadow:0 6px 24px rgba(196,240,0,.3)}
+.btn-outline{background:transparent;color:var(--white);border:1px solid var(--b3)}
+.btn-outline:hover{border-color:var(--neon);color:var(--neon)}
+.btn-ghost{background:var(--s2);color:var(--muted);border:1px solid var(--b1)}
+.btn-ghost:hover{color:var(--white);border-color:var(--b2)}
+.btn-danger{background:rgba(239,68,68,.1);color:var(--red);border:1px solid rgba(239,68,68,.25)}
+.btn-danger:hover{background:rgba(239,68,68,.18)}
+.btn-full{width:100%;justify-content:center;border-radius:var(--r)}
+.btn-lg{padding:14px 36px;font-size:15px}
+.btn:disabled{opacity:.55;cursor:not-allowed;transform:none!important}
+
+/* CARDS */
+.card{background:var(--s1);border:1px solid var(--b1);border-radius:var(--r2);padding:28px}
+.card-sm{background:var(--s1);border:1px solid var(--b1);border-radius:var(--r);padding:20px}
+.card-glow{box-shadow:0 0 0 1px var(--b1),0 24px 64px rgba(0,0,0,.4),0 0 80px rgba(124,58,237,.06)}
+
+/* FORM */
+.form-group{margin-bottom:18px}
+.form-label{display:block;font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.7px;margin-bottom:7px}
+.form-input{width:100%;padding:11px 14px;background:var(--s2);border:1px solid var(--b2);border-radius:var(--r);color:var(--white);font-size:14px;font-family:inherit;outline:none;transition:border-color .2s,box-shadow .2s}
+.form-input:focus{border-color:var(--purple);box-shadow:0 0 0 3px rgba(124,58,237,.12)}
+.form-input::placeholder{color:var(--muted2)}
+.form-hint{font-size:12px;color:var(--muted);margin-top:5px}
+.input-wrap{position:relative}
+.input-wrap .form-input{padding-right:44px}
+.input-icon{position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--muted);cursor:pointer;font-size:16px;padding:4px;transition:color .2s}
+.input-icon:hover{color:var(--white)}
+
+/* ALERTS */
+.alert{padding:12px 16px;border-radius:var(--r);font-size:13px;font-weight:500;margin-bottom:18px;display:flex;align-items:flex-start;gap:8px}
+.alert::before{font-size:15px;flex-shrink:0;margin-top:1px}
+.alert-error{background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.2);color:#fca5a5}
+.alert-error::before{content:'⚠'}
+.alert-success{background:rgba(196,240,0,.07);border:1px solid rgba(196,240,0,.2);color:var(--neon)}
+.alert-success::before{content:'✓'}
+.hidden{display:none!important}
+
+/* BADGE */
+.badge{display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:99px;font-size:11px;font-weight:600;letter-spacing:.2px}
+.badge-neon{background:rgba(196,240,0,.1);color:var(--neon);border:1px solid rgba(196,240,0,.2)}
+.badge-purple{background:rgba(124,58,237,.12);color:#c4b5fd;border:1px solid rgba(124,58,237,.2)}
+.badge-gray{background:rgba(255,255,255,.06);color:var(--muted);border:1px solid var(--b1)}
+
+/* STAT CARD */
+.stat-card{background:var(--s1);border:1px solid var(--b1);border-radius:var(--r2);padding:22px 24px;position:relative;overflow:hidden;transition:border-color .2s,transform .2s}
+.stat-card:hover{border-color:var(--b2);transform:translateY(-2px)}
+.stat-card::after{content:'';position:absolute;bottom:0;left:0;width:0;height:2px;background:var(--neon);transition:width .4s}
+.stat-card:hover::after{width:100%}
+.stat-val{font-size:32px;font-weight:800;color:var(--white);letter-spacing:-1.5px;line-height:1;margin-bottom:6px}
+.stat-lbl{font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.7px}
+.stat-sub{font-size:12px;color:var(--neon);margin-top:5px}
+
+/* TABLE */
+.tbl-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse}
+thead th{padding:11px 16px;font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.7px;background:var(--s2);border-bottom:1px solid var(--b1);white-space:nowrap}
+tbody td{padding:12px 16px;font-size:13px;border-bottom:1px solid var(--b1);vertical-align:middle}
+tbody tr:last-child td{border-bottom:none}
+tbody tr:hover td{background:rgba(139,92,246,.04)}
+tbody tr:first-child.new-row td{animation:rowflash .8s ease}
+@keyframes rowflash{0%,100%{background:transparent}50%{background:rgba(196,240,0,.05)}}
+
+/* FOOTER */
+.footer{border-top:1px solid var(--b1);padding:28px 56px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px;position:relative;z-index:1;margin-top:auto}
+.footer-logo{font-size:17px;font-weight:800;letter-spacing:-.3px}
+.footer-logo em{font-style:normal;color:var(--neon)}
+.footer p{font-size:12px;color:var(--muted2)}
+.footer-links{display:flex;gap:20px}
+.footer-links a{font-size:12px;color:var(--muted2);transition:color .2s}
+.footer-links a:hover{color:var(--neon)}
+
+/* REVEAL */
+.reveal{opacity:0;transform:translateY(22px);transition:opacity .7s cubic-bezier(.16,1,.3,1),transform .7s cubic-bezier(.16,1,.3,1)}
+.reveal.in{opacity:1;transform:none}
+
+/* UTILS */
+.z1{position:relative;z-index:1}
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+.grid-4{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+.flex{display:flex;align-items:center}
+.flex-between{display:flex;align-items:center;justify-content:space-between}
+.gap-2{gap:8px}
+.gap-3{gap:12px}
+.gap-4{gap:16px}
+.mt-2{margin-top:8px}
+.mt-3{margin-top:12px}
+.mt-4{margin-top:16px}
+.mb-2{margin-bottom:8px}
+.mb-3{margin-bottom:12px}
+.mb-4{margin-bottom:16px}
+.mb-5{margin-bottom:24px}
+.mb-6{margin-bottom:32px}
+.text-muted{color:var(--muted)}
+.text-neon{color:var(--neon)}
+.text-sm{font-size:13px}
+.text-xs{font-size:11px}
+.fw-600{font-weight:600}
+.fw-700{font-weight:700}
+.fw-800{font-weight:800}
+.section-tag{font-size:11px;font-weight:600;color:var(--neon);letter-spacing:2px;text-transform:uppercase;margin-bottom:12px}
+.section-title{font-size:clamp(30px,4vw,48px);font-weight:800;letter-spacing:-1.5px;color:var(--white);line-height:1.08;margin-bottom:14px}
+.section-desc{font-size:15px;font-weight:300;color:var(--muted);line-height:1.8;max-width:520px}
+.wrap{position:relative;z-index:1}
+
+@media(max-width:768px){
+  .nav{padding:0 20px}
+  .nav-links{display:none}
+  .grid-2,.grid-3,.grid-4{grid-template-columns:1fr}
+  .footer{padding:20px;flex-direction:column;text-align:center}
+}
+
+
+.auth-page{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:100px 20px 40px}
+.auth-box{width:100%;max-width:420px}
+.auth-top{text-align:center;margin-bottom:32px}
+.auth-logo{font-size:26px;font-weight:800;letter-spacing:-.5px;display:inline-block;margin-bottom:20px}
+.auth-logo em{font-style:normal;color:var(--neon)}
+.auth-title{font-size:26px;font-weight:800;letter-spacing:-1px;margin-bottom:6px}
+.auth-sub{font-size:14px;color:var(--muted)}
+.auth-card{background:var(--s1);border:1px solid var(--b2);border-radius:var(--r3);padding:36px;box-shadow:0 0 80px rgba(124,58,237,.08)}
+.auth-footer{text-align:center;margin-top:18px;font-size:13px;color:var(--muted)}
+.auth-footer a{color:var(--neon);font-weight:600}
+
+
+/* profile */
+
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+:root{
+  --bg:#07050f;
+  --s1:#0e0b1a;
+  --s2:#141028;
+  --s3:#1a1530;
+  --b1:rgba(139,92,246,.12);
+  --b2:rgba(139,92,246,.25);
+  --b3:rgba(139,92,246,.45);
+  --neon:#c4f000;
+  --neon2:#d4ff20;
+  --purple:#7c3aed;
+  --purple2:#9d5df0;
+  --white:#f0eeff;
+  --muted:rgba(240,238,255,.45);
+  --muted2:rgba(240,238,255,.2);
+  --red:#ef4444;
+  --green:#22c55e;
+  --r:10px;
+  --r2:16px;
+  --r3:24px;
+  --shadow:0 4px 24px rgba(0,0,0,.4);
+  --shadow2:0 8px 48px rgba(0,0,0,.5);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--white);min-height:100vh;font-size:15px;line-height:1.6;-webkit-font-smoothing:antialiased}
+a{text-decoration:none;color:inherit}
+
+/* ORBS */
+.orb{position:fixed;border-radius:50%;filter:blur(130px);pointer-events:none;z-index:0;animation:orb 20s ease-in-out infinite}
+.orb1{width:600px;height:600px;background:radial-gradient(circle,rgba(124,58,237,.28),transparent 70%);top:-180px;right:-120px}
+.orb2{width:500px;height:500px;background:radial-gradient(circle,rgba(196,240,0,.07),transparent 70%);bottom:-120px;left:-80px;animation-delay:-10s}
+@keyframes orb{0%,100%{transform:translate(0,0)}50%{transform:translate(-20px,14px)}}
+
+/* NAV */
+.nav{position:fixed;top:0;left:0;right:0;z-index:500;height:64px;display:flex;align-items:center;padding:0 56px;transition:background .3s,border-color .3s}
+.nav.stuck{background:rgba(7,5,15,.92);backdrop-filter:blur(24px);border-bottom:1px solid var(--b1)}
+.nav-logo{font-size:19px;font-weight:800;letter-spacing:-.5px;color:var(--white)}
+.nav-logo em{font-style:normal;color:var(--neon)}
+.nav-links{display:flex;align-items:center;gap:6px;margin:0 32px}
+.nav-links a{font-size:13px;font-weight:500;color:var(--muted);padding:6px 12px;border-radius:8px;transition:color .2s,background .2s}
+.nav-links a:hover{color:var(--white);background:var(--s2)}
+.nav-links a.active{color:var(--white)}
+.nav-right{margin-left:auto;display:flex;align-items:center;gap:10px}
+.nav-user-link{display:flex;align-items:center;gap:9px}
+.nav-avatar{width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,var(--purple),var(--purple2));display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:#fff;flex-shrink:0}
+.nav-username{font-size:13px;font-weight:600;color:var(--white)}
+.btn-ghost-sm{font-size:13px;font-weight:500;color:var(--muted);padding:7px 14px;border-radius:8px;border:1px solid var(--b2);transition:all .2s;cursor:pointer;background:transparent}
+.btn-ghost-sm:hover{color:var(--white);border-color:var(--b3)}
+.btn-neon-sm{font-size:13px;font-weight:700;color:#07050f;padding:7px 18px;border-radius:8px;background:var(--neon);transition:all .2s;cursor:pointer;border:none}
+.btn-neon-sm:hover{background:var(--neon2);transform:translateY(-1px);box-shadow:0 4px 16px rgba(196,240,0,.3)}
+
+/* BUTTONS */
+.btn{display:inline-flex;align-items:center;gap:8px;padding:12px 24px;border-radius:100px;font-size:14px;font-weight:700;cursor:pointer;border:none;font-family:inherit;transition:all .22s;letter-spacing:.1px;text-decoration:none}
+.btn-neon{background:var(--neon);color:#07050f}
+.btn-neon:hover{background:var(--neon2);transform:translateY(-2px);box-shadow:0 6px 24px rgba(196,240,0,.3)}
+.btn-outline{background:transparent;color:var(--white);border:1px solid var(--b3)}
+.btn-outline:hover{border-color:var(--neon);color:var(--neon)}
+.btn-ghost{background:var(--s2);color:var(--muted);border:1px solid var(--b1)}
+.btn-ghost:hover{color:var(--white);border-color:var(--b2)}
+.btn-danger{background:rgba(239,68,68,.1);color:var(--red);border:1px solid rgba(239,68,68,.25)}
+.btn-danger:hover{background:rgba(239,68,68,.18)}
+.btn-full{width:100%;justify-content:center;border-radius:var(--r)}
+.btn-lg{padding:14px 36px;font-size:15px}
+.btn:disabled{opacity:.55;cursor:not-allowed;transform:none!important}
+
+/* CARDS */
+.card{background:var(--s1);border:1px solid var(--b1);border-radius:var(--r2);padding:28px}
+.card-sm{background:var(--s1);border:1px solid var(--b1);border-radius:var(--r);padding:20px}
+.card-glow{box-shadow:0 0 0 1px var(--b1),0 24px 64px rgba(0,0,0,.4),0 0 80px rgba(124,58,237,.06)}
+
+/* FORM */
+.form-group{margin-bottom:18px}
+.form-label{display:block;font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.7px;margin-bottom:7px}
+.form-input{width:100%;padding:11px 14px;background:var(--s2);border:1px solid var(--b2);border-radius:var(--r);color:var(--white);font-size:14px;font-family:inherit;outline:none;transition:border-color .2s,box-shadow .2s}
+.form-input:focus{border-color:var(--purple);box-shadow:0 0 0 3px rgba(124,58,237,.12)}
+.form-input::placeholder{color:var(--muted2)}
+.form-hint{font-size:12px;color:var(--muted);margin-top:5px}
+.input-wrap{position:relative}
+.input-wrap .form-input{padding-right:44px}
+.input-icon{position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--muted);cursor:pointer;font-size:16px;padding:4px;transition:color .2s}
+.input-icon:hover{color:var(--white)}
+
+/* ALERTS */
+.alert{padding:12px 16px;border-radius:var(--r);font-size:13px;font-weight:500;margin-bottom:18px;display:flex;align-items:flex-start;gap:8px}
+.alert::before{font-size:15px;flex-shrink:0;margin-top:1px}
+.alert-error{background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.2);color:#fca5a5}
+.alert-error::before{content:'⚠'}
+.alert-success{background:rgba(196,240,0,.07);border:1px solid rgba(196,240,0,.2);color:var(--neon)}
+.alert-success::before{content:'✓'}
+.hidden{display:none!important}
+
+/* BADGE */
+.badge{display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:99px;font-size:11px;font-weight:600;letter-spacing:.2px}
+.badge-neon{background:rgba(196,240,0,.1);color:var(--neon);border:1px solid rgba(196,240,0,.2)}
+.badge-purple{background:rgba(124,58,237,.12);color:#c4b5fd;border:1px solid rgba(124,58,237,.2)}
+.badge-gray{background:rgba(255,255,255,.06);color:var(--muted);border:1px solid var(--b1)}
+
+/* STAT CARD */
+.stat-card{background:var(--s1);border:1px solid var(--b1);border-radius:var(--r2);padding:22px 24px;position:relative;overflow:hidden;transition:border-color .2s,transform .2s}
+.stat-card:hover{border-color:var(--b2);transform:translateY(-2px)}
+.stat-card::after{content:'';position:absolute;bottom:0;left:0;width:0;height:2px;background:var(--neon);transition:width .4s}
+.stat-card:hover::after{width:100%}
+.stat-val{font-size:32px;font-weight:800;color:var(--white);letter-spacing:-1.5px;line-height:1;margin-bottom:6px}
+.stat-lbl{font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.7px}
+.stat-sub{font-size:12px;color:var(--neon);margin-top:5px}
+
+/* TABLE */
+.tbl-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse}
+thead th{padding:11px 16px;font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.7px;background:var(--s2);border-bottom:1px solid var(--b1);white-space:nowrap}
+tbody td{padding:12px 16px;font-size:13px;border-bottom:1px solid var(--b1);vertical-align:middle}
+tbody tr:last-child td{border-bottom:none}
+tbody tr:hover td{background:rgba(139,92,246,.04)}
+tbody tr:first-child.new-row td{animation:rowflash .8s ease}
+@keyframes rowflash{0%,100%{background:transparent}50%{background:rgba(196,240,0,.05)}}
+
+/* FOOTER */
+.footer{border-top:1px solid var(--b1);padding:28px 56px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px;position:relative;z-index:1;margin-top:auto}
+.footer-logo{font-size:17px;font-weight:800;letter-spacing:-.3px}
+.footer-logo em{font-style:normal;color:var(--neon)}
+.footer p{font-size:12px;color:var(--muted2)}
+.footer-links{display:flex;gap:20px}
+.footer-links a{font-size:12px;color:var(--muted2);transition:color .2s}
+.footer-links a:hover{color:var(--neon)}
+
+/* REVEAL */
+.reveal{opacity:0;transform:translateY(22px);transition:opacity .7s cubic-bezier(.16,1,.3,1),transform .7s cubic-bezier(.16,1,.3,1)}
+.reveal.in{opacity:1;transform:none}
+
+/* UTILS */
+.z1{position:relative;z-index:1}
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+.grid-4{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+.flex{display:flex;align-items:center}
+.flex-between{display:flex;align-items:center;justify-content:space-between}
+.gap-2{gap:8px}
+.gap-3{gap:12px}
+.gap-4{gap:16px}
+.mt-2{margin-top:8px}
+.mt-3{margin-top:12px}
+.mt-4{margin-top:16px}
+.mb-2{margin-bottom:8px}
+.mb-3{margin-bottom:12px}
+.mb-4{margin-bottom:16px}
+.mb-5{margin-bottom:24px}
+.mb-6{margin-bottom:32px}
+.text-muted{color:var(--muted)}
+.text-neon{color:var(--neon)}
+.text-sm{font-size:13px}
+.text-xs{font-size:11px}
+.fw-600{font-weight:600}
+.fw-700{font-weight:700}
+.fw-800{font-weight:800}
+.section-tag{font-size:11px;font-weight:600;color:var(--neon);letter-spacing:2px;text-transform:uppercase;margin-bottom:12px}
+.section-title{font-size:clamp(30px,4vw,48px);font-weight:800;letter-spacing:-1.5px;color:var(--white);line-height:1.08;margin-bottom:14px}
+.section-desc{font-size:15px;font-weight:300;color:var(--muted);line-height:1.8;max-width:520px}
+.wrap{position:relative;z-index:1}
+
+@media(max-width:768px){
+  .nav{padding:0 20px}
+  .nav-links{display:none}
+  .grid-2,.grid-3,.grid-4{grid-template-columns:1fr}
+  .footer{padding:20px;flex-direction:column;text-align:center}
+}
+
+
+.profile-page{padding:90px 56px 60px;max-width:960px;margin:0 auto}
+.profile-hero{background:var(--s1);border:1px solid var(--b2);border-radius:var(--r3);padding:32px;margin-bottom:24px;position:relative;overflow:hidden;display:flex;align-items:center;gap:24px;flex-wrap:wrap}
+.profile-hero::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--purple),var(--neon),var(--purple),transparent)}
+.p-avatar{width:72px;height:72px;border-radius:50%;background:linear-gradient(135deg,var(--purple),var(--purple2));display:flex;align-items:center;justify-content:center;font-size:26px;font-weight:800;color:#fff;flex-shrink:0;border:3px solid var(--b2)}
+.p-name{font-size:22px;font-weight:800;letter-spacing:-.5px;margin-bottom:4px}
+.p-email{font-size:13px;color:var(--muted);margin-bottom:10px}
+.plan-opt{background:var(--s2);border:1px solid var(--b1);border-radius:var(--r2);padding:18px 20px;cursor:pointer;transition:all .22s;position:relative}
+.plan-opt:hover{border-color:var(--b2);transform:translateY(-2px)}
+.plan-opt.current{border-color:var(--neon);background:rgba(196,240,0,.04)}
+.plan-opt.current::after{content:'Joriy tarif';position:absolute;top:12px;right:12px;font-size:10px;font-weight:600;color:var(--neon);background:rgba(196,240,0,.1);border:1px solid rgba(196,240,0,.2);padding:2px 8px;border-radius:99px}
+.plan-price{font-size:26px;font-weight:800;letter-spacing:-1px;color:var(--white);margin:6px 0 4px}
+.plan-price sub{font-size:13px;font-weight:400;color:var(--muted);letter-spacing:0;vertical-align:baseline}
+.danger-zone{background:rgba(239,68,68,.04);border:1px solid rgba(239,68,68,.15);border-radius:var(--r2);padding:24px}
+@media(max-width:768px){.profile-page{padding:80px 20px 40px}}
+
+
+/* pricing */
+
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+:root{
+  --bg:#07050f;
+  --s1:#0e0b1a;
+  --s2:#141028;
+  --s3:#1a1530;
+  --b1:rgba(139,92,246,.12);
+  --b2:rgba(139,92,246,.25);
+  --b3:rgba(139,92,246,.45);
+  --neon:#c4f000;
+  --neon2:#d4ff20;
+  --purple:#7c3aed;
+  --purple2:#9d5df0;
+  --white:#f0eeff;
+  --muted:rgba(240,238,255,.45);
+  --muted2:rgba(240,238,255,.2);
+  --red:#ef4444;
+  --green:#22c55e;
+  --r:10px;
+  --r2:16px;
+  --r3:24px;
+  --shadow:0 4px 24px rgba(0,0,0,.4);
+  --shadow2:0 8px 48px rgba(0,0,0,.5);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--white);min-height:100vh;font-size:15px;line-height:1.6;-webkit-font-smoothing:antialiased}
+a{text-decoration:none;color:inherit}
+
+/* ORBS */
+.orb{position:fixed;border-radius:50%;filter:blur(130px);pointer-events:none;z-index:0;animation:orb 20s ease-in-out infinite}
+.orb1{width:600px;height:600px;background:radial-gradient(circle,rgba(124,58,237,.28),transparent 70%);top:-180px;right:-120px}
+.orb2{width:500px;height:500px;background:radial-gradient(circle,rgba(196,240,0,.07),transparent 70%);bottom:-120px;left:-80px;animation-delay:-10s}
+@keyframes orb{0%,100%{transform:translate(0,0)}50%{transform:translate(-20px,14px)}}
+
+/* NAV */
+.nav{position:fixed;top:0;left:0;right:0;z-index:500;height:64px;display:flex;align-items:center;padding:0 56px;transition:background .3s,border-color .3s}
+.nav.stuck{background:rgba(7,5,15,.92);backdrop-filter:blur(24px);border-bottom:1px solid var(--b1)}
+.nav-logo{font-size:19px;font-weight:800;letter-spacing:-.5px;color:var(--white)}
+.nav-logo em{font-style:normal;color:var(--neon)}
+.nav-links{display:flex;align-items:center;gap:6px;margin:0 32px}
+.nav-links a{font-size:13px;font-weight:500;color:var(--muted);padding:6px 12px;border-radius:8px;transition:color .2s,background .2s}
+.nav-links a:hover{color:var(--white);background:var(--s2)}
+.nav-links a.active{color:var(--white)}
+.nav-right{margin-left:auto;display:flex;align-items:center;gap:10px}
+.nav-user-link{display:flex;align-items:center;gap:9px}
+.nav-avatar{width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,var(--purple),var(--purple2));display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:#fff;flex-shrink:0}
+.nav-username{font-size:13px;font-weight:600;color:var(--white)}
+.btn-ghost-sm{font-size:13px;font-weight:500;color:var(--muted);padding:7px 14px;border-radius:8px;border:1px solid var(--b2);transition:all .2s;cursor:pointer;background:transparent}
+.btn-ghost-sm:hover{color:var(--white);border-color:var(--b3)}
+.btn-neon-sm{font-size:13px;font-weight:700;color:#07050f;padding:7px 18px;border-radius:8px;background:var(--neon);transition:all .2s;cursor:pointer;border:none}
+.btn-neon-sm:hover{background:var(--neon2);transform:translateY(-1px);box-shadow:0 4px 16px rgba(196,240,0,.3)}
+
+/* BUTTONS */
+.btn{display:inline-flex;align-items:center;gap:8px;padding:12px 24px;border-radius:100px;font-size:14px;font-weight:700;cursor:pointer;border:none;font-family:inherit;transition:all .22s;letter-spacing:.1px;text-decoration:none}
+.btn-neon{background:var(--neon);color:#07050f}
+.btn-neon:hover{background:var(--neon2);transform:translateY(-2px);box-shadow:0 6px 24px rgba(196,240,0,.3)}
+.btn-outline{background:transparent;color:var(--white);border:1px solid var(--b3)}
+.btn-outline:hover{border-color:var(--neon);color:var(--neon)}
+.btn-ghost{background:var(--s2);color:var(--muted);border:1px solid var(--b1)}
+.btn-ghost:hover{color:var(--white);border-color:var(--b2)}
+.btn-danger{background:rgba(239,68,68,.1);color:var(--red);border:1px solid rgba(239,68,68,.25)}
+.btn-danger:hover{background:rgba(239,68,68,.18)}
+.btn-full{width:100%;justify-content:center;border-radius:var(--r)}
+.btn-lg{padding:14px 36px;font-size:15px}
+.btn:disabled{opacity:.55;cursor:not-allowed;transform:none!important}
+
+/* CARDS */
+.card{background:var(--s1);border:1px solid var(--b1);border-radius:var(--r2);padding:28px}
+.card-sm{background:var(--s1);border:1px solid var(--b1);border-radius:var(--r);padding:20px}
+.card-glow{box-shadow:0 0 0 1px var(--b1),0 24px 64px rgba(0,0,0,.4),0 0 80px rgba(124,58,237,.06)}
+
+/* FORM */
+.form-group{margin-bottom:18px}
+.form-label{display:block;font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.7px;margin-bottom:7px}
+.form-input{width:100%;padding:11px 14px;background:var(--s2);border:1px solid var(--b2);border-radius:var(--r);color:var(--white);font-size:14px;font-family:inherit;outline:none;transition:border-color .2s,box-shadow .2s}
+.form-input:focus{border-color:var(--purple);box-shadow:0 0 0 3px rgba(124,58,237,.12)}
+.form-input::placeholder{color:var(--muted2)}
+.form-hint{font-size:12px;color:var(--muted);margin-top:5px}
+.input-wrap{position:relative}
+.input-wrap .form-input{padding-right:44px}
+.input-icon{position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--muted);cursor:pointer;font-size:16px;padding:4px;transition:color .2s}
+.input-icon:hover{color:var(--white)}
+
+/* ALERTS */
+.alert{padding:12px 16px;border-radius:var(--r);font-size:13px;font-weight:500;margin-bottom:18px;display:flex;align-items:flex-start;gap:8px}
+.alert::before{font-size:15px;flex-shrink:0;margin-top:1px}
+.alert-error{background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.2);color:#fca5a5}
+.alert-error::before{content:'⚠'}
+.alert-success{background:rgba(196,240,0,.07);border:1px solid rgba(196,240,0,.2);color:var(--neon)}
+.alert-success::before{content:'✓'}
+.hidden{display:none!important}
+
+/* BADGE */
+.badge{display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:99px;font-size:11px;font-weight:600;letter-spacing:.2px}
+.badge-neon{background:rgba(196,240,0,.1);color:var(--neon);border:1px solid rgba(196,240,0,.2)}
+.badge-purple{background:rgba(124,58,237,.12);color:#c4b5fd;border:1px solid rgba(124,58,237,.2)}
+.badge-gray{background:rgba(255,255,255,.06);color:var(--muted);border:1px solid var(--b1)}
+
+/* STAT CARD */
+.stat-card{background:var(--s1);border:1px solid var(--b1);border-radius:var(--r2);padding:22px 24px;position:relative;overflow:hidden;transition:border-color .2s,transform .2s}
+.stat-card:hover{border-color:var(--b2);transform:translateY(-2px)}
+.stat-card::after{content:'';position:absolute;bottom:0;left:0;width:0;height:2px;background:var(--neon);transition:width .4s}
+.stat-card:hover::after{width:100%}
+.stat-val{font-size:32px;font-weight:800;color:var(--white);letter-spacing:-1.5px;line-height:1;margin-bottom:6px}
+.stat-lbl{font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.7px}
+.stat-sub{font-size:12px;color:var(--neon);margin-top:5px}
+
+/* TABLE */
+.tbl-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse}
+thead th{padding:11px 16px;font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.7px;background:var(--s2);border-bottom:1px solid var(--b1);white-space:nowrap}
+tbody td{padding:12px 16px;font-size:13px;border-bottom:1px solid var(--b1);vertical-align:middle}
+tbody tr:last-child td{border-bottom:none}
+tbody tr:hover td{background:rgba(139,92,246,.04)}
+tbody tr:first-child.new-row td{animation:rowflash .8s ease}
+@keyframes rowflash{0%,100%{background:transparent}50%{background:rgba(196,240,0,.05)}}
+
+/* FOOTER */
+.footer{border-top:1px solid var(--b1);padding:28px 56px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px;position:relative;z-index:1;margin-top:auto}
+.footer-logo{font-size:17px;font-weight:800;letter-spacing:-.3px}
+.footer-logo em{font-style:normal;color:var(--neon)}
+.footer p{font-size:12px;color:var(--muted2)}
+.footer-links{display:flex;gap:20px}
+.footer-links a{font-size:12px;color:var(--muted2);transition:color .2s}
+.footer-links a:hover{color:var(--neon)}
+
+/* REVEAL */
+.reveal{opacity:0;transform:translateY(22px);transition:opacity .7s cubic-bezier(.16,1,.3,1),transform .7s cubic-bezier(.16,1,.3,1)}
+.reveal.in{opacity:1;transform:none}
+
+/* UTILS */
+.z1{position:relative;z-index:1}
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+.grid-4{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+.flex{display:flex;align-items:center}
+.flex-between{display:flex;align-items:center;justify-content:space-between}
+.gap-2{gap:8px}
+.gap-3{gap:12px}
+.gap-4{gap:16px}
+.mt-2{margin-top:8px}
+.mt-3{margin-top:12px}
+.mt-4{margin-top:16px}
+.mb-2{margin-bottom:8px}
+.mb-3{margin-bottom:12px}
+.mb-4{margin-bottom:16px}
+.mb-5{margin-bottom:24px}
+.mb-6{margin-bottom:32px}
+.text-muted{color:var(--muted)}
+.text-neon{color:var(--neon)}
+.text-sm{font-size:13px}
+.text-xs{font-size:11px}
+.fw-600{font-weight:600}
+.fw-700{font-weight:700}
+.fw-800{font-weight:800}
+.section-tag{font-size:11px;font-weight:600;color:var(--neon);letter-spacing:2px;text-transform:uppercase;margin-bottom:12px}
+.section-title{font-size:clamp(30px,4vw,48px);font-weight:800;letter-spacing:-1.5px;color:var(--white);line-height:1.08;margin-bottom:14px}
+.section-desc{font-size:15px;font-weight:300;color:var(--muted);line-height:1.8;max-width:520px}
+.wrap{position:relative;z-index:1}
+
+@media(max-width:768px){
+  .nav{padding:0 20px}
+  .nav-links{display:none}
+  .grid-2,.grid-3,.grid-4{grid-template-columns:1fr}
+  .footer{padding:20px;flex-direction:column;text-align:center}
+}
+
+
+.pricing-page{padding:110px 56px 80px;max-width:1040px;margin:0 auto}
+.pricing-hero{text-align:center;margin-bottom:56px}
+.pricing-title{font-size:clamp(40px,5vw,64px);font-weight:800;letter-spacing:-2.5px;color:var(--white);line-height:1.05;margin-bottom:16px}
+.pricing-title em{font-style:normal;color:var(--neon)}
+.toggle-row{display:flex;align-items:center;justify-content:center;gap:12px;margin-top:28px}
+.toggle-lbl{font-size:13px;font-weight:500;transition:color .2s}
+.toggle-lbl.on{color:var(--white)}
+.toggle-lbl.off{color:var(--muted)}
+.toggle{width:44px;height:24px;background:var(--s2);border:1px solid var(--b2);border-radius:99px;cursor:pointer;position:relative;transition:background .2s}
+.toggle.active{background:var(--purple)}
+.toggle-thumb{width:18px;height:18px;background:#fff;border-radius:50%;position:absolute;top:2px;left:2px;transition:transform .2s;pointer-events:none}
+.toggle.active .toggle-thumb{transform:translateX(20px)}
+.plan-card{background:var(--s1);border:1px solid var(--b1);border-radius:var(--r3);padding:36px;display:flex;flex-direction:column;transition:all .3s;position:relative;overflow:hidden}
+.plan-card::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--purple),transparent);opacity:0;transition:opacity .3s}
+.plan-card:hover{border-color:var(--b2);transform:translateY(-5px);box-shadow:0 24px 60px rgba(0,0,0,.3)}
+.plan-card:hover::before{opacity:1}
+.plan-card.pop{border-color:var(--purple);background:linear-gradient(145deg,rgba(124,58,237,.09),var(--s1))}
+.plan-card.pop::before{opacity:1}
+.plan-tag{font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--neon);margin-bottom:14px}
+.plan-name{font-size:22px;font-weight:800;letter-spacing:-.5px;margin-bottom:6px}
+.plan-price{font-size:52px;font-weight:800;letter-spacing:-3px;line-height:1;margin-bottom:4px;transition:all .25s}
+.plan-price sub{font-size:15px;font-weight:400;color:var(--muted);letter-spacing:0;vertical-align:baseline}
+.plan-desc{font-size:13px;color:var(--muted);margin-bottom:24px}
+.plan-divider{height:1px;background:var(--b1);margin-bottom:20px}
+.plan-feat{display:flex;align-items:flex-start;gap:10px;font-size:13px;color:rgba(240,238,255,.5);margin-bottom:10px;line-height:1.5}
+.plan-feat::before{content:'';width:16px;height:16px;border-radius:50%;border:1px solid var(--b2);flex-shrink:0;margin-top:1px}
+.plan-feat.yes{color:var(--muted)}
+.plan-feat.yes::before{content:'✓';font-size:8px;color:var(--neon);background:rgba(196,240,0,.08);border-color:rgba(196,240,0,.2);display:flex;align-items:center;justify-content:center;font-weight:700}
+.plan-btn{margin-top:auto;padding-top:24px}
+.faq-wrap{max-width:660px;margin:0 auto}
+.faq-item{border:1px solid var(--b1);border-radius:var(--r2);margin-bottom:8px;overflow:hidden;transition:border-color .2s}
+.faq-item:hover{border-color:var(--b2)}
+.faq-q{padding:18px 22px;font-size:14px;font-weight:600;cursor:pointer;display:flex;justify-content:space-between;align-items:center;user-select:none;gap:12px}
+.faq-icon{font-size:18px;color:var(--muted);transition:transform .3s;flex-shrink:0}
+.faq-item.open .faq-icon{transform:rotate(45deg);color:var(--neon)}
+.faq-body{max-height:0;overflow:hidden;transition:max-height .35s ease,padding .3s}
+.faq-item.open .faq-body{max-height:200px;padding:0 22px 20px}
+.faq-body p{font-size:13px;color:var(--muted);line-height:1.8}
+@media(max-width:768px){.pricing-page{padding:80px 20px 60px}}
+
+
+/* ── BUYURTMA MODAL ── */
+.order-modal-overlay{
+  display:none;position:fixed;inset:0;z-index:4000;
+  align-items:center;justify-content:center;padding:20px;
+  background:rgba(7,5,15,.9);backdrop-filter:blur(16px);
+}
+.order-modal-overlay.open{display:flex;animation:ofade .25s ease}
+@keyframes ofade{from{opacity:0}to{opacity:1}}
+.order-modal-box{
+  background:#0e0b1a;border:1px solid rgba(139,92,246,.35);
+  border-radius:20px;padding:36px;width:100%;max-width:460px;
+  position:relative;box-shadow:0 0 100px rgba(124,58,237,.12);
+  animation:oslide .3s cubic-bezier(.16,1,.3,1);
+  max-height:90vh;overflow-y:auto;
+}
+@keyframes oslide{from{transform:translateY(20px);opacity:0}to{transform:none;opacity:1}}
+.order-modal-close{
+  position:absolute;top:16px;right:18px;background:none;border:none;
+  color:rgba(240,238,255,.3);font-size:24px;cursor:pointer;line-height:1;
+  transition:color .2s;padding:4px 8px;
+}
+.order-modal-close:hover{color:#f0eeff}
+.order-modal-tag{font-size:11px;font-weight:600;color:#c4f000;letter-spacing:2px;text-transform:uppercase;margin-bottom:10px}
+.order-modal-title{font-size:22px;font-weight:800;letter-spacing:-.5px;color:#f0eeff;margin-bottom:6px}
+.order-modal-desc{font-size:13px;color:rgba(240,238,255,.4);margin-bottom:24px;line-height:1.6}
+.order-alert{padding:11px 14px;border-radius:8px;font-size:13px;font-weight:500;margin-bottom:16px}
+.order-alert-success{background:rgba(196,240,0,.08);border:1px solid rgba(196,240,0,.2);color:#c4f000}
+.order-alert-error{background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.2);color:#fca5a5}
+.order-form-group{margin-bottom:14px}
+.order-label{display:block;font-size:11px;font-weight:600;color:rgba(240,238,255,.4);text-transform:uppercase;letter-spacing:.7px;margin-bottom:6px}
+.order-input{width:100%;padding:11px 14px;background:#141028;border:1px solid rgba(139,92,246,.2);border-radius:8px;color:#f0eeff;font-size:14px;font-family:inherit;outline:none;transition:border-color .2s}
+.order-input:focus{border-color:#7c3aed;box-shadow:0 0 0 3px rgba(124,58,237,.1)}
+.order-input option{background:#141028;color:#f0eeff}
+.order-plans{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:6px}
+.order-plan{background:#141028;border:1px solid rgba(139,92,246,.2);border-radius:8px;padding:10px;text-align:center;cursor:pointer;transition:all .2s}
+.order-plan:hover{border-color:rgba(139,92,246,.4)}
+.order-plan-active{border-color:#c4f000;background:rgba(196,240,0,.05)}
+.order-plan-name{font-size:12px;font-weight:600;color:#f0eeff;margin-bottom:3px}
+.order-plan-price{font-size:11px;color:rgba(240,238,255,.4)}
+.order-plan-active .order-plan-price{color:#c4f000}
+.order-submit-btn{
+  width:100%;padding:13px;background:#c4f000;color:#07050f;border:none;
+  border-radius:8px;font-size:14px;font-weight:700;cursor:pointer;
+  font-family:inherit;transition:all .2s;margin-top:8px;
+}
+.order-submit-btn:hover{background:#d4ff20;box-shadow:0 4px 20px rgba(196,240,0,.25)}
+.order-submit-btn:disabled{opacity:.6;cursor:not-allowed}
+.order-note{text-align:center;font-size:12px;color:rgba(240,238,255,.2);margin-top:14px}
+
+/* Floating tugma */
+.order-float-btn{
+  position:fixed;bottom:90px;right:32px;z-index:900;
+  background:#07050f;color:#f0eeff;
+  border:1px solid rgba(139,92,246,.4);
+  padding:12px 22px;border-radius:100px;
+  font-size:13px;font-weight:700;cursor:pointer;
+  font-family:inherit;transition:all .25s;
+  box-shadow:0 4px 20px rgba(0,0,0,.4);
+}
+.order-float-btn:hover{
+  background:#141028;border-color:#7c3aed;color:#c4f000;
+  transform:translateY(-2px);box-shadow:0 8px 28px rgba(124,58,237,.2);
+}
+@media(max-width:768px){
+  .order-float-btn{bottom:80px;right:16px;padding:10px 18px;font-size:12px}
+  .order-modal-box{padding:24px}
+  .order-plans{grid-template-columns:1fr}
+}
+
+
+/* about */
+
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+:root{
+  --bg:#07050f;
+  --s1:#0e0b1a;
+  --s2:#141028;
+  --s3:#1a1530;
+  --b1:rgba(139,92,246,.12);
+  --b2:rgba(139,92,246,.25);
+  --b3:rgba(139,92,246,.45);
+  --neon:#c4f000;
+  --neon2:#d4ff20;
+  --purple:#7c3aed;
+  --purple2:#9d5df0;
+  --white:#f0eeff;
+  --muted:rgba(240,238,255,.45);
+  --muted2:rgba(240,238,255,.2);
+  --red:#ef4444;
+  --green:#22c55e;
+  --r:10px;
+  --r2:16px;
+  --r3:24px;
+  --shadow:0 4px 24px rgba(0,0,0,.4);
+  --shadow2:0 8px 48px rgba(0,0,0,.5);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--white);min-height:100vh;font-size:15px;line-height:1.6;-webkit-font-smoothing:antialiased}
+a{text-decoration:none;color:inherit}
+
+/* ORBS */
+.orb{position:fixed;border-radius:50%;filter:blur(130px);pointer-events:none;z-index:0;animation:orb 20s ease-in-out infinite}
+.orb1{width:600px;height:600px;background:radial-gradient(circle,rgba(124,58,237,.28),transparent 70%);top:-180px;right:-120px}
+.orb2{width:500px;height:500px;background:radial-gradient(circle,rgba(196,240,0,.07),transparent 70%);bottom:-120px;left:-80px;animation-delay:-10s}
+@keyframes orb{0%,100%{transform:translate(0,0)}50%{transform:translate(-20px,14px)}}
+
+/* NAV */
+.nav{position:fixed;top:0;left:0;right:0;z-index:500;height:64px;display:flex;align-items:center;padding:0 56px;transition:background .3s,border-color .3s}
+.nav.stuck{background:rgba(7,5,15,.92);backdrop-filter:blur(24px);border-bottom:1px solid var(--b1)}
+.nav-logo{font-size:19px;font-weight:800;letter-spacing:-.5px;color:var(--white)}
+.nav-logo em{font-style:normal;color:var(--neon)}
+.nav-links{display:flex;align-items:center;gap:6px;margin:0 32px}
+.nav-links a{font-size:13px;font-weight:500;color:var(--muted);padding:6px 12px;border-radius:8px;transition:color .2s,background .2s}
+.nav-links a:hover{color:var(--white);background:var(--s2)}
+.nav-links a.active{color:var(--white)}
+.nav-right{margin-left:auto;display:flex;align-items:center;gap:10px}
+.nav-user-link{display:flex;align-items:center;gap:9px}
+.nav-avatar{width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,var(--purple),var(--purple2));display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:#fff;flex-shrink:0}
+.nav-username{font-size:13px;font-weight:600;color:var(--white)}
+.btn-ghost-sm{font-size:13px;font-weight:500;color:var(--muted);padding:7px 14px;border-radius:8px;border:1px solid var(--b2);transition:all .2s;cursor:pointer;background:transparent}
+.btn-ghost-sm:hover{color:var(--white);border-color:var(--b3)}
+.btn-neon-sm{font-size:13px;font-weight:700;color:#07050f;padding:7px 18px;border-radius:8px;background:var(--neon);transition:all .2s;cursor:pointer;border:none}
+.btn-neon-sm:hover{background:var(--neon2);transform:translateY(-1px);box-shadow:0 4px 16px rgba(196,240,0,.3)}
+
+/* BUTTONS */
+.btn{display:inline-flex;align-items:center;gap:8px;padding:12px 24px;border-radius:100px;font-size:14px;font-weight:700;cursor:pointer;border:none;font-family:inherit;transition:all .22s;letter-spacing:.1px;text-decoration:none}
+.btn-neon{background:var(--neon);color:#07050f}
+.btn-neon:hover{background:var(--neon2);transform:translateY(-2px);box-shadow:0 6px 24px rgba(196,240,0,.3)}
+.btn-outline{background:transparent;color:var(--white);border:1px solid var(--b3)}
+.btn-outline:hover{border-color:var(--neon);color:var(--neon)}
+.btn-ghost{background:var(--s2);color:var(--muted);border:1px solid var(--b1)}
+.btn-ghost:hover{color:var(--white);border-color:var(--b2)}
+.btn-danger{background:rgba(239,68,68,.1);color:var(--red);border:1px solid rgba(239,68,68,.25)}
+.btn-danger:hover{background:rgba(239,68,68,.18)}
+.btn-full{width:100%;justify-content:center;border-radius:var(--r)}
+.btn-lg{padding:14px 36px;font-size:15px}
+.btn:disabled{opacity:.55;cursor:not-allowed;transform:none!important}
+
+/* CARDS */
+.card{background:var(--s1);border:1px solid var(--b1);border-radius:var(--r2);padding:28px}
+.card-sm{background:var(--s1);border:1px solid var(--b1);border-radius:var(--r);padding:20px}
+.card-glow{box-shadow:0 0 0 1px var(--b1),0 24px 64px rgba(0,0,0,.4),0 0 80px rgba(124,58,237,.06)}
+
+/* FORM */
+.form-group{margin-bottom:18px}
+.form-label{display:block;font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.7px;margin-bottom:7px}
+.form-input{width:100%;padding:11px 14px;background:var(--s2);border:1px solid var(--b2);border-radius:var(--r);color:var(--white);font-size:14px;font-family:inherit;outline:none;transition:border-color .2s,box-shadow .2s}
+.form-input:focus{border-color:var(--purple);box-shadow:0 0 0 3px rgba(124,58,237,.12)}
+.form-input::placeholder{color:var(--muted2)}
+.form-hint{font-size:12px;color:var(--muted);margin-top:5px}
+.input-wrap{position:relative}
+.input-wrap .form-input{padding-right:44px}
+.input-icon{position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--muted);cursor:pointer;font-size:16px;padding:4px;transition:color .2s}
+.input-icon:hover{color:var(--white)}
+
+/* ALERTS */
+.alert{padding:12px 16px;border-radius:var(--r);font-size:13px;font-weight:500;margin-bottom:18px;display:flex;align-items:flex-start;gap:8px}
+.alert::before{font-size:15px;flex-shrink:0;margin-top:1px}
+.alert-error{background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.2);color:#fca5a5}
+.alert-error::before{content:'⚠'}
+.alert-success{background:rgba(196,240,0,.07);border:1px solid rgba(196,240,0,.2);color:var(--neon)}
+.alert-success::before{content:'✓'}
+.hidden{display:none!important}
+
+/* BADGE */
+.badge{display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:99px;font-size:11px;font-weight:600;letter-spacing:.2px}
+.badge-neon{background:rgba(196,240,0,.1);color:var(--neon);border:1px solid rgba(196,240,0,.2)}
+.badge-purple{background:rgba(124,58,237,.12);color:#c4b5fd;border:1px solid rgba(124,58,237,.2)}
+.badge-gray{background:rgba(255,255,255,.06);color:var(--muted);border:1px solid var(--b1)}
+
+/* STAT CARD */
+.stat-card{background:var(--s1);border:1px solid var(--b1);border-radius:var(--r2);padding:22px 24px;position:relative;overflow:hidden;transition:border-color .2s,transform .2s}
+.stat-card:hover{border-color:var(--b2);transform:translateY(-2px)}
+.stat-card::after{content:'';position:absolute;bottom:0;left:0;width:0;height:2px;background:var(--neon);transition:width .4s}
+.stat-card:hover::after{width:100%}
+.stat-val{font-size:32px;font-weight:800;color:var(--white);letter-spacing:-1.5px;line-height:1;margin-bottom:6px}
+.stat-lbl{font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.7px}
+.stat-sub{font-size:12px;color:var(--neon);margin-top:5px}
+
+/* TABLE */
+.tbl-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse}
+thead th{padding:11px 16px;font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.7px;background:var(--s2);border-bottom:1px solid var(--b1);white-space:nowrap}
+tbody td{padding:12px 16px;font-size:13px;border-bottom:1px solid var(--b1);vertical-align:middle}
+tbody tr:last-child td{border-bottom:none}
+tbody tr:hover td{background:rgba(139,92,246,.04)}
+tbody tr:first-child.new-row td{animation:rowflash .8s ease}
+@keyframes rowflash{0%,100%{background:transparent}50%{background:rgba(196,240,0,.05)}}
+
+/* FOOTER */
+.footer{border-top:1px solid var(--b1);padding:28px 56px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px;position:relative;z-index:1;margin-top:auto}
+.footer-logo{font-size:17px;font-weight:800;letter-spacing:-.3px}
+.footer-logo em{font-style:normal;color:var(--neon)}
+.footer p{font-size:12px;color:var(--muted2)}
+.footer-links{display:flex;gap:20px}
+.footer-links a{font-size:12px;color:var(--muted2);transition:color .2s}
+.footer-links a:hover{color:var(--neon)}
+
+/* REVEAL */
+.reveal{opacity:0;transform:translateY(22px);transition:opacity .7s cubic-bezier(.16,1,.3,1),transform .7s cubic-bezier(.16,1,.3,1)}
+.reveal.in{opacity:1;transform:none}
+
+/* UTILS */
+.z1{position:relative;z-index:1}
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+.grid-4{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+.flex{display:flex;align-items:center}
+.flex-between{display:flex;align-items:center;justify-content:space-between}
+.gap-2{gap:8px}
+.gap-3{gap:12px}
+.gap-4{gap:16px}
+.mt-2{margin-top:8px}
+.mt-3{margin-top:12px}
+.mt-4{margin-top:16px}
+.mb-2{margin-bottom:8px}
+.mb-3{margin-bottom:12px}
+.mb-4{margin-bottom:16px}
+.mb-5{margin-bottom:24px}
+.mb-6{margin-bottom:32px}
+.text-muted{color:var(--muted)}
+.text-neon{color:var(--neon)}
+.text-sm{font-size:13px}
+.text-xs{font-size:11px}
+.fw-600{font-weight:600}
+.fw-700{font-weight:700}
+.fw-800{font-weight:800}
+.section-tag{font-size:11px;font-weight:600;color:var(--neon);letter-spacing:2px;text-transform:uppercase;margin-bottom:12px}
+.section-title{font-size:clamp(30px,4vw,48px);font-weight:800;letter-spacing:-1.5px;color:var(--white);line-height:1.08;margin-bottom:14px}
+.section-desc{font-size:15px;font-weight:300;color:var(--muted);line-height:1.8;max-width:520px}
+.wrap{position:relative;z-index:1}
+
+@media(max-width:768px){
+  .nav{padding:0 20px}
+  .nav-links{display:none}
+  .grid-2,.grid-3,.grid-4{grid-template-columns:1fr}
+  .footer{padding:20px;flex-direction:column;text-align:center}
+}
+
+
+.about-page{padding:110px 56px 80px;max-width:1040px;margin:0 auto}
+.about-hero{display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:center;margin-bottom:80px}
+.about-tag{display:inline-flex;align-items:center;gap:8px;font-size:11px;font-weight:600;color:var(--neon);letter-spacing:2px;text-transform:uppercase;margin-bottom:20px}
+.about-tag::before{content:'';width:24px;height:1px;background:var(--neon)}
+.about-title{font-size:clamp(38px,5vw,60px);font-weight:800;letter-spacing:-2px;color:var(--white);line-height:1.07;margin-bottom:20px}
+.about-title em{font-style:normal;color:var(--neon)}
+.about-desc{font-size:15px;font-weight:300;color:var(--muted);line-height:1.8;margin-bottom:14px}
+.stats-2x2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.val-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--b1);border-radius:var(--r2);overflow:hidden;margin-bottom:64px}
+.val-item{background:var(--bg);padding:36px;transition:background .25s}
+.val-item:hover{background:var(--s1)}
+.val-num{font-size:11px;font-weight:600;color:rgba(196,240,0,.35);letter-spacing:2px;margin-bottom:16px}
+.val-t{font-size:17px;font-weight:700;margin-bottom:10px;letter-spacing:-.3px}
+.val-d{font-size:13px;color:var(--muted);line-height:1.75}
+.team-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-bottom:64px}
+.team-card{background:var(--s1);border:1px solid var(--b1);border-radius:var(--r2);padding:32px;text-align:center;transition:border-color .3s,transform .3s}
+.team-card:hover{border-color:var(--b2);transform:translateY(-4px)}
+.team-av{width:64px;height:64px;border-radius:50%;background:linear-gradient(135deg,var(--purple),var(--purple2));display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:800;color:#fff;margin:0 auto 16px;border:2px solid var(--b2)}
+.team-name{font-size:16px;font-weight:700;margin-bottom:4px}
+.team-role{font-size:11px;font-weight:600;color:var(--neon);text-transform:uppercase;letter-spacing:1px;margin-bottom:10px}
+.team-bio{font-size:12px;color:var(--muted);line-height:1.65}
+.about-cta{background:var(--s1);border:1px solid var(--b2);border-radius:var(--r3);padding:64px;text-align:center;position:relative;overflow:hidden}
+.about-cta::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at 50% 50%,rgba(124,58,237,.08),transparent 70%)}
+@media(max-width:768px){.about-page{padding:80px 20px 40px}.about-hero{grid-template-columns:1fr;gap:40px}.val-grid,.team-grid{grid-template-columns:1fr}}
+
+
+/* admin */
+
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+:root{
+  --bg:#07050f;
+  --s1:#0e0b1a;
+  --s2:#141028;
+  --s3:#1a1530;
+  --b1:rgba(139,92,246,.12);
+  --b2:rgba(139,92,246,.25);
+  --b3:rgba(139,92,246,.45);
+  --neon:#c4f000;
+  --neon2:#d4ff20;
+  --purple:#7c3aed;
+  --purple2:#9d5df0;
+  --white:#f0eeff;
+  --muted:rgba(240,238,255,.45);
+  --muted2:rgba(240,238,255,.2);
+  --red:#ef4444;
+  --green:#22c55e;
+  --r:10px;
+  --r2:16px;
+  --r3:24px;
+  --shadow:0 4px 24px rgba(0,0,0,.4);
+  --shadow2:0 8px 48px rgba(0,0,0,.5);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--white);min-height:100vh;font-size:15px;line-height:1.6;-webkit-font-smoothing:antialiased}
+a{text-decoration:none;color:inherit}
+
+/* ORBS */
+.orb{position:fixed;border-radius:50%;filter:blur(130px);pointer-events:none;z-index:0;animation:orb 20s ease-in-out infinite}
+.orb1{width:600px;height:600px;background:radial-gradient(circle,rgba(124,58,237,.28),transparent 70%);top:-180px;right:-120px}
+.orb2{width:500px;height:500px;background:radial-gradient(circle,rgba(196,240,0,.07),transparent 70%);bottom:-120px;left:-80px;animation-delay:-10s}
+@keyframes orb{0%,100%{transform:translate(0,0)}50%{transform:translate(-20px,14px)}}
+
+/* NAV */
+.nav{position:fixed;top:0;left:0;right:0;z-index:500;height:64px;display:flex;align-items:center;padding:0 56px;transition:background .3s,border-color .3s}
+.nav.stuck{background:rgba(7,5,15,.92);backdrop-filter:blur(24px);border-bottom:1px solid var(--b1)}
+.nav-logo{font-size:19px;font-weight:800;letter-spacing:-.5px;color:var(--white)}
+.nav-logo em{font-style:normal;color:var(--neon)}
+.nav-links{display:flex;align-items:center;gap:6px;margin:0 32px}
+.nav-links a{font-size:13px;font-weight:500;color:var(--muted);padding:6px 12px;border-radius:8px;transition:color .2s,background .2s}
+.nav-links a:hover{color:var(--white);background:var(--s2)}
+.nav-links a.active{color:var(--white)}
+.nav-right{margin-left:auto;display:flex;align-items:center;gap:10px}
+.nav-user-link{display:flex;align-items:center;gap:9px}
+.nav-avatar{width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,var(--purple),var(--purple2));display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:#fff;flex-shrink:0}
+.nav-username{font-size:13px;font-weight:600;color:var(--white)}
+.btn-ghost-sm{font-size:13px;font-weight:500;color:var(--muted);padding:7px 14px;border-radius:8px;border:1px solid var(--b2);transition:all .2s;cursor:pointer;background:transparent}
+.btn-ghost-sm:hover{color:var(--white);border-color:var(--b3)}
+.btn-neon-sm{font-size:13px;font-weight:700;color:#07050f;padding:7px 18px;border-radius:8px;background:var(--neon);transition:all .2s;cursor:pointer;border:none}
+.btn-neon-sm:hover{background:var(--neon2);transform:translateY(-1px);box-shadow:0 4px 16px rgba(196,240,0,.3)}
+
+/* BUTTONS */
+.btn{display:inline-flex;align-items:center;gap:8px;padding:12px 24px;border-radius:100px;font-size:14px;font-weight:700;cursor:pointer;border:none;font-family:inherit;transition:all .22s;letter-spacing:.1px;text-decoration:none}
+.btn-neon{background:var(--neon);color:#07050f}
+.btn-neon:hover{background:var(--neon2);transform:translateY(-2px);box-shadow:0 6px 24px rgba(196,240,0,.3)}
+.btn-outline{background:transparent;color:var(--white);border:1px solid var(--b3)}
+.btn-outline:hover{border-color:var(--neon);color:var(--neon)}
+.btn-ghost{background:var(--s2);color:var(--muted);border:1px solid var(--b1)}
+.btn-ghost:hover{color:var(--white);border-color:var(--b2)}
+.btn-danger{background:rgba(239,68,68,.1);color:var(--red);border:1px solid rgba(239,68,68,.25)}
+.btn-danger:hover{background:rgba(239,68,68,.18)}
+.btn-full{width:100%;justify-content:center;border-radius:var(--r)}
+.btn-lg{padding:14px 36px;font-size:15px}
+.btn:disabled{opacity:.55;cursor:not-allowed;transform:none!important}
+
+/* CARDS */
+.card{background:var(--s1);border:1px solid var(--b1);border-radius:var(--r2);padding:28px}
+.card-sm{background:var(--s1);border:1px solid var(--b1);border-radius:var(--r);padding:20px}
+.card-glow{box-shadow:0 0 0 1px var(--b1),0 24px 64px rgba(0,0,0,.4),0 0 80px rgba(124,58,237,.06)}
+
+/* FORM */
+.form-group{margin-bottom:18px}
+.form-label{display:block;font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.7px;margin-bottom:7px}
+.form-input{width:100%;padding:11px 14px;background:var(--s2);border:1px solid var(--b2);border-radius:var(--r);color:var(--white);font-size:14px;font-family:inherit;outline:none;transition:border-color .2s,box-shadow .2s}
+.form-input:focus{border-color:var(--purple);box-shadow:0 0 0 3px rgba(124,58,237,.12)}
+.form-input::placeholder{color:var(--muted2)}
+.form-hint{font-size:12px;color:var(--muted);margin-top:5px}
+.input-wrap{position:relative}
+.input-wrap .form-input{padding-right:44px}
+.input-icon{position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--muted);cursor:pointer;font-size:16px;padding:4px;transition:color .2s}
+.input-icon:hover{color:var(--white)}
+
+/* ALERTS */
+.alert{padding:12px 16px;border-radius:var(--r);font-size:13px;font-weight:500;margin-bottom:18px;display:flex;align-items:flex-start;gap:8px}
+.alert::before{font-size:15px;flex-shrink:0;margin-top:1px}
+.alert-error{background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.2);color:#fca5a5}
+.alert-error::before{content:'⚠'}
+.alert-success{background:rgba(196,240,0,.07);border:1px solid rgba(196,240,0,.2);color:var(--neon)}
+.alert-success::before{content:'✓'}
+.hidden{display:none!important}
+
+/* BADGE */
+.badge{display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:99px;font-size:11px;font-weight:600;letter-spacing:.2px}
+.badge-neon{background:rgba(196,240,0,.1);color:var(--neon);border:1px solid rgba(196,240,0,.2)}
+.badge-purple{background:rgba(124,58,237,.12);color:#c4b5fd;border:1px solid rgba(124,58,237,.2)}
+.badge-gray{background:rgba(255,255,255,.06);color:var(--muted);border:1px solid var(--b1)}
+
+/* STAT CARD */
+.stat-card{background:var(--s1);border:1px solid var(--b1);border-radius:var(--r2);padding:22px 24px;position:relative;overflow:hidden;transition:border-color .2s,transform .2s}
+.stat-card:hover{border-color:var(--b2);transform:translateY(-2px)}
+.stat-card::after{content:'';position:absolute;bottom:0;left:0;width:0;height:2px;background:var(--neon);transition:width .4s}
+.stat-card:hover::after{width:100%}
+.stat-val{font-size:32px;font-weight:800;color:var(--white);letter-spacing:-1.5px;line-height:1;margin-bottom:6px}
+.stat-lbl{font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.7px}
+.stat-sub{font-size:12px;color:var(--neon);margin-top:5px}
+
+/* TABLE */
+.tbl-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse}
+thead th{padding:11px 16px;font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.7px;background:var(--s2);border-bottom:1px solid var(--b1);white-space:nowrap}
+tbody td{padding:12px 16px;font-size:13px;border-bottom:1px solid var(--b1);vertical-align:middle}
+tbody tr:last-child td{border-bottom:none}
+tbody tr:hover td{background:rgba(139,92,246,.04)}
+tbody tr:first-child.new-row td{animation:rowflash .8s ease}
+@keyframes rowflash{0%,100%{background:transparent}50%{background:rgba(196,240,0,.05)}}
+
+/* FOOTER */
+.footer{border-top:1px solid var(--b1);padding:28px 56px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px;position:relative;z-index:1;margin-top:auto}
+.footer-logo{font-size:17px;font-weight:800;letter-spacing:-.3px}
+.footer-logo em{font-style:normal;color:var(--neon)}
+.footer p{font-size:12px;color:var(--muted2)}
+.footer-links{display:flex;gap:20px}
+.footer-links a{font-size:12px;color:var(--muted2);transition:color .2s}
+.footer-links a:hover{color:var(--neon)}
+
+/* REVEAL */
+.reveal{opacity:0;transform:translateY(22px);transition:opacity .7s cubic-bezier(.16,1,.3,1),transform .7s cubic-bezier(.16,1,.3,1)}
+.reveal.in{opacity:1;transform:none}
+
+/* UTILS */
+.z1{position:relative;z-index:1}
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+.grid-4{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+.flex{display:flex;align-items:center}
+.flex-between{display:flex;align-items:center;justify-content:space-between}
+.gap-2{gap:8px}
+.gap-3{gap:12px}
+.gap-4{gap:16px}
+.mt-2{margin-top:8px}
+.mt-3{margin-top:12px}
+.mt-4{margin-top:16px}
+.mb-2{margin-bottom:8px}
+.mb-3{margin-bottom:12px}
+.mb-4{margin-bottom:16px}
+.mb-5{margin-bottom:24px}
+.mb-6{margin-bottom:32px}
+.text-muted{color:var(--muted)}
+.text-neon{color:var(--neon)}
+.text-sm{font-size:13px}
+.text-xs{font-size:11px}
+.fw-600{font-weight:600}
+.fw-700{font-weight:700}
+.fw-800{font-weight:800}
+.section-tag{font-size:11px;font-weight:600;color:var(--neon);letter-spacing:2px;text-transform:uppercase;margin-bottom:12px}
+.section-title{font-size:clamp(30px,4vw,48px);font-weight:800;letter-spacing:-1.5px;color:var(--white);line-height:1.08;margin-bottom:14px}
+.section-desc{font-size:15px;font-weight:300;color:var(--muted);line-height:1.8;max-width:520px}
+.wrap{position:relative;z-index:1}
+
+@media(max-width:768px){
+  .nav{padding:0 20px}
+  .nav-links{display:none}
+  .grid-2,.grid-3,.grid-4{grid-template-columns:1fr}
+  .footer{padding:20px;flex-direction:column;text-align:center}
+}
+
+
+body{display:flex;min-height:100vh}
+.sidebar{width:220px;background:var(--s1);border-right:1px solid var(--b1);display:flex;flex-direction:column;position:fixed;top:0;bottom:0;left:0;z-index:200}
+.sb-logo{padding:22px 20px;border-bottom:1px solid var(--b1);font-size:18px;font-weight:800;letter-spacing:-.3px}
+.sb-logo em{font-style:normal;color:var(--neon)}
+.sb-logo span{font-size:9px;font-weight:600;color:var(--neon);background:rgba(196,240,0,.1);border:1px solid rgba(196,240,0,.2);padding:2px 6px;border-radius:4px;margin-left:6px;text-transform:uppercase;letter-spacing:1px;vertical-align:middle}
+.sb-nav{flex:1;padding:10px 8px;overflow-y:auto}
+.sb-item{display:flex;align-items:center;gap:10px;padding:10px 14px;border-radius:var(--r);color:var(--muted);font-size:13px;font-weight:500;cursor:pointer;transition:all .2s;border:none;background:none;width:100%;text-align:left;font-family:inherit;text-decoration:none}
+.sb-item:hover{background:var(--s2);color:var(--white)}
+.sb-item.active{background:rgba(196,240,0,.08);color:var(--neon);border:1px solid rgba(196,240,0,.12)}
+.sb-footer{padding:10px 8px;border-top:1px solid var(--b1)}
+.main{margin-left:220px;flex:1;padding:32px;min-height:100vh}
+.topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:28px}
+.page-title{font-size:22px;font-weight:800;letter-spacing:-.5px}
+.live-badge{display:flex;align-items:center;gap:7px;font-size:12px;color:var(--muted)}
+.live-dot{width:7px;height:7px;border-radius:50%;background:var(--green);animation:live 1.5s ease-in-out infinite}
+@keyframes live{0%,100%{opacity:1}50%{opacity:.25}}
+.search-input{padding:9px 14px;background:var(--s2);border:1px solid var(--b1);border-radius:var(--r);color:var(--white);font-size:13px;font-family:inherit;outline:none;width:220px;transition:border-color .2s}
+.search-input:focus{border-color:var(--b2)}
+.search-input::placeholder{color:var(--muted2)}
+.tbl-card{background:var(--s1);border:1px solid var(--b1);border-radius:var(--r2);overflow:hidden}
+.tbl-header{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid var(--b1)}
+.tbl-title{font-size:14px;font-weight:700}
+.action-btn{padding:5px 12px;border-radius:6px;font-size:11px;font-weight:600;cursor:pointer;border:1px solid var(--b2);background:transparent;color:var(--muted);font-family:inherit;transition:all .2s}
+.action-btn:hover{border-color:var(--neon);color:var(--neon)}
+.action-btn.del:hover{border-color:var(--red);color:var(--red)}
+.chart-bar-col{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px}
+.chart-bar{width:100%;border-radius:4px 4px 0 0;min-height:3px;transition:height .5s cubic-bezier(.16,1,.3,1)}
+.prog-row{margin-bottom:14px}
+.prog-bar{height:5px;background:var(--s2);border-radius:99px;overflow:hidden;margin-top:5px}
+.prog-fill{height:100%;background:var(--purple);border-radius:99px;transition:width .5s}
+@media(max-width:768px){.sidebar{display:none}.main{margin-left:0;padding:20px}}
+
+
+
+#login-modal.open{display:flex !important;animation:mfade .25s ease}
+@keyframes mfade{from{opacity:0}to{opacity:1}}
+#login-modal.open > div{animation:mslide .3s cubic-bezier(.16,1,.3,1)}
+@keyframes mslide{from{transform:translateY(20px);opacity:0}to{transform:none;opacity:1}}
+#m-email:focus,#m-pass:focus{border-color:rgba(196,240,0,0.5) !important;box-shadow:0 0 0 3px rgba(196,240,0,0.08)}
+#m-submit:hover{background:#d4ff20;box-shadow:0 4px 20px rgba(196,240,0,0.25)}
+#modal-close:hover{color:#f0eeff !important}
+
+
+@keyframes pbtn{0%,100%{box-shadow:0 4px 24px rgba(196,240,0,0.3),0 0 0 0 rgba(196,240,0,0.35)}50%{box-shadow:0 4px 24px rgba(196,240,0,0.4),0 0 0 14px rgba(196,240,0,0)}}
+#invest-modal.open{display:flex!important;animation:mfade2 .25s ease}
+@keyframes mfade2{from{opacity:0}to{opacity:1}}
+#invest-btn:hover{transform:translateY(-2px)}
+
+
+#page-login.page.active,
+#page-register.page.active {
+  display: flex !important;
+  min-height: 100vh;
+  align-items: center;
+  justify-content: center;
+  padding-top: 64px;
+  padding-bottom: 32px;
+}
+
+</style>
+</head>
+<body>
+<div class="orb orb1"></div>
+<div class="orb orb2"></div>
+<nav class="nav" id="main-nav">
+  <a href="#" class="nav-logo" id="nav-logo">Biznes<em>OS</em></a>
+  <div class="nav-links">
+    <a href="#" class="nav-link" data-page="home">Bosh sahifa</a>
+    <a href="#" class="nav-link" data-page="about">Haqimizda</a>
+    <a href="#" class="nav-link" data-page="pricing">Narxlar</a>
+  </div>
+  <div class="nav-right" id="nav-auth"></div>
+</nav>
+<div id="page-home" class="page active"><div id="cur-dot"></div>
+<div id="cur-ring"></div>
+<!-- NAV -->
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-left reveal">
+    <div class="hero-eye"><span class="eye-dot"></span>O'zbekiston biznesi uchun</div>
+    <h1>Biznesingizni<br><span class="neon" id="sc-target">aqlli</span> boshqaring</h1>
+    <p class="hero-desc">Mijozlar, navbat, to'lov va xodimlar — barchasi bitta oynada. Excel'siz. O'zbek tilida.</p>
+    <div class="hero-btns">
+      <button class="lbtn lbtn-p" onclick="openOrderModal()" style="border:none;cursor:pointer"><div class="fill"></div><span>Buyurtma berish</span><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+    <a href="#" onclick="navigate('register')" class="lbtn lbtn-p magnetic" data-s="30">
+        <div class="fill"></div><span>14 kun bepul</span>
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </a>
+      <a href="#" onclick="navigate('about')" class="lbtn lbtn-o magnetic" data-s="20">
+        <div class="fill"></div><span>Qanday ishlaydi</span>
+      </a>
+    </div>
+  </div>
+
+  <div class="hero-right reveal" style="transition-delay:.2s">
+    <div class="mock">
+      <div class="mock-scan"></div>
+      <div class="mock-bar"><div class="mdot md1"></div><div class="mdot md2"></div><div class="mdot md3"></div></div>
+      <div class="mock-body">
+        <div class="mc"><div class="mc-l">Bugungi daromad</div><div class="mc-v">1,840,000</div><div class="mc-s">↑ 12% o'sdi</div></div>
+        <div class="mc"><div class="mc-l">Faol navbat</div><div class="mc-v">24</div><div class="mc-s">3 kutmoqda</div></div>
+        <div class="mc mc-full">
+          <div class="mc-l">Haftalik daromad</div>
+          <div class="bars">
+            <div class="b" style="height:30%"></div><div class="b" style="height:48%"></div>
+            <div class="b p" style="height:40%"></div><div class="b p" style="height:72%"></div>
+            <div class="b n" style="height:60%"></div><div class="b n" style="height:92%"></div>
+            <div class="b n" style="height:68%"></div>
+          </div>
+        </div>
+        <div class="cl mc-full">
+          <div class="cl-r"><span class="cl-n">Aziz Toshmatov</span><span class="tag t-d">Bajarildi</span></div>
+          <div class="cl-r"><span class="cl-n">Malika Yusupova</span><span class="tag t-w">Navbatda</span></div>
+          <div class="cl-r"><span class="cl-n">Jasur Nazarov</span><span class="tag t-n">Yangi</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="flt flt1">
+      <div class="flt-l">Mijozlar</div><div class="flt-v">342</div><div class="flt-s">↑ 28 bu oy</div>
+      <div class="mbars"><div class="mb" style="height:35%"></div><div class="mb a" style="height:60%"></div><div class="mb" style="height:45%"></div><div class="mb a" style="height:80%"></div><div class="mb a" style="height:100%"></div></div>
+    </div>
+    <div class="flt flt2">
+      <div class="flt-l">Xodimlar</div><div class="flt-v">5</div><div class="flt-s">Hammasi aktiv</div>
+    </div>
+  </div>
+</section>
+
+<!-- MARQUEE -->
+<div class="marquee">
+  <div class="mq-track">
+    <span class="mq-i"><span class="mq-dot"></span>Mijozlar bazasi</span><span class="mq-i"><span class="mq-dot"></span>Navbat tizimi</span><span class="mq-i"><span class="mq-dot"></span>Moliya hisobi</span><span class="mq-i"><span class="mq-dot"></span>Xodimlar</span><span class="mq-i"><span class="mq-dot"></span>Telegram bot</span><span class="mq-i"><span class="mq-dot"></span>Dashboard</span><span class="mq-i"><span class="mq-dot"></span>Click & Payme</span><span class="mq-i"><span class="mq-dot"></span>Hisobotlar</span>
+    <span class="mq-i"><span class="mq-dot"></span>Mijozlar bazasi</span><span class="mq-i"><span class="mq-dot"></span>Navbat tizimi</span><span class="mq-i"><span class="mq-dot"></span>Moliya hisobi</span><span class="mq-i"><span class="mq-dot"></span>Xodimlar</span><span class="mq-i"><span class="mq-dot"></span>Telegram bot</span><span class="mq-i"><span class="mq-dot"></span>Dashboard</span><span class="mq-i"><span class="mq-dot"></span>Click & Payme</span><span class="mq-i"><span class="mq-dot"></span>Hisobotlar</span>
+  </div>
+</div>
+
+<!-- STATS -->
+<div class="stats-row">
+  <div class="sc reveal"><div class="sn">$15</div><div class="sl">oylik narx,<br>karta kerak emas</div></div>
+  <div class="sc reveal" style="transition-delay:.08s"><div class="sn">2'</div><div class="sl">daqiqada<br>to'liq sozlash</div></div>
+  <div class="sc reveal" style="transition-delay:.16s"><div class="sn">5</div><div class="sl">asosiy modul<br>bitta tizimda</div></div>
+  <div class="sc reveal" style="transition-delay:.24s"><div class="sn">24/7</div><div class="sl">ishlash vaqti,<br>texnik yordam</div></div>
+</div>
+
+<!-- FEATURES -->
+<section class="section" id="features">
+  <div class="sec-head reveal">
+    <div><div class="sec-tag">Imkoniyatlar</div><h2>Kerakli hamma narsa — ortiqchasiz</h2></div>
+    <p class="sec-desc">Murakkab tizimlar o'rniga — siz uchun aniqlangan, sodda va tez yechim.</p>
+  </div>
+  <div class="feat-grid">
+    <div class="feat-card reveal"><div class="feat-num">01</div><div class="feat-t">Mijozlar bazasi (CRM)</div><div class="feat-d">Har bir mijozning tarixi, kontakti, izohlar va tashriflarini saqlang. Tezkor qidirish.</div></div>
+    <div class="feat-card reveal" style="transition-delay:.07s"><div class="feat-num">02</div><div class="feat-t">Navbat va Booking</div><div class="feat-d">Kunlik, haftalik jadval. Xodimlarga taqsimlash. Telegram orqali avtomatik eslatma.</div></div>
+    <div class="feat-card reveal" style="transition-delay:.14s"><div class="feat-num">03</div><div class="feat-t">Moliya hisobi</div><div class="feat-d">Daromad va xarajat. Click, Payme. Kunlik va oylik hisobotlar grafik bilan.</div></div>
+    <div class="feat-card reveal" style="transition-delay:.21s"><div class="feat-num">04</div><div class="feat-t">Xodimlar boshqaruvi</div><div class="feat-d">Ish vaqti, yuklanma va maosh hisobi. Har bir xodim uchun alohida statistika.</div></div>
+    <div class="feat-card reveal" style="transition-delay:.28s"><div class="feat-num">05</div><div class="feat-t">Real-time Dashboard</div><div class="feat-d">Bugungi daromad, eng faol mijozlar, xodim yuklanmasi — bir nazar bilan.</div></div>
+    <div class="feat-card reveal" style="transition-delay:.35s"><div class="feat-num">06</div><div class="feat-t">Telegram Bot</div><div class="feat-d">Navbat eslatmalari, kunlik hisobot va yangi mijoz bildirishnomalari — avtomatik.</div></div>
+  </div>
+</section>
+
+<!-- STEPS -->
+<section class="section" id="steps">
+  <div class="sec-head reveal">
+    <div><div class="sec-tag">Qanday ishlaydi</div><h2>3 qadamda tayyor</h2></div>
+    <p class="sec-desc">Texnik bilim shart emas. Hech narsa o'rnatmaysiz. Brauzerni oching — boshlang.</p>
+  </div>
+  <div class="steps-grid">
+    <div class="step-card reveal"><span class="step-arrow">→</span><div class="step-n">01</div><div class="step-t">Ro&#39;yxatdan o&#39;ting</div><div class="step-d">Biznes nomi va emailingiz bilan 30 soniyada akkaunt yarating. Karta kerak emas.</div></div>
+    <div class="step-card reveal" style="transition-delay:.1s"><span class="step-arrow">→</span><div class="step-n">02</div><div class="step-t">Sozlang</div><div class="step-d">Xodimlar, xizmatlar va ish vaqtini kiriting. Tayyor shablonlar — 2 daqiqada tayyor.</div></div>
+    <div class="step-card reveal" style="transition-delay:.2s"><span class="step-arrow"></span><div class="step-n">03</div><div class="step-t">Ishlang</div><div class="step-d">Mijozlar qabul qiling, navbat belgilang, daromadni real vaqtda kuzating.</div></div>
+  </div>
+</section>
+
+<!-- PRICING -->
+<section class="section" id="pricing">
+  <div class="sec-head reveal">
+    <div><div class="sec-tag">Narxlar</div><h2>Shaffof narxlar</h2></div>
+    <p class="sec-desc">Yashirin to'lovlar yo'q. Istalgan vaqt bekor qilish mumkin. 14 kun bepul sinab ko'ring.</p>
+  </div>
+  <div class="plans-grid">
+    <div class="plan-card reveal">
+      <div class="p-tag">Starter</div><div class="p-name">Boshlang'ich</div>
+      <div class="p-price">$15<sub>/oy</sub></div><div class="p-period">Kichik biznes uchun</div>
+      <div class="p-div"></div>
+      <div class="pf yes">Mijozlar bazasi (CRM)</div><div class="pf yes">Navbat tizimi</div>
+      <div class="pf yes">1 ta xodim</div><div class="pf yes">Telegram eslatma</div>
+      <div class="pf">Moliya hisobi</div><div class="pf">Hisobotlar</div>
+      <button class="p-btn pb-o magnetic" data-s="10">Boshlash</button>
+    </div>
+    <div class="plan-card pop reveal" style="transition-delay:.12s">
+      <div class="p-tag">⚡ Eng mashhur</div><div class="p-name">Biznes</div>
+      <div class="p-price">$30<sub>/oy</sub></div><div class="p-period">O'sib kelayotgan biznes uchun</div>
+      <div class="p-div"></div>
+      <div class="pf yes">Barcha Starter imkoniyatlari</div><div class="pf yes">5 ta xodimgacha</div>
+      <div class="pf yes">Moliya hisobi to'liq</div><div class="pf yes">Dashboard + Hisobotlar</div>
+      <div class="pf yes">Click / Payme</div><div class="pf">Cheksiz xodimlar</div>
+      <button class="p-btn pb-n magnetic" data-s="10">Boshlash</button>
+    </div>
+    <div class="plan-card reveal" style="transition-delay:.24s">
+      <div class="p-tag">Pro</div><div class="p-name">Professional</div>
+      <div class="p-price">$50<sub>/oy</sub></div><div class="p-period">Ko'p filiallar uchun</div>
+      <div class="p-div"></div>
+      <div class="pf yes">Barcha Business imkoniyatlari</div><div class="pf yes">Cheksiz xodimlar</div>
+      <div class="pf yes">Ko'p filial boshqaruvi</div><div class="pf yes">Maxsus hisobotlar</div>
+      <div class="pf yes">API kirish huquqi</div><div class="pf yes">Ustuvor yordam</div>
+      <button class="p-btn pb-o magnetic" data-s="10">Boshlash</button>
+    </div>
+  </div>
+</section>
+
+<!-- TESTI -->
+<section class="section">
+  <div class="sec-head reveal">
+    <div><div class="sec-tag">Mijozlar fikri</div><h2>Ular allaqachon ishlatmoqda</h2></div>
+    <p class="sec-desc">O'zbekistondagi biznes egalari nima deydi.</p>
+  </div>
+  <div class="testi-grid">
+    <div class="testi-card reveal"><div class="tq">"</div><div class="tt">Ilgari hamma narsani daftarga yozardim. Endi telefonimdanoq ko'raman. Xodimlarim ham 2 kunda o'rgandi.</div><div class="ta"><div class="ta-name">Aziz Toshmatov</div><div class="ta-biz">Barber Shop, Toshkent</div></div></div>
+    <div class="testi-card reveal" style="transition-delay:.1s"><div class="tq">"</div><div class="tt">Mijozlarim navbatni Telegram orqali oladi. Men hisobotni real vaqtda ko'raman. Bitta mijozni ham esdan chiqarmayman.</div><div class="ta"><div class="ta-name">Malika Yusupova</div><div class="ta-biz">Go'zallik Saloni, Samarqand</div></div></div>
+    <div class="testi-card reveal" style="transition-delay:.2s"><div class="tq">"</div><div class="tt">1C qimmat va murakkab edi. BiznesOS kerakli narsalarni qiladi — narxi 10 barobar arzon. Avto servisim tartibda.</div><div class="ta"><div class="ta-name">Jasur Nazarov</div><div class="ta-biz">Avto Servis, Andijon</div></div></div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta" id="start">
+  <h2 class="reveal">Biznesingizni bugun<br><em>raqamlashtiring</em></h2>
+  <p class="reveal" style="transition-delay:.1s">14 kun bepul. Karta kerak emas. O'rnatish shart emas.</p>
+  <div class="cta-btns reveal" style="transition-delay:.2s">
+    <a href="#" class="lbtn lbtn-p magnetic" data-s="30" style="font-size:15px;padding:16px 40px">
+      <div class="fill"></div><span>Bepul boshlash</span>
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </a>
+    <a href="#" class="lbtn lbtn-o magnetic" data-s="20" style="font-size:15px;padding:16px 36px">
+      <div class="fill"></div><span>Demo so'rash</span>
+    </a>
+  </div>
+  <p class="cta-note reveal" style="transition-delay:.3s">Savol bormi? Telegram: @biznes_os_support</p>
+</section>
+
+<!-- FOOTER -->
+<!-- LOGIN MODAL -->
+<div id="login-modal" class="login-modal-overlay">
+  <div style="
+    background:#0e0b1a;border:1px solid rgba(139,92,246,0.3);
+    border-radius:20px;padding:40px 36px;width:100%;max-width:400px;
+    position:relative;box-shadow:0 0 80px rgba(124,58,237,0.15);
+  ">
+    <!-- Close -->
+    <button id="modal-close" style="
+      position:absolute;top:16px;right:20px;background:none;border:none;
+      color:rgba(240,238,255,0.35);font-size:22px;cursor:none;line-height:1;
+      transition:color .2s;
+    ">×</button>
+
+    <!-- Logo -->
+    <div style="font-size:18px;font-weight:800;color:#f0eeff;margin-bottom:28px;letter-spacing:-0.3px">
+      Biznes<span style="color:#c4f000">OS</span>
+      <span style="font-size:11px;font-weight:400;color:rgba(240,238,255,0.3);margin-left:8px;letter-spacing:1px;text-transform:uppercase">Admin</span>
+    </div>
+
+    <!-- Error -->
+    <div id="m-error" style="
+      display:none;background:rgba(220,38,38,0.1);border:1px solid rgba(220,38,38,0.25);
+      color:#f87171;font-size:13px;padding:10px 14px;border-radius:8px;margin-bottom:16px;
+    "></div>
+
+    <!-- Form -->
+    <div style="margin-bottom:16px">
+      <label style="display:block;font-size:12px;font-weight:600;color:rgba(240,238,255,0.4);letter-spacing:0.5px;text-transform:uppercase;margin-bottom:7px">Email</label>
+      <input id="m-email" type="email" placeholder="email@biznes.uz" style="
+        width:100%;padding:11px 14px;background:#07050f;
+        border:1px solid rgba(139,92,246,0.2);border-radius:8px;
+        color:#f0eeff;font-size:14px;font-family:inherit;outline:none;
+        transition:border-color .2s;
+      ">
+    </div>
+    <div style="margin-bottom:24px">
+      <label style="display:block;font-size:12px;font-weight:600;color:rgba(240,238,255,0.4);letter-spacing:0.5px;text-transform:uppercase;margin-bottom:7px">Parol</label>
+      <input id="m-pass" type="password" placeholder="••••••••" style="
+        width:100%;padding:11px 14px;background:#07050f;
+        border:1px solid rgba(139,92,246,0.2);border-radius:8px;
+        color:#f0eeff;font-size:14px;font-family:inherit;outline:none;
+        transition:border-color .2s;
+      ">
+    </div>
+    <button id="m-submit" style="
+      width:100%;padding:13px;background:#c4f000;color:#07050f;
+      border:none;border-radius:8px;font-size:14px;font-weight:700;
+      cursor:none;font-family:inherit;transition:all .2s;letter-spacing:0.3px;
+    ">Kirish</button>
+
+    <p style="text-align:center;font-size:12px;color:rgba(240,238,255,0.2);margin-top:20px">
+      Parolni unutdingizmi? — Telegram: @biznes_os_support
+    </p>
+  </div>
+</div>
+
+<!-- SARMOYA MODAL va FLOATING BTN HTML bu yerga o'tkazilmaydi, u allaqachon pastda bor -->
+
+
+
+<!-- SARMOYA MODAL -->
+<div id="invest-modal" class="invest-modal-overlay">
+  <div style="background:#0e0b1a;border:1px solid rgba(139,92,246,0.35);border-radius:20px;padding:40px 36px;width:100%;max-width:420px;position:relative;box-shadow:0 0 80px rgba(196,240,0,0.06)">
+    <button id="inv-close" style="position:absolute;top:16px;right:20px;background:none;border:none;color:rgba(240,238,255,0.3);font-size:22px;cursor:pointer;line-height:1">x</button>
+    <div style="font-size:11px;font-weight:600;color:#c4f000;letter-spacing:2px;text-transform:uppercase;margin-bottom:12px">Sarmoya</div>
+    <div style="font-size:24px;font-weight:800;color:#f0eeff;margin-bottom:6px;letter-spacing:-0.5px">Loyihaga sarmoya kiriting</div>
+    <div style="font-size:14px;color:rgba(240,238,255,0.4);margin-bottom:28px;line-height:1.6">Malumotlaringiz adminga yuboriladi, biz siz bilan boglanamiz.</div>
+    <div id="inv-success" style="display:none;background:rgba(196,240,0,0.08);border:1px solid rgba(196,240,0,0.2);color:#c4f000;font-size:14px;padding:12px 16px;border-radius:8px;margin-bottom:16px;text-align:center">Malumotlaringiz yuborildi! Tez orada boglanamiz.</div>
+    <div id="inv-error" style="display:none;background:rgba(220,38,38,0.1);border:1px solid rgba(220,38,38,0.25);color:#f87171;font-size:13px;padding:10px 14px;border-radius:8px;margin-bottom:16px"></div>
+    <div style="margin-bottom:14px"><label style="display:block;font-size:11px;font-weight:600;color:rgba(240,238,255,0.35);letter-spacing:0.8px;text-transform:uppercase;margin-bottom:6px">Ismingiz *</label><input id="inv-name" type="text" placeholder="Aziz Toshmatov" style="width:100%;padding:11px 14px;background:#07050f;border:1px solid rgba(139,92,246,0.2);border-radius:8px;color:#f0eeff;font-size:14px;font-family:inherit;outline:none"></div>
+    <div style="margin-bottom:14px"><label style="display:block;font-size:11px;font-weight:600;color:rgba(240,238,255,0.35);letter-spacing:0.8px;text-transform:uppercase;margin-bottom:6px">Telefon *</label><input id="inv-phone" type="tel" placeholder="+998 90 123 45 67" style="width:100%;padding:11px 14px;background:#07050f;border:1px solid rgba(139,92,246,0.2);border-radius:8px;color:#f0eeff;font-size:14px;font-family:inherit;outline:none"></div>
+    <div style="margin-bottom:14px"><label style="display:block;font-size:11px;font-weight:600;color:rgba(240,238,255,0.35);letter-spacing:0.8px;text-transform:uppercase;margin-bottom:6px">Sarmoya miqdori ($)</label><input id="inv-amount" type="number" placeholder="1000" style="width:100%;padding:11px 14px;background:#07050f;border:1px solid rgba(139,92,246,0.2);border-radius:8px;color:#f0eeff;font-size:14px;font-family:inherit;outline:none"></div>
+    <div style="margin-bottom:24px"><label style="display:block;font-size:11px;font-weight:600;color:rgba(240,238,255,0.35);letter-spacing:0.8px;text-transform:uppercase;margin-bottom:6px">Izoh</label><textarea id="inv-note" rows="2" placeholder="Qoshimcha malumot..." style="width:100%;padding:11px 14px;background:#07050f;border:1px solid rgba(139,92,246,0.2);border-radius:8px;color:#f0eeff;font-size:14px;font-family:inherit;outline:none;resize:none"></textarea></div>
+    <button id="inv-submit" style="width:100%;padding:13px;background:#c4f000;color:#07050f;border:none;border-radius:8px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;transition:all .2s">Yuborish</button>
+  </div>
+</div>
+
+<!-- FLOATING SARMOYA BTN -->
+<button id="invest-btn" style="position:fixed;bottom:32px;right:32px;z-index:900;background:#c4f000;color:#07050f;border:none;padding:14px 24px;border-radius:100px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;box-shadow:0 4px 24px rgba(196,240,0,0.3);animation:pbtn 2.5s ease-in-out infinite;transition:transform .2s">Sarmoya kiriting</button>
+
+<!-- BUYURTMA MODAL -->
+<div id="order-modal" class="order-modal-overlay">
+  <div class="order-modal-box">
+    <button id="order-close" class="order-modal-close">×</button>
+    <div class="order-modal-tag">Buyurtma</div>
+    <h2 class="order-modal-title">BiznesOS ni sinab ko'ring</h2>
+    <p class="order-modal-desc">14 kun bepul. Karta kerak emas. Menejer siz bilan bog'lanadi.</p>
+
+    <div id="order-success" class="order-alert order-alert-success" style="display:none">
+      ✓ Buyurtmangiz qabul qilindi! Tez orada bog'lanamiz.
+    </div>
+    <div id="order-error" class="order-alert order-alert-error" style="display:none"></div>
+
+    <div class="order-form-group">
+      <label class="order-label">Ism *</label>
+      <input id="order-name" type="text" class="order-input" placeholder="Aziz Toshmatov">
+    </div>
+    <div class="order-form-group">
+      <label class="order-label">Telefon *</label>
+      <input id="order-phone" type="tel" class="order-input" placeholder="+998 90 123 45 67">
+    </div>
+    <div class="order-form-group">
+      <label class="order-label">Biznes turi</label>
+      <select id="order-type" class="order-input">
+        <option value="">Tanlang...</option>
+        <option>Barber / Sartaroshxona</option>
+        <option>Go'zallik saloni</option>
+        <option>Avto servis</option>
+        <option>Sport zal / Fitnes</option>
+        <option>Restoran / Kafe</option>
+        <option>Klinika / Tibbiyot</option>
+        <option>Boshqa</option>
+      </select>
+    </div>
+    <div class="order-form-group">
+      <label class="order-label">Tarif</label>
+      <div class="order-plans">
+        <div class="order-plan" data-plan="free" onclick="selectOrderPlan(this)">
+          <div class="order-plan-name">Free</div>
+          <div class="order-plan-price">$0</div>
+        </div>
+        <div class="order-plan order-plan-active" data-plan="business" onclick="selectOrderPlan(this)">
+          <div class="order-plan-name">Business ⚡</div>
+          <div class="order-plan-price">$30/oy</div>
+        </div>
+        <div class="order-plan" data-plan="pro" onclick="selectOrderPlan(this)">
+          <div class="order-plan-name">Pro</div>
+          <div class="order-plan-price">$50/oy</div>
+        </div>
+      </div>
+    </div>
+    <button id="order-submit" class="order-submit-btn">Buyurtma berish →</button>
+    <p class="order-note">Telegram: @biznes_os_support</p>
+  </div>
+</div>
+
+<!-- BUYURTMA TUGMASI (floating) -->
+<button id="order-btn" class="order-float-btn" onclick="openOrderModal()">
+  Buyurtma berish →
+</button></div>
+<div id="page-login" class="page"><div class="auth-page wrap">
+  <div class="auth-box">
+    <div class="auth-top">
+      <a href="#" onclick="navigate('home')" class="auth-logo">Biznes<em>OS</em></a>
+      <h1 class="auth-title">Xush kelibsiz</h1>
+      <p class="auth-sub">Akkauntingizga kiring</p>
+    </div>
+    <div class="auth-card">
+      <div id="err" class="alert alert-error hidden"></div>
+      <div id="suc" class="alert alert-success hidden"></div>
+      <div class="form-group">
+        <label class="form-label">Email</label>
+        <input type="email" id="f-email" class="form-input" placeholder="email@biznes.uz" autocomplete="email">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Parol</label>
+        <div class="input-wrap">
+          <input type="password" id="f-pass" class="form-input" placeholder="Parolingiz" autocomplete="current-password">
+          <button class="input-icon" id="toggle-pass" type="button">👁</button>
+        </div>
+      </div>
+      <button class="btn btn-neon btn-full" id="login-submit-btn" style="margin-top:8px">Kirish →</button>
+    </div>
+    <p class="auth-footer">Akkauntingiz yo'qmi? <a href="#" onclick="navigate('register')">Ro&#39;yxatdan o&#39;ting</a></p>
+  </div>
+</div></div>
+<div id="page-register" class="page"><div class="auth-page wrap">
+  <div class="auth-box">
+    <div class="auth-top">
+      <a href="#" onclick="navigate('home')" class="auth-logo">Biznes<em>OS</em></a>
+      <h1 class="auth-title">Akkaunt yarating</h1>
+      <p class="auth-sub">14 kun bepul. Karta kerak emas.</p>
+    </div>
+    <div class="auth-card">
+      <div id="err" class="alert alert-error hidden"></div>
+      <div id="preview" class="preview-box">
+        <div id="pv-av" class="preview-av">A</div>
+        <div><div class="text-xs text-muted mb-1">Sizning profilingiz</div><div id="pv-name" class="fw-600">Ism Familiya</div></div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Ism va Familiya *</label>
+        <input type="text" id="f-name" class="form-input" placeholder="Aziz Toshmatov" autocomplete="name">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Email *</label>
+        <input type="email" id="f-email" class="form-input" placeholder="email@biznes.uz" autocomplete="email">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Parol *</label>
+        <input type="password" id="f-pass" class="form-input" placeholder="Kamida 6 ta belgi">
+        <div class="str-bar"><div class="str-fill" id="str-fill"></div></div>
+        <div class="form-hint" id="str-lbl"></div>
+      </div>
+      <div class="form-group" style="margin-bottom:24px">
+        <label class="form-label">Parolni tasdiqlang *</label>
+        <input type="password" id="f-pass2" class="form-input" placeholder="Parolni qaytaring">
+      </div>
+      <button class="btn btn-neon btn-full" id="register-submit-btn">Ro'yxatdan o&#39;tish →</button>
+    </div>
+    <p class="auth-footer">Akkauntingiz bormi? <a href="#" onclick="navigate('login')">Kirish</a></p>
+  </div>
+</div></div>
+<div id="page-profile" class="page"><div class="profile-page wrap">
+
+  <!-- Welcome banner -->
+  <div id="welcome" class="alert alert-success hidden mb-4" style="margin-bottom:20px">
+    <span id="welcome-text">Xush kelibsiz!</span>
+    <button onclick="var w=document.getElementById('welcome');if(w)w.classList.add('hidden')" style="margin-left:auto;background:none;border:none;color:var(--neon);cursor:pointer;font-size:16px">✕</button>
+  </div>
+
+  <!-- Hero -->
+  <div class="profile-hero reveal">
+    <div id="p-av" class="p-avatar">A</div>
+    <div style="flex:1">
+      <div id="p-name" class="p-name">—</div>
+      <div id="p-email" class="p-email">—</div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <span class="badge badge-neon" id="p-plan">Free</span>
+        <span class="badge badge-purple">✓ Tasdiqlangan</span>
+      </div>
+    </div>
+    <div style="text-align:right"><div class="text-xs text-muted" id="p-joined"></div></div>
+  </div>
+
+  <!-- Stats -->
+  <div class="grid-4 mb-4 reveal" style="transition-delay:.1s">
+    <div class="stat-card text-center">
+      <div class="stat-val" id="st-days">14</div>
+      <div class="stat-lbl">Kun bepul</div>
+    </div>
+    <div class="stat-card text-center">
+      <div class="stat-val" id="st-plan" style="font-size:20px">Free</div>
+      <div class="stat-lbl">Joriy tarif</div>
+    </div>
+    <div class="stat-card text-center">
+      <div class="stat-val">5</div>
+      <div class="stat-lbl">Modullar</div>
+    </div>
+    <div class="stat-card text-center">
+      <div class="stat-val">24/7</div>
+      <div class="stat-lbl">Ishlash vaqti</div>
+    </div>
+  </div>
+
+  <div class="grid-2 mb-4 reveal" style="transition-delay:.15s">
+    <!-- Edit form -->
+    <div class="card">
+      <h3 class="fw-700 mb-4" style="font-size:17px">Profil ma'lumotlari</h3>
+      <div id="edit-err" class="alert alert-error hidden"></div>
+      <div id="edit-suc" class="alert alert-success hidden"></div>
+      <div class="form-group">
+        <label class="form-label">Ism va Familiya</label>
+        <input type="text" id="edit-name" class="form-input">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Email</label>
+        <input type="email" id="edit-email" class="form-input">
+      </div>
+      <div class="form-group" style="margin-bottom:24px">
+        <label class="form-label">Yangi parol <span class="text-xs text-muted fw-600" style="text-transform:none;letter-spacing:0">(ixtiyoriy)</span></label>
+        <input type="password" id="edit-pass" class="form-input" placeholder="O'zgartirmasangiz bo'sh qoldiring">
+      </div>
+      <button class="btn btn-neon btn-full" onclick="saveProfile()">Saqlash</button>
+    </div>
+
+    <!-- Plan -->
+    <div class="card">
+      <h3 class="fw-700 mb-4" style="font-size:17px">Tarifni o&#39;zgartirish</h3>
+      <div style="display:flex;flex-direction:column;gap:10px">
+        <div class="plan-opt" id="plan-free" onclick="selectPlan('free')">
+          <div class="flex-between">
+            <div><div class="fw-600" style="font-size:15px">Free</div><div class="text-xs text-muted mt-1">CRM + Navbat · 1 xodim</div></div>
+            <div class="plan-price">$0<sub>/oy</sub></div>
+          </div>
+        </div>
+        <div class="plan-opt" id="plan-business" onclick="selectPlan('business')">
+          <div class="flex-between">
+            <div><div class="fw-600" style="font-size:15px">Business <span class="badge badge-neon" style="font-size:9px;margin-left:6px">Mashhur</span></div><div class="text-xs text-muted mt-1">Barcha modullar · 5 xodim · Click/Payme</div></div>
+            <div class="plan-price">$30<sub>/oy</sub></div>
+          </div>
+        </div>
+        <div class="plan-opt" id="plan-pro" onclick="selectPlan('pro')">
+          <div class="flex-between">
+            <div><div class="fw-600" style="font-size:15px">Pro</div><div class="text-xs text-muted mt-1">Cheksiz xodim · Ko'p filial · API</div></div>
+            <div class="plan-price">$50<sub>/oy</sub></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Danger -->
+  <div class="danger-zone reveal" style="transition-delay:.2s">
+    <div class="fw-700 mb-2" style="color:var(--red)">Xavfli zona</div>
+    <div class="text-sm text-muted mb-4">Akkauntingizni o&#39;chirsangiz barcha ma'lumotlar yo'qoladi.</div>
+    <button class="btn btn-danger" onclick="deleteAccount()">Akkauntni o&#39;chirish</button>
+  </div>
+</div></div>
+<div id="page-pricing" class="page"><div class="pricing-page wrap">
+  <div class="pricing-hero reveal">
+    <h1 class="pricing-title">Shaffof <em>narxlar</em></h1>
+    <p class="section-desc" style="margin:0 auto">Yashirin to'lovlar yo'q. 14 kun bepul. Istalgan vaqt bekor qilish mumkin.</p>
+    <div class="toggle-row">
+      <span class="toggle-lbl on" id="lbl-m">Oylik</span>
+      <div class="toggle" id="toggle" onclick="toggleBilling()"><div class="toggle-thumb"></div></div>
+      <span class="toggle-lbl off" id="lbl-y">Yillik</span>
+      <span class="badge badge-neon">20% tejash</span>
+    </div>
+  </div>
+
+  <div class="grid-3 mb-6 reveal" style="transition-delay:.1s">
+    <div class="plan-card">
+      <div class="plan-tag">Starter</div>
+      <div class="plan-name">Boshlang'ich</div>
+      <div class="plan-price"><span class="pv">$15</span><sub>/oy</sub></div>
+      <div class="plan-desc">Kichik biznes uchun ideal</div>
+      <div class="plan-divider"></div>
+      <div class="plan-feat yes">Mijozlar bazasi (CRM)</div>
+      <div class="plan-feat yes">Navbat tizimi</div>
+      <div class="plan-feat yes">1 ta xodim</div>
+      <div class="plan-feat yes">Telegram eslatma</div>
+      <div class="plan-feat">Moliya hisobi</div>
+      <div class="plan-feat">Hisobotlar</div>
+      <div class="plan-btn"><button class="btn btn-outline btn-full" onclick="choosePlan('free')">Bepul boshlash</button></div>
+    </div>
+    <div class="plan-card pop">
+      <div class="plan-tag">⚡ Eng mashhur</div>
+      <div class="plan-name">Biznes</div>
+      <div class="plan-price"><span class="pv">$30</span><sub>/oy</sub></div>
+      <div class="plan-desc">O'sib kelayotgan biznes uchun</div>
+      <div class="plan-divider"></div>
+      <div class="plan-feat yes">Barcha Starter imkoniyatlari</div>
+      <div class="plan-feat yes">5 ta xodimgacha</div>
+      <div class="plan-feat yes">Moliya hisobi to'liq</div>
+      <div class="plan-feat yes">Dashboard + Hisobotlar</div>
+      <div class="plan-feat yes">Click / Payme</div>
+      <div class="plan-feat">Cheksiz xodimlar</div>
+      <div class="plan-btn"><button class="btn btn-neon btn-full" onclick="choosePlan('business')">Boshlash</button></div>
+    </div>
+    <div class="plan-card">
+      <div class="plan-tag">Pro</div>
+      <div class="plan-name">Professional</div>
+      <div class="plan-price"><span class="pv">$50</span><sub>/oy</sub></div>
+      <div class="plan-desc">Ko'p filiallar uchun</div>
+      <div class="plan-divider"></div>
+      <div class="plan-feat yes">Barcha Business imkoniyatlari</div>
+      <div class="plan-feat yes">Cheksiz xodimlar</div>
+      <div class="plan-feat yes">Ko'p filial boshqaruvi</div>
+      <div class="plan-feat yes">Maxsus hisobotlar</div>
+      <div class="plan-feat yes">API kirish huquqi</div>
+      <div class="plan-feat yes">Ustuvor qo'llab-quvvatlash</div>
+      <div class="plan-btn"><button class="btn btn-outline btn-full" onclick="choosePlan('pro')">Boshlash</button></div>
+    </div>
+  </div>
+
+  <div class="faq-wrap reveal" style="transition-delay:.15s">
+    <h2 class="section-title" style="text-align:center;margin-bottom:32px">Ko'p so'raladigan savollar</h2>
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggleFaq(this)"><span>14 kundan keyin nima bo'ladi?</span><span class="faq-icon">+</span></div>
+      <div class="faq-body"><p>14 kunlik sinov muddati tugagandan so'ng siz tanlagan tarifga o'tasiz. Agar bekor qilmasangiz, to'lov avtomatik boshlanmaydi — biz siz bilan avval bog'lanamiz.</p></div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggleFaq(this)"><span>Tarifni istalgan vaqt o&#39;zgartirsa bo'ladimi?</span><span class="faq-icon">+</span></div>
+      <div class="faq-body"><p>Ha, istalgan vaqt yuqori yoki quyi tarifga o&#39;tishingiz mumkin. Farq narxi hisoblanadi va joriy oyga qo'shiladi.</p></div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggleFaq(this)"><span>Qaysi to'lov usullari qabul qilinadi?</span><span class="faq-icon">+</span></div>
+      <div class="faq-body"><p>Click, Payme, Uzcard, Humo va xalqaro kartalar qabul qilinadi.</p></div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggleFaq(this)"><span>Ma'lumotlarim xavfsizmi?</span><span class="faq-icon">+</span></div>
+      <div class="faq-body"><p>Barcha ma'lumotlar shifrlangan holda saqlanadi. SSL sertifikati va muntazam backup ta'minlangan.</p></div>
+    </div>
+  </div>
+</div>
+<!-- BUYURTMA MODAL -->
+<div id="order-modal" class="order-modal-overlay">
+  <div class="order-modal-box">
+    <button id="order-close" class="order-modal-close">×</button>
+    <div class="order-modal-tag">Buyurtma</div>
+    <h2 class="order-modal-title">BiznesOS ni sinab ko'ring</h2>
+    <p class="order-modal-desc">14 kun bepul. Karta kerak emas. Menejer siz bilan bog'lanadi.</p>
+
+    <div id="order-success" class="order-alert order-alert-success" style="display:none">
+      ✓ Buyurtmangiz qabul qilindi! Tez orada bog'lanamiz.
+    </div>
+    <div id="order-error" class="order-alert order-alert-error" style="display:none"></div>
+
+    <div class="order-form-group">
+      <label class="order-label">Ism *</label>
+      <input id="order-name" type="text" class="order-input" placeholder="Aziz Toshmatov">
+    </div>
+    <div class="order-form-group">
+      <label class="order-label">Telefon *</label>
+      <input id="order-phone" type="tel" class="order-input" placeholder="+998 90 123 45 67">
+    </div>
+    <div class="order-form-group">
+      <label class="order-label">Biznes turi</label>
+      <select id="order-type" class="order-input">
+        <option value="">Tanlang...</option>
+        <option>Barber / Sartaroshxona</option>
+        <option>Go'zallik saloni</option>
+        <option>Avto servis</option>
+        <option>Sport zal / Fitnes</option>
+        <option>Restoran / Kafe</option>
+        <option>Klinika / Tibbiyot</option>
+        <option>Boshqa</option>
+      </select>
+    </div>
+    <div class="order-form-group">
+      <label class="order-label">Tarif</label>
+      <div class="order-plans">
+        <div class="order-plan" data-plan="free" onclick="selectOrderPlan(this)">
+          <div class="order-plan-name">Free</div>
+          <div class="order-plan-price">$0</div>
+        </div>
+        <div class="order-plan order-plan-active" data-plan="business" onclick="selectOrderPlan(this)">
+          <div class="order-plan-name">Business ⚡</div>
+          <div class="order-plan-price">$30/oy</div>
+        </div>
+        <div class="order-plan" data-plan="pro" onclick="selectOrderPlan(this)">
+          <div class="order-plan-name">Pro</div>
+          <div class="order-plan-price">$50/oy</div>
+        </div>
+      </div>
+    </div>
+    <button id="order-submit" class="order-submit-btn">Buyurtma berish →</button>
+    <p class="order-note">Telegram: @biznes_os_support</p>
+  </div>
+</div>
+
+<!-- BUYURTMA TUGMASI (floating) -->
+<button id="order-btn" class="order-float-btn" onclick="openOrderModal()">
+  Buyurtma berish →
+</button></div>
+<div id="page-about" class="page"><div class="about-page wrap">
+  <div class="about-hero">
+    <div class="reveal">
+      <div class="about-tag">Bizning hikoyamiz</div>
+      <h1 class="about-title">O'zbek biznesi uchun <em>qurilgan</em></h1>
+      <p class="about-desc">BiznesOS 2024-yilda Toshkentda tug'ildi. Biz o'zimiz biznes yuritib, kichik va o'rta tadbirkorlarning muammolarini ko'z bilan ko'rdik.</p>
+      <p class="about-desc">Excel'dan voz keching. Qog'oz daftarlardan voz keching. Barchasi bitta — oddiy, tez, o'zbek tilidagi tizimda.</p>
+      <div style="display:flex;gap:12px;margin-top:28px;flex-wrap:wrap">
+        <a href="#" onclick="navigate('register')" class="btn btn-neon">Bepul boshlash →</a>
+        <a href="#" onclick="navigate('pricing')" class="btn btn-outline">Narxlarni ko'rish</a>
+      </div>
+    </div>
+    <div class="stats-2x2 reveal" style="transition-delay:.15s">
+      <div class="stat-card text-center"><div class="stat-val">500+</div><div class="stat-lbl">Faol biznes</div></div>
+      <div class="stat-card text-center"><div class="stat-val">3</div><div class="stat-lbl">Yil tajriba</div></div>
+      <div class="stat-card text-center"><div class="stat-val">99.9%</div><div class="stat-lbl" style="font-size:10px">Ishlash vaqti</div></div>
+      <div class="stat-card text-center"><div class="stat-val">24/7</div><div class="stat-lbl">Texnik yordam</div></div>
+    </div>
+  </div>
+
+  <div class="reveal" style="margin-bottom:16px">
+    <div class="section-tag">Qadriyatlarimiz</div>
+    <h2 class="section-title">Biz nimaga ishonamiz</h2>
+  </div>
+  <div class="val-grid reveal" style="transition-delay:.1s">
+    <div class="val-item"><div class="val-num">01</div><div class="val-t">Soddalik</div><div class="val-d">Texnik bilim shart emas. Har kim ishlatishi mumkin bo'lgan mahsulot yaratamiz.</div></div>
+    <div class="val-item"><div class="val-num">02</div><div class="val-t">Mahalliy</div><div class="val-d">O'zbek tili, O'zbekiston to'lov tizimlari, mahalliy biznes ehtiyojlari.</div></div>
+    <div class="val-item"><div class="val-num">03</div><div class="val-t">Shaffoflik</div><div class="val-d">Yashirin to'lovlar yo'q. Narxlar aniq. Istalgan vaqt bekor qilsa bo'ladi.</div></div>
+  </div>
+
+  <div class="reveal" style="margin-bottom:16px">
+    <div class="section-tag">Jamoa</div>
+    <h2 class="section-title">Bizni yaratganlar</h2>
+  </div>
+  <div class="team-grid reveal" style="transition-delay:.1s">
+    <div class="team-card"><div class="team-av">A</div><div class="team-name">Akbar Mirzayev</div><div class="team-role">Asoschi & CEO</div><div class="team-bio">7 yil davomida O'zbekistonda IT va biznes sohasida ishlagan.</div></div>
+    <div class="team-card"><div class="team-av">Z</div><div class="team-name">Zulfiya Qodirov</div><div class="team-role">CTO</div><div class="team-bio">Full-stack developer. Node.js va MySQL bo'yicha mutaxassis.</div></div>
+    <div class="team-card"><div class="team-av">J</div><div class="team-name">Jasur Xolmatov</div><div class="team-role">UX Designer</div><div class="team-bio">5 yillik product design tajribasi.</div></div>
+  </div>
+
+  <div class="about-cta reveal">
+    <div style="position:relative;z-index:1">
+      <h2 class="section-title">Biznesda birgami?</h2>
+      <p class="section-desc" style="margin:0 auto 32px">O'zbekistondagi 500+ biznes egasi bilan qo'shiling</p>
+      <div style="display:flex;justify-content:center;gap:14px;flex-wrap:wrap">
+        <a href="#" onclick="navigate('register')" class="btn btn-neon btn-lg">Bepul boshlash →</a>
+        <a href="#" onclick="navigate('pricing')" class="btn btn-outline btn-lg">Narxlarni ko'rish</a>
+      </div>
+    </div>
+  </div>
+</div></div>
+<div id="page-admin" class="page admin-wrap"><aside class="sidebar">
+  <div class="sb-logo">Biznes<em>OS</em><span>Admin</span></div>
+  <div class="sb-footer">
+    <button class="sb-item" onclick="doLogout()">🚪 Chiqish</button>
+  </div>
+</aside>
+
+<main class="main">
+  <div class="topbar">
+    <h1 class="page-title" id="page-title">Tashriflar</h1>
+    <div style="display:flex;align-items:center;gap:12px">
+      <div class="live-badge"><span class="live-dot"></span>Real-time</div>
+      <button class="action-btn" onclick="loadAll()">↻ Yangilash</button>
+      <button class="action-btn del" onclick="clearData()">Tozalash</button>
+    </div>
+  </div>
+
+  <!-- Stats -->
+  <div class="grid-4 mb-4">
+    <div class="stat-card"><div class="stat-lbl">Jami tashriflar</div><div class="stat-val" id="s-v">0</div><div class="stat-sub" id="s-td">Bugun: 0</div></div>
+    <div class="stat-card"><div class="stat-lbl">Sarmoyachilar</div><div class="stat-val" id="s-i">0</div><div class="stat-sub" id="s-ni">Yangi: 0</div></div>
+    <div class="stat-card"><div class="stat-lbl">Jami sarmoya</div><div class="stat-val" id="s-a">$0</div><div class="stat-sub" id="s-avg">O'rtacha: $0</div></div>
+    <div class="stat-card"><div class="stat-lbl">Buyurtmalar</div><div class="stat-val" id="s-o">0</div><div class="stat-sub" id="s-no">Yangi: 0</div></div>
+    <div class="stat-card"><div class="stat-lbl">Top sahifa</div><div class="stat-val" id="s-tp" style="font-size:18px;margin-top:4px">—</div><div class="stat-sub" id="s-tc">0 marta</div></div>
+  </div>
+
+  <!-- Visits -->
+  <div id="tab-visits">
+    <div class="tbl-card">
+      <div class="tbl-header">
+        <span class="tbl-title">Tashrif jurnali</span>
+        <input class="search-input" id="visit-search" placeholder="Sahifa bo'yicha..." oninput="renderVisits()">
+      </div>
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>#</th><th>Vaqt</th><th>Sahifa</th><th>Manba</th><th>Til</th><th>Ekran</th></tr></thead>
+          <tbody id="v-tbody"><tr><td colspan="6" style="text-align:center;padding:32px;color:var(--muted)">Yuklanmoqda...</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Investments -->
+  <div id="tab-investments" style="display:none">
+    <div class="tbl-card">
+      <div class="tbl-header">
+        <span class="tbl-title">Sarmoyachilar</span>
+        <input class="search-input" id="inv-search" placeholder="Ism yoki telefon..." oninput="renderInvestments()">
+      </div>
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>#</th><th>Vaqt</th><th>Ism</th><th>Telefon</th><th>Summa</th><th>Izoh</th><th>Holat</th><th></th></tr></thead>
+          <tbody id="i-tbody"><tr><td colspan="8" style="text-align:center;padding:32px;color:var(--muted)">Yuklanmoqda...</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Stats -->
+  
+  <!-- Orders tab -->
+  <div id="tab-orders" style="display:none">
+    <div class="tbl-card">
+      <div class="tbl-header">
+        <span class="tbl-title">Buyurtmalar</span>
+        <input class="search-input" id="ord-search" placeholder="Ism yoki telefon..." oninput="renderOrders()">
+      </div>
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>#</th><th>Vaqt</th><th>Ism</th><th>Telefon</th><th>Biznes turi</th><th>Tarif</th><th>Holat</th><th></th></tr></thead>
+          <tbody id="ord-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div id="tab-stats" style="display:none">
+    <div class="grid-2">
+      <div class="card">
+        <div class="flex-between mb-4"><span class="tbl-title">So'nggi 7 kun</span><span class="text-xs text-muted" id="chart-tot"></span></div>
+        <div style="display:flex;align-items:flex-end;gap:6px;height:110px" id="c-bars"></div>
+        <div style="display:flex;gap:6px;margin-top:6px" id="c-labels"></div>
+      </div>
+      <div class="card">
+        <div class="tbl-title mb-4">Sahifalar taqsimoti</div>
+        <div id="pages-dist"></div>
+      </div>
+    </div>
+  </div>
+</main></div>
+
+<!-- FLOATING SARMOYA BTN -->
+<button id="invest-btn" style="position:fixed;bottom:32px;right:32px;z-index:900;background:#c4f000;color:#07050f;border:none;padding:14px 24px;border-radius:100px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;box-shadow:0 4px 24px rgba(196,240,0,0.3);animation:pbtn 2.5s ease-in-out infinite;transition:transform .2s">Sarmoya kiriting</button>
+<div id="order-modal" class="order-modal-overlay">
+  <div class="order-modal-box">
+    <button id="order-close" class="order-modal-close">×</button>
+    <div class="order-modal-tag">Buyurtma</div>
+    <h2 class="order-modal-title">BiznesOS ni sinab ko'ring</h2>
+    <p class="order-modal-desc">14 kun bepul. Karta kerak emas. Menejer siz bilan bog'lanadi.</p>
+
+    <div id="order-success" class="order-alert order-alert-success" style="display:none">
+      ✓ Buyurtmangiz qabul qilindi! Tez orada bog'lanamiz.
+    </div>
+    <div id="order-error" class="order-alert order-alert-error" style="display:none"></div>
+
+    <div class="order-form-group">
+      <label class="order-label">Ism *</label>
+      <input id="order-name" type="text" class="order-input" placeholder="Aziz Toshmatov">
+    </div>
+    <div class="order-form-group">
+      <label class="order-label">Telefon *</label>
+      <input id="order-phone" type="tel" class="order-input" placeholder="+998 90 123 45 67">
+    </div>
+    <div class="order-form-group">
+      <label class="order-label">Biznes turi</label>
+      <select id="order-type" class="order-input">
+        <option value="">Tanlang...</option>
+        <option>Barber / Sartaroshxona</option>
+        <option>Go'zallik saloni</option>
+        <option>Avto servis</option>
+        <option>Sport zal / Fitnes</option>
+        <option>Restoran / Kafe</option>
+        <option>Klinika / Tibbiyot</option>
+        <option>Boshqa</option>
+      </select>
+    </div>
+    <div class="order-form-group">
+      <label class="order-label">Tarif</label>
+      <div class="order-plans">
+        <div class="order-plan" data-plan="free" onclick="selectOrderPlan(this)">
+          <div class="order-plan-name">Free</div>
+          <div class="order-plan-price">$0</div>
+        </div>
+        <div class="order-plan order-plan-active" data-plan="business" onclick="selectOrderPlan(this)">
+          <div class="order-plan-name">Business ⚡</div>
+          <div class="order-plan-price">$30/oy</div>
+        </div>
+        <div class="order-plan" data-plan="pro" onclick="selectOrderPlan(this)">
+          <div class="order-plan-name">Pro</div>
+          <div class="order-plan-price">$50/oy</div>
+        </div>
+      </div>
+    </div>
+    <button id="order-submit" class="order-submit-btn">Buyurtma berish →</button>
+    <p class="order-note">Telegram: @biznes_os_support</p>
+  </div>
+</div>
+<!-- BUYURTMA TUGMASI (floating) -->
+<button id="order-btn" class="order-float-btn" onclick="openOrderModal()">
+  Buyurtma berish →
+</button>
+<div id="login-modal" class="login-modal-overlay">
+  <div style="
+    background:#0e0b1a;border:1px solid rgba(139,92,246,0.3);
+    border-radius:20px;padding:40px 36px;width:100%;max-width:400px;
+    position:relative;box-shadow:0 0 80px rgba(124,58,237,0.15);
+  ">
+<footer class="footer" id="main-footer">
+  <div class="footer-logo">Biznes<em>OS</em></div>
+  <p>© 2025 BiznesOS · O'zbekiston uchun qurilgan 🇺🇿</p>
+  <div class="footer-links">
+    <a href="#" data-page="home">Bosh sahifa</a>
+    <a href="#" data-page="about">Haqimizda</a>
+    <a href="#" data-page="pricing">Narxlar</a>
+    <a href="#" data-page="login">Kirish</a>
+    <a href="#" data-page="register">Ro'yxatdan o&#39;tish</a>
+  </div>
+</footer>
+<script>
+(function(){
+  /* CURSOR */
+  var dot=document.getElementById('cur-dot'),ring=document.getElementById('cur-ring');
+  var mx=0,my=0,rx=0,ry=0;
+  document.addEventListener('mousemove',function(e){mx=e.clientX;my=e.clientY;dot.style.left=mx+'px';dot.style.top=my+'px';});
+  (function loop(){rx+=(mx-rx)*.1;ry+=(my-ry)*.1;ring.style.left=rx+'px';ring.style.top=ry+'px';requestAnimationFrame(loop);})();
+  var hoverEls=document.querySelectorAll('a,button,.feat-card,.testi-card,.plan-card,.step-card');
+  hoverEls.forEach(function(el){
+    el.addEventListener('mouseenter',function(){document.body.classList.add('hov');});
+    el.addEventListener('mouseleave',function(){document.body.classList.remove('hov');});
+  });
+
+  /* MAGNETIC */
+  document.querySelectorAll('.magnetic').forEach(function(el){
+    var s=parseFloat(el.dataset.s)||20;
+    el.addEventListener('mouseenter',function(){el.style.transition='transform .1s';});
+    el.addEventListener('mousemove',function(e){
+      var r=el.getBoundingClientRect();
+      var dx=e.clientX-(r.left+r.width/2);
+      var dy=e.clientY-(r.top+r.height/2);
+      el.style.transform='translate('+dx*s/100+'px,'+dy*s/100+'px)';
+    });
+    el.addEventListener('mouseleave',function(){
+      el.style.transition='transform .6s cubic-bezier(.19,1,.22,1)';
+      el.style.transform='';
+    });
+  });
+
+  /* FEAT CARD SPOTLIGHT */
+  document.querySelectorAll('.feat-card').forEach(function(card){
+    card.addEventListener('mousemove',function(e){
+      var r=card.getBoundingClientRect();
+      card.style.setProperty('--mx',((e.clientX-r.left)/r.width*100)+'%');
+      card.style.setProperty('--my',((e.clientY-r.top)/r.height*100)+'%');
+    });
+  });
+
+  /* TEXT SCRAMBLE */
+  var CHARS='ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%&*';
+  function scramble(el,target,dur){
+    var start=Date.now(),running=true;
+    (function tick(){
+      var p=Math.min((Date.now()-start)/dur,1);
+      el.textContent=target.split('').map(function(c,i){
+        if(c===' ')return ' ';
+        if(p>i/target.length)return c;
+        return CHARS[Math.floor(Math.random()*CHARS.length)];
+      }).join('');
+      if(p<1&&running)requestAnimationFrame(tick);
+      else el.textContent=target;
+    })();
+    return function(){running=false;};
+  }
+
+  /* Nav link scramble on hover */
+  document.querySelectorAll('.nav-a').forEach(function(a){
+    var orig=a.textContent,cancel;
+    a.addEventListener('mouseenter',function(){
+      if(cancel)cancel();
+      cancel=scramble(a,orig,400);
+    });
+  });
+
+  /* Hero word scramble on load */
+  var sc=document.getElementById('sc-target');
+  if(sc){
+    var orig=sc.textContent;
+    setTimeout(function(){scramble(sc,orig,900);},500);
+  }
+
+  /* NAV SCROLL */
+  window.addEventListener('scroll',function(){
+    document.getElementById('nav').classList.toggle('scrolled',window.scrollY>50);
+  },{passive:true});
+
+  /* PARALLAX */
+  var heroRight=document.querySelector('.hero-right');
+  window.addEventListener('scroll',function(){
+    if(heroRight)heroRight.style.transform='translateY('+(window.scrollY*0.04)+'px)';
+  },{passive:true});
+
+  /* REVEAL */
+  var obs=new IntersectionObserver(function(entries){
+    entries.forEach(function(e){if(e.isIntersecting)e.target.classList.add('in');});
+  },{threshold:0.08});
+  document.querySelectorAll('.reveal').forEach(function(el){obs.observe(el);});
+  setTimeout(function(){
+    document.querySelectorAll('.reveal').forEach(function(el){
+      if(el.getBoundingClientRect().top<window.innerHeight)el.classList.add('in');
+    });
+  },80);
+
+  /* LOGO DOUBLE-CLICK → ADMIN LOGIN */
+  var logo=document.getElementById('nav-logo');
+  if(logo){
+    logo.addEventListener('dblclick',function(e){
+      e.preventDefault();
+      document.getElementById('login-modal').classList.add('open');document.body.style.overflow='hidden';
+    });
+    logo.addEventListener('click',function(){
+      logo.style.transition='color .12s';
+      logo.style.color='var(--neon)';
+      setTimeout(function(){logo.style.color='';},180);
+    });
+  }
+
+})();
+</script>
+<script>
+/* ── BiznesOS Shared Auth & Utils ── */
+var BOS = (function(){
+
+  var USERS_KEY   = 'bos_users';
+  var SESSION_KEY = 'bos_session';
+
+  /* ── USER STORE ── */
+  function getUsers(){ return JSON.parse(localStorage.getItem(USERS_KEY)||'[]'); }
+  function saveUsers(u){ localStorage.setItem(USERS_KEY, JSON.stringify(u)); }
+
+  function getSession(){ return JSON.parse(localStorage.getItem(SESSION_KEY)||'null'); }
+  function saveSession(u){ localStorage.setItem(SESSION_KEY, JSON.stringify(u)); }
+  function clearSession(){ localStorage.removeItem(SESSION_KEY); }
+
+  /* ── REGISTER ── */
+  function register(name, email, password){
+    var users = getUsers();
+    if(users.find(function(u){ return u.email===email; }))
+      return { ok:false, msg:'Bu email allaqachon ro\'yxatdan o\'tgan' };
+    if(password.length < 6)
+      return { ok:false, msg:'Parol kamida 6 ta belgi bo\'lishi kerak' };
+    var user = {
+      id: Date.now(),
+      name: name.trim(),
+      email: email.trim().toLowerCase(),
+      password: btoa(password),   // oddiy encode (real proyektda bcrypt)
+      plan: 'free',
+      avatar: name.trim()[0].toUpperCase(),
+      createdAt: new Date().toISOString()
+    };
+    users.push(user);
+    saveUsers(users);
+    var session = {id:user.id,name:user.name,email:user.email,plan:user.plan,avatar:user.avatar};
+    saveSession(session);
+
+    /* Real serverga ham yuborish */
+    fetchSafe('/api/auth/register',{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({name:user.name,email:user.email,password:password,businessName:user.name+' Biznes'})
+    }).then(function(r){return r.json();}).then(function(d){
+      if(d.success && d.data && d.data.token) localStorage.setItem('bos_token', d.data.token);
+    }).catch(function(){});
+
+    return { ok:true, user:session };
+  }
+
+  /* ── LOGIN ── */
+  function login(email, password){
+    var users = getUsers();
+    var user = users.find(function(u){ return u.email===email.trim().toLowerCase(); });
+    if(!user) return { ok:false, msg:'Email yoki parol noto\'g\'ri' };
+    if(atob(user.password) !== password) return { ok:false, msg:'Email yoki parol noto\'g\'ri' };
+    var session = {id:user.id,name:user.name,email:user.email,plan:user.plan,avatar:user.avatar};
+    saveSession(session);
+
+    /* Real server */
+    fetchSafe('/api/auth/login',{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({email:email,password:password})
+    }).then(function(r){return r.json();}).then(function(d){
+      if(d.success && d.data && d.data.token) localStorage.setItem('bos_token', d.data.token);
+    }).catch(function(){});
+
+    return { ok:true, user:session };
+  }
+
+  /* ── UPDATE PROFILE ── */
+  function updateProfile(fields){
+    var session = getSession();
+    if(!session) return { ok:false, msg:'Sessiya topilmadi' };
+    var users = getUsers();
+    var idx = users.findIndex(function(u){ return u.id===session.id; });
+    if(idx<0) return { ok:false, msg:'Foydalanuvchi topilmadi' };
+    Object.assign(users[idx], fields);
+    saveUsers(users);
+    var newSession = {id:users[idx].id,name:users[idx].name,email:users[idx].email,plan:users[idx].plan,avatar:users[idx].name[0].toUpperCase()};
+    saveSession(newSession);
+    return { ok:true, user:newSession };
+  }
+
+  /* ── HELPERS ── */
+  function requireAuth(redirect){
+    if(!getSession()){
+      window.location.href = redirect||'login.html';
+      return false;
+    }
+    return true;
+  }
+  function requireGuest(redirect){
+    if(getSession()){
+      window.location.href = redirect||'profile.html';
+      return false;
+    }
+    return true;
+  }
+
+  /* ── TRACK VISIT ── */
+  function trackVisit(page){
+    var visits = JSON.parse(localStorage.getItem('bos_visits')||'[]');
+    visits.unshift({
+      id:Date.now(), time:new Date().toISOString(), page:page||document.title,
+      lang:navigator.language||'—', ref:document.referrer||'To\'g\'ridan',
+      screen:screen.width+'×'+screen.height, ua:navigator.userAgent.substring(0,80)
+    });
+    if(visits.length>300) visits=visits.slice(0,300);
+    localStorage.setItem('bos_visits', JSON.stringify(visits));
+  }
+
+  return { register, login, updateProfile, getSession, clearSession, requireAuth, requireGuest, trackVisit };
+})();
+
+</script>
+<script>
+var PAGES = ['home','login','register','profile','pricing','about','admin'];
+
+function navigate(page) {
+  var session = BOS.getSession();
+  if((page==='profile'||page==='admin') && !session){ navigate('login'); return; }
+  if((page==='login'||page==='register') && session){ navigate('profile'); return; }
+
+  PAGES.forEach(function(p){
+    var el = document.getElementById('page-'+p);
+    if(el) el.classList.remove('active');
+  });
+  var target = document.getElementById('page-'+page);
+  if(target) target.classList.add('active');
+
+  var footer = document.getElementById('main-footer');
+  var nav    = document.getElementById('main-nav');
+  var noNav  = ['admin'];
+  var noFoot = ['login','register','admin'];
+  if(nav)    nav.style.display    = noNav.includes(page)  ? 'none' : '';
+  if(footer) footer.style.display = noFoot.includes(page) ? 'none' : '';
+
+  document.querySelectorAll('.nav-link').forEach(function(a){
+    a.classList.toggle('active', a.dataset.page === page);
+  });
+
+  window.scrollTo(0,0);
+  try{ history.pushState({page:page}, '', '#'+page); }catch(e){}
+
+  BOS.navAuth(document.getElementById('nav-auth'));
+
+  setTimeout(function(){
+    document.querySelectorAll('#page-'+page+' .reveal:not(.in)').forEach(function(el){
+      if(el.getBoundingClientRect().top < innerHeight) el.classList.add('in');
+    });
+  }, 80);
+
+  if(page==='profile') setTimeout(initProfile,  50);
+  if(page==='admin')   setTimeout(initAdmin,    50);
+  if(page==='pricing') setTimeout(initPricing,  50);
+}
+
+document.addEventListener('click', function(e){
+  var a = e.target.closest('[data-page]');
+  if(a){ e.preventDefault(); navigate(a.dataset.page); }
+  var btn = e.target.closest('[onclick*="navigate"]');
+  // handled by inline onclick
+});
+
+window.addEventListener('popstate', function(){
+  var hash = location.hash.replace('#','') || 'home';
+  navigate(PAGES.includes(hash) ? hash : 'home');
+});
+
+BOS.navAuth = function(el){
+  if(!el) return;
+  var s = BOS.getSession();
+  if(s){
+    el.innerHTML = '<a href="#" class="nav-user-link" data-page="profile">'+
+      '<span class="nav-avatar">'+s.avatar+'</span>'+
+      '<span class="nav-username">'+s.name+'</span></a>'+
+      ' <a href="#" class="btn-ghost-sm" onclick="BOS.clearSession();navigate(\'home\')">Chiqish</a>';
+  } else {
+    el.innerHTML = '<a href="#" class="btn-ghost-sm" data-page="login">Kirish</a>'+
+      ' <a href="#" class="btn-neon-sm" data-page="register">Boshlash</a>';
+  }
+};
+BOS.requireAuth  = function(){ var s=BOS.getSession(); if(!s){ navigate('login');   return false; } return true; };
+BOS.requireGuest = function(){ var s=BOS.getSession(); if(s){  navigate('profile'); return false; } return true; };
+</script>
+<script>
+/* ── PAGE INITS ── */
+var _loginInited    = false;
+var _registerInited = false;
+var _profileInited  = false;
+var _pricingInited  = false;
+var _aboutInited    = false;
+var _adminInited    = false;
+
+function initLogin(){
+  var pg = document.getElementById('page-login');
+  if(!pg) return;
+  var eml = pg.querySelector('[id="f-email"]');
+  var pwd = pg.querySelector('[id="f-pass"]');
+  var tgl = pg.querySelector('[id="toggle-pass"]');
+  var btn = pg.querySelector('#login-submit-btn, .btn-neon.btn-full');
+  var err = pg.querySelector('.alert-error');
+  var suc = pg.querySelector('.alert-success');
+  if(eml) eml.value='';
+  if(pwd){pwd.value='';pwd.type='password';}
+  if(err) err.classList.add('hidden');
+  if(suc) suc.classList.add('hidden');
+  if(btn){btn.disabled=false;btn.textContent='Kirish';}
+  if(tgl){
+    tgl.onclick=function(){
+      var i=pg.querySelector('[id="f-pass"]');
+      if(!i)return;
+      i.type=i.type==='password'?'text':'password';
+      this.textContent=i.type==='password'?'show':'hide';
+    };
+  }
+  function doLogin(){
+    var e2=pg.querySelector('[id="f-email"]');
+    var p2=pg.querySelector('[id="f-pass"]');
+    var em=e2?e2.value.trim():'';
+    var pw=p2?p2.value:'';
+    var errEl=pg.querySelector('.alert-error');
+    var sucEl=pg.querySelector('.alert-success');
+    if(errEl)errEl.classList.add('hidden');
+    if(sucEl)sucEl.classList.add('hidden');
+    if(!em||!pw){
+      if(errEl){errEl.textContent='Email va parol kiritilishi shart';errEl.classList.remove('hidden');}
+      return;
+    }
+    if(btn){btn.disabled=true;btn.textContent='Tekshirilmoqda...';}
+    var DEMO=[
+      {email:'admin@gmail.com',pass:'admin123',name:'Admin',role:'owner'},
+      {email:'demo@biznes.uz', pass:'demo123', name:'Demo', role:'admin'}
+    ];
+    var hit=DEMO.find(function(u){return u.email===em&&u.pass===pw;});
+    if(hit){
+      localStorage.setItem('bos_token','demo-'+Date.now());
+      localStorage.setItem('bos_user',JSON.stringify({id:1,name:hit.name,email:hit.email,role:hit.role}));
+      if(btn)btn.textContent='Kirish OK';
+      setTimeout(function(){navigate('admin');},400);
+      return;
+    }
+    var r=BOS.login(em,pw);
+    if(r.ok){
+      if(sucEl){sucEl.textContent=r.user.name+', xush kelibsiz!';sucEl.classList.remove('hidden');}
+      setTimeout(function(){navigate('profile');},700);
+    } else {
+      if(errEl){errEl.textContent=r.msg;errEl.classList.remove('hidden');}
+      if(btn){btn.disabled=false;btn.textContent='Kirish';}
+    }
+  }
+  if(btn) btn.onclick=doLogin;
+  if(pwd) pwd.onkeydown=function(ev){if(ev.key==='Enter')doLogin();};
+  window.doLogin=doLogin;
+}
+
+function initRegister(){
+  var pg=document.getElementById('page-register');
+  if(!pg)return;
+  var nameEl =pg.querySelector('[id="f-name"]');
+  var emailEl=pg.querySelector('[id="f-email"]');
+  var passEl =pg.querySelector('[id="f-pass"]');
+  var pass2El=pg.querySelector('[id="f-pass2"]');
+  var btn    =pg.querySelector('#register-submit-btn, .btn-neon.btn-full');
+  var errEl  =pg.querySelector('.alert-error');
+  var previewEl=pg.querySelector('[id="preview"]');
+  var pvAvEl   =pg.querySelector('[id="pv-av"]');
+  var pvNameEl =pg.querySelector('[id="pv-name"]');
+  var strFill  =pg.querySelector('[id="str-fill"]');
+  var strLbl   =pg.querySelector('[id="str-lbl"]');
+  [nameEl,emailEl,passEl,pass2El].forEach(function(el){if(el)el.value='';});
+  if(errEl)errEl.classList.add('hidden');
+  if(previewEl)previewEl.style.display='none';
+  if(strFill){strFill.style.width='0';strFill.style.background='';}
+  if(strLbl)strLbl.textContent='';
+  if(btn){btn.disabled=false;btn.textContent="Ro'yxatdan o&#39;tish";}
+  if(nameEl){
+    nameEl.oninput=function(){
+      var v=this.value.trim();
+      if(v.length>1){
+        if(previewEl)previewEl.style.display='flex';
+        if(pvAvEl)pvAvEl.textContent=v[0].toUpperCase();
+        if(pvNameEl)pvNameEl.textContent=v;
+      } else if(previewEl)previewEl.style.display='none';
+    };
+  }
+  if(passEl){
+    passEl.oninput=function(){
+      var pw=this.value,s=0;
+      if(pw.length>=6)s++;if(pw.length>=10)s++;
+      if(/[A-Z]/.test(pw))s++;if(/[0-9]/.test(pw))s++;if(/[^a-zA-Z0-9]/.test(pw))s++;
+      var L=[['0%','',''],['20%','#ef4444','Juda zaif'],['40%','#f97316','Zaif'],['70%','#eab308','Yaxshi'],['100%','#c4f000','Kuchli']][Math.min(s,4)];
+      if(strFill){strFill.style.width=L[0];strFill.style.background=L[1];}
+      if(strLbl){strLbl.textContent=L[2];strLbl.style.color=L[1];}
+    };
+  }
+  function doReg(){
+    var nm=nameEl?nameEl.value.trim():'';
+    var em=emailEl?emailEl.value.trim():'';
+    var pw=passEl?passEl.value:'';
+    var p2=pass2El?pass2El.value:'';
+    if(errEl)errEl.classList.add('hidden');
+    if(!nm||!em||!pw||!p2){
+      if(errEl){errEl.textContent="Barcha maydonlarni to'ldiring";errEl.classList.remove('hidden');}
+      return;
+    }
+    if(pw!==p2){
+      if(errEl){errEl.textContent='Parollar mos kelmaydi';errEl.classList.remove('hidden');}
+      return;
+    }
+    if(btn){btn.disabled=true;btn.textContent='Yaratilmoqda...';}
+    setTimeout(function(){
+      var r=BOS.register(nm,em,pw);
+      if(r.ok){navigate('profile');}
+      else{
+        if(errEl){errEl.textContent=r.msg;errEl.classList.remove('hidden');}
+        if(btn){btn.disabled=false;btn.textContent="Ro'yxatdan o&#39;tish";}
+      }
+    },600);
+  }
+  if(btn)btn.onclick=doReg;
+  if(pass2El)pass2El.onkeydown=function(ev){if(ev.key==='Enter')doReg();};
+  window.doRegister=doReg;
+}
+
+function initProfile(){
+  if(!BOS.requireAuth()) return;
+  var pg = document.getElementById('page-profile');
+  if(!pg) return;
+
+  var session = BOS.getSession();
+
+  /* Welcome banner */
+  var wb = pg.querySelector('[id="welcome"]');
+  if(wb && new URLSearchParams(location.search).get('new')){
+    wb.classList.remove('hidden');
+    var wt = pg.querySelector('[id="welcome-text"]');
+    if(wt) wt.textContent = session.name + ", xush kelibsiz! Akkauntingiz tayyor!";
+  }
+
+  function fillUI(){
+    session = BOS.getSession();
+    var av    = pg.querySelector('[id="p-av"]');
+    var pname = pg.querySelector('[id="p-name"]');
+    var pemail= pg.querySelector('[id="p-email"]');
+    var pbadge= pg.querySelector('[id="p-plan"]');
+    var stplan= pg.querySelector('[id="st-plan"]');
+    var pjoin = pg.querySelector('[id="p-joined"]');
+    var editNm= pg.querySelector('[id="edit-name"]');
+    var editEm= pg.querySelector('[id="edit-email"]');
+
+    if(av)     av.textContent    = session.avatar || session.name[0].toUpperCase();
+    if(pname)  pname.textContent = session.name;
+    if(pemail) pemail.textContent= session.email;
+    var planLabel = {free:'Free', business:'Business', pro:'Pro'}[session.plan] || 'Free';
+    if(pbadge) pbadge.textContent = planLabel;
+    if(stplan) stplan.textContent = session.plan || 'free';
+    if(editNm) editNm.value      = session.name;
+    if(editEm) editEm.value      = session.email;
+
+    /* Plan highlight */
+    pg.querySelectorAll('.plan-opt').forEach(function(el){
+      el.classList.toggle('current', el.id === 'plan-' + session.plan);
+    });
+
+    /* Joined date */
+    var users = JSON.parse(localStorage.getItem('bos_users') || '[]');
+    var u = users.find(function(x){ return x.id === session.id; });
+    if(u && pjoin) pjoin.textContent = "A'zo: " + new Date(u.createdAt).toLocaleDateString('uz-UZ');
+
+    BOS.navAuth(document.getElementById('nav-auth'));
+  }
+  fillUI();
+
+  /* Save profile */
+  var saveBtn = pg.querySelector('button[onclick*="saveProfile"], button.btn-neon');
+  /* Find by text */
+  pg.querySelectorAll('button').forEach(function(b){
+    if(b.textContent.trim() === 'Saqlash') saveBtn = b;
+  });
+  if(saveBtn){
+    saveBtn.onclick = function(){
+      var nm  = pg.querySelector('[id="edit-name"]');
+      var em  = pg.querySelector('[id="edit-email"]');
+      var pw  = pg.querySelector('[id="edit-pass"]');
+      var err = pg.querySelector('[id="edit-err"]');
+      var suc = pg.querySelector('[id="edit-suc"]');
+      if(err) err.classList.add('hidden');
+      if(suc) suc.classList.add('hidden');
+      var name  = nm  ? nm.value.trim()  : '';
+      var email = em  ? em.value.trim()  : '';
+      var pass  = pw  ? pw.value         : '';
+      if(!name || !email){
+        if(err){ err.textContent = 'Ism va email kiritilishi shart'; err.classList.remove('hidden'); }
+        return;
+      }
+      var fields = {name: name, email: email};
+      if(pass){
+        if(pass.length < 6){
+          if(err){ err.textContent = 'Parol kamida 6 belgi'; err.classList.remove('hidden'); }
+          return;
+        }
+        fields.password = btoa(pass);
+      }
+      var r = BOS.updateProfile(fields);
+      if(r.ok){
+        if(suc){ suc.textContent = 'Profil saqlandi'; suc.classList.remove('hidden'); }
+        fillUI();
+        setTimeout(function(){ if(suc) suc.classList.add('hidden'); }, 2500);
+      } else {
+        if(err){ err.textContent = r.msg; err.classList.remove('hidden'); }
+      }
+    };
+  }
+
+  /* Plan select */
+  pg.querySelectorAll('.plan-opt').forEach(function(el){
+    el.onclick = function(){
+      var plan = this.id.replace('plan-', '');
+      BOS.updateProfile({plan: plan});
+      fillUI();
+    };
+  });
+
+  /* Delete account */
+  pg.querySelectorAll('button').forEach(function(b){
+    if(b.textContent.trim().indexOf("o&#39;chirish") >= 0 || b.textContent.trim().indexOf("Delete") >= 0
+       || b.className.indexOf('btn-danger') >= 0){
+      b.onclick = function(){
+        if(!confirm("Haqiqatan ham akkauntni o&#39;chirmoqchimisiz?")) return;
+        var users = JSON.parse(localStorage.getItem('bos_users') || '[]');
+        users = users.filter(function(u){ return u.id !== session.id; });
+        localStorage.setItem('bos_users', JSON.stringify(users));
+        BOS.clearSession();
+        navigate('home');
+      };
+    }
+  });
+
+  /* Welcome close */
+  pg.querySelectorAll('button').forEach(function(b){
+    if(b.textContent.trim() === 'Tushunarli' && wb){
+      b.onclick = function(){ wb.classList.add('hidden'); };
+    }
+  });
+}
+
+/* Expose to global for onclick handlers */
+window.saveProfile = function(){
+  var pg = document.getElementById('page-profile');
+  if(!pg) return;
+  var nm  = pg.querySelector('[id="edit-name"]');
+  var em  = pg.querySelector('[id="edit-email"]');
+  var pw  = pg.querySelector('[id="edit-pass"]');
+  var err = pg.querySelector('[id="edit-err"]');
+  var suc = pg.querySelector('[id="edit-suc"]');
+  if(err) err.classList.add('hidden');
+  if(suc) suc.classList.add('hidden');
+  var name  = nm  ? nm.value.trim()  : '';
+  var email = em  ? em.value.trim()  : '';
+  var pass  = pw  ? pw.value         : '';
+  if(!name||!email){
+    if(err){err.textContent='Ism va email kiritilishi shart';err.classList.remove('hidden');}
+    return;
+  }
+  var fields={name:name,email:email};
+  if(pass){
+    if(pass.length<6){if(err){err.textContent='Parol kamida 6 belgi';err.classList.remove('hidden');}return;}
+    fields.password=btoa(pass);
+  }
+  var r=BOS.updateProfile(fields);
+  if(r.ok){
+    if(suc){suc.textContent='Profil saqlandi';suc.classList.remove('hidden');}
+    initProfile();
+    setTimeout(function(){if(suc)suc.classList.add('hidden');},2500);
+  } else {
+    if(err){err.textContent=r.msg;err.classList.remove('hidden');}
+  }
+};
+window.deleteAccount = function(){
+  var s=BOS.getSession();
+  if(!s)return;
+  if(!confirm("Haqiqatan ham akkauntni o&#39;chirmoqchimisiz?"))return;
+  var users=JSON.parse(localStorage.getItem('bos_users')||'[]');
+  users=users.filter(function(u){return u.id!==s.id;});
+  localStorage.setItem('bos_users',JSON.stringify(users));
+  BOS.clearSession();
+  navigate('home');
+};
+window.selectPlan = function(plan){
+  BOS.updateProfile({plan:plan});
+  initProfile();
+};
+
+function initPricing(){
+  if(_pricingInited) return; _pricingInited=true;
+  window.addEventListener('scroll',function(){document.getElementById('nav').classList.toggle('stuck',scrollY>30);},{passive:true});
+var _obs=new IntersectionObserver(function(e){e.forEach(function(x){if(x.isIntersecting)x.target.classList.add('in');});},{threshold:.08});
+document.querySelectorAll('.reveal').forEach(function(el){_obs.observe(el);});
+setTimeout(function(){document.querySelectorAll('.reveal').forEach(function(el){if(el.getBoundingClientRect().top<innerHeight)el.classList.add('in');});},60);
+
+var yearly=false,prices=[[15,12],[30,24],[50,40]];
+function toggleBilling(){
+  yearly=!yearly;
+  var t=document.getElementById('toggle');
+  t.classList.toggle('active',yearly);
+  document.getElementById('lbl-m').className='toggle-lbl '+(yearly?'off':'on');
+  document.getElementById('lbl-y').className='toggle-lbl '+(yearly?'on':'off');
+  document.querySelectorAll('.pv').forEach(function(v,i){v.textContent='$'+prices[i][yearly?1:0];});
+}
+function toggleFaq(el){
+  var item=el.parentElement;
+  document.querySelectorAll('.faq-item').forEach(function(i){if(i!==item)i.classList.remove('open');});
+  item.classList.toggle('open');
+}
+function choosePlan(plan){
+  document.querySelectorAll(".order-plan").forEach(function(pl){pl.classList.toggle("order-plan-active", pl.dataset.plan===plan);});
+  if(BOS.getSession()){BOS.updateProfile({plan:plan});navigate('profile');}
+  else navigate('register');
+}
+BOS.navAuth(document.getElementById('nav-auth'));
+BOS.trackVisit('Narxlar');
+
+/* ── BUYURTMA MODAL JS ── */
+(function(){
+  var modal   = document.getElementById('order-modal');
+  var closeBtn = document.getElementById('order-close');
+  var submitBtn = document.getElementById('order-submit');
+  if(!modal) return;
+
+  window.openOrderModal = function(){
+    modal.classList.add('open');
+    document.body.style.overflow = 'hidden';
+  };
+  window.closeOrderModal = function(){
+    modal.classList.remove('open');
+    document.body.style.overflow = '';
+    var suc = document.getElementById('order-success');
+    var err = document.getElementById('order-error');
+    if(suc) suc.style.display = 'none';
+    if(err) err.style.display = 'none';
+  };
+  window.selectOrderPlan = function(el){
+    document.querySelectorAll('.order-plan').forEach(function(p){ p.classList.remove('order-plan-active'); });
+    el.classList.add('order-plan-active');
+  };
+
+  closeBtn.addEventListener('click', window.closeOrderModal);
+  modal.addEventListener('click', function(e){ if(e.target===modal) window.closeOrderModal(); });
+
+  submitBtn.addEventListener('click', function(){
+    var name  = (document.getElementById('order-name').value  || '').trim();
+    var phone = (document.getElementById('order-phone').value || '').trim();
+    var type  = (document.getElementById('order-type').value  || '').trim();
+    var plan  = (document.querySelector('.order-plan-active') || {}).dataset && document.querySelector('.order-plan-active').dataset.plan || 'business';
+    var errEl = document.getElementById('order-error');
+    var sucEl = document.getElementById('order-success');
+    errEl.style.display = 'none';
+
+    if(!name || !phone){
+      errEl.textContent   = 'Ism va telefon kiritilishi shart';
+      errEl.style.display = 'block';
+      return;
+    }
+
+    submitBtn.disabled     = true;
+    submitBtn.textContent  = 'Yuborilmoqda...';
+
+    /* LocalStorage ga saqlash */
+    var orders = JSON.parse(localStorage.getItem('bos_orders') || '[]');
+    orders.unshift({
+      id: Date.now(), time: new Date().toISOString(),
+      name: name, phone: phone, type: type, plan: plan, status: 'yangi'
+    });
+    localStorage.setItem('bos_orders', JSON.stringify(orders));
+
+    /* Serverga yuborish */
+    fetchSafe('/api/orders', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({name:name, phone:phone, type:type, plan:plan})
+    }).catch(function(){});
+
+    sucEl.style.display = 'block';
+    document.getElementById('order-name').value  = '';
+    document.getElementById('order-phone').value = '';
+    document.getElementById('order-type').value  = '';
+    submitBtn.textContent = 'Yuborildi ✓';
+
+    /* Admin panelga xabar */
+    var ev = new CustomEvent('bos:new-order', {detail:{name:name,phone:phone,plan:plan}});
+    window.dispatchEvent(ev);
+
+    setTimeout(window.closeOrderModal, 2000);
+    setTimeout(function(){
+      submitBtn.disabled    = false;
+      submitBtn.textContent = 'Buyurtma berish →';
+    }, 2200);
+  });
+
+  document.addEventListener('keydown', function(e){
+    if(e.key==='Escape') window.closeOrderModal && window.closeOrderModal();
+  });
+})();
+}
+function initAbout(){
+  if(_aboutInited) return; _aboutInited=true;
+  window.addEventListener('scroll',function(){document.getElementById('nav').classList.toggle('stuck',scrollY>30);},{passive:true});
+var _obs=new IntersectionObserver(function(e){e.forEach(function(x){if(x.isIntersecting)x.target.classList.add('in');});},{threshold:.08});
+document.querySelectorAll('.reveal').forEach(function(el){_obs.observe(el);});
+setTimeout(function(){document.querySelectorAll('.reveal').forEach(function(el){if(el.getBoundingClientRect().top<innerHeight)el.classList.add('in');});},60);
+
+BOS.navAuth(document.getElementById('nav-auth'));
+BOS.trackVisit('Haqimizda');
+}
+function initAdmin(){
+  (function(){if(!BOS.getSession()){navigate('login');return;}})();
+var visits=[],investments=[],orders=[];
+function loadAll(){
+  visits=JSON.parse(localStorage.getItem('bos_visits')||'[]');
+  investments=JSON.parse(localStorage.getItem('bos_investments')||'[]');
+  orders=JSON.parse(localStorage.getItem('bos_orders')||'[]');
+  updateStats();renderVisits();renderInvestments();renderOrders();renderCharts();
+}
+function updateStats(){
+  var today=new Date().toDateString();
+  var tv=visits.filter(function(v){return new Date(v.time).toDateString()===today;}).length;
+  document.getElementById('s-v').textContent=visits.length;
+  document.getElementById('s-td').textContent='Bugun: '+tv;
+  var ni=investments.filter(function(i){return i.status==='yangi';}).length;
+  document.getElementById('s-i').textContent=investments.length;
+  document.getElementById('s-ni').textContent='Yangi: '+ni;
+  var no=orders.filter(function(o){return o.status==='yangi';}).length;
+  if(document.getElementById('s-o')) document.getElementById('s-o').textContent=orders.length;
+  if(document.getElementById('s-no')) document.getElementById('s-no').textContent='Yangi: '+no;
+  var wa=investments.filter(function(i){return i.amount;});
+  var tot=wa.reduce(function(s,i){return s+(i.amount||0);},0);
+  document.getElementById('s-a').textContent=tot?'$'+tot.toLocaleString():'$0';
+  document.getElementById('s-avg').textContent="O'rtacha: $"+(wa.length?Math.round(tot/wa.length):0);
+  var pc={};visits.forEach(function(v){pc[v.page]=(pc[v.page]||0)+1;});
+  var tp=Object.entries(pc).sort(function(a,b){return b[1]-a[1];})[0];
+  if(tp){document.getElementById('s-tp').textContent=tp[0];document.getElementById('s-tc').textContent=tp[1]+' marta';}
+}
+function fmt(iso){
+  var d=new Date(iso),now=new Date(),diff=Math.floor((now-d)/1000);
+  if(diff<60)return diff+'s oldin';if(diff<3600)return Math.floor(diff/60)+'daq oldin';
+  if(diff<86400)return Math.floor(diff/3600)+'soat oldin';
+  return d.toLocaleDateString('uz-UZ')+' '+d.toLocaleTimeString('uz-UZ',{hour:'2-digit',minute:'2-digit'});
+}
+function renderVisits(){
+  var q=(document.getElementById('visit-search').value||'').toLowerCase();
+  var fl=visits.filter(function(v){return !q||v.page.toLowerCase().includes(q)||(v.ref&&v.ref.toLowerCase().includes(q));});
+  var tb=document.getElementById('v-tbody');
+  if(!fl.length){tb.innerHTML='<tr><td colspan="6" style="text-align:center;padding:32px;color:var(--muted)">Hali tashrif yo&#39;q</td></tr>';return;}
+  tb.innerHTML=fl.slice(0,100).map(function(v,i){
+    return '<tr><td class="text-muted text-sm">'+(i+1)+'</td>'+
+      '<td style="white-space:nowrap" class="text-sm">'+fmt(v.time)+'</td>'+
+      '<td><span class="badge badge-purple">'+v.page+'</span></td>'+
+      '<td class="text-sm text-muted" style="max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+v.ref+'</td>'+
+      '<td class="text-sm">'+v.lang+'</td>'+
+      '<td class="text-sm text-muted">'+v.screen+'</td></tr>';
+  }).join('');
+}
+function renderInvestments(){
+  var q=(document.getElementById('inv-search').value||'').toLowerCase();
+  var fl=investments.filter(function(i){return !q||i.name.toLowerCase().includes(q)||i.phone.includes(q);});
+  var tb=document.getElementById('i-tbody');
+  if(!fl.length){tb.innerHTML='<tr><td colspan="8" style="text-align:center;padding:32px;color:var(--muted)">Hali sarmoyachi yo&#39;q</td></tr>';return;}
+  tb.innerHTML=fl.map(function(inv,i){
+    var bc=inv.status==='yangi'?'badge-neon':inv.status==='korildi'?'badge-purple':'badge-gray';
+    var bt=inv.status==='yangi'?'Yangi':inv.status==='korildi'?"Ko&#39;rildi":'Tasdiqlandi';
+    return '<tr><td class="text-muted text-sm">'+(i+1)+'</td>'+
+      '<td class="text-sm" style="white-space:nowrap">'+fmt(inv.time)+'</td>'+
+      '<td class="fw-600">'+inv.name+'</td>'+
+      '<td><a href="tel:'+inv.phone+'" style="color:var(--neon);text-decoration:none;font-size:13px">'+inv.phone+'</a></td>'+
+      '<td class="fw-700">'+(inv.amount?'$'+inv.amount.toLocaleString():'—')+'</td>'+
+      '<td class="text-sm text-muted" style="max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+(inv.note||'—')+'</td>'+
+      '<td><span class="badge '+bc+'">'+bt+'</span></td>'+
+      '<td style="white-space:nowrap"><button class="action-btn" onclick="markInv('+inv.id+')">Ko&#39;rildi</button> <button class="action-btn del" onclick="deleteInv('+inv.id+')">✕</button></td></tr>';
+  }).join('');
+}
+function markInv(id){
+  var idx=investments.findIndex(function(i){return i.id==id;});
+  if(idx>=0){investments[idx].status='korildi';localStorage.setItem('bos_investments',JSON.stringify(investments));renderInvestments();updateStats();}
+}
+function deleteInv(id){
+  if(!confirm('O&#39;chirasizmi?'))return;
+  investments=investments.filter(function(i){return i.id!=id;});
+  localStorage.setItem('bos_investments',JSON.stringify(investments));renderInvestments();updateStats();
+}
+
+function renderOrders(){
+  var q=(document.getElementById('ord-search').value||'').toLowerCase();
+  var fl=orders.filter(function(o){return !q||o.name.toLowerCase().includes(q)||(o.phone&&o.phone.includes(q));});
+  var tb=document.getElementById('ord-tbody');
+  if(!tb) return;
+  if(!fl.length){tb.innerHTML='<tr><td colspan="8" style="text-align:center;padding:32px;color:var(--muted)">Hali buyurtma yo&#39;q</td></tr>';return;}
+  tb.innerHTML=fl.map(function(o,i){
+    var bc=o.status==='yangi'?'badge-neon':o.status==='korildi'?'badge-purple':'badge-gray';
+    var bt=o.status==='yangi'?'Yangi':o.status==='korildi'?"Ko&#39;rildi":'Bajarildi';
+    return '<tr>'+
+      '<td class="text-muted text-sm">'+(i+1)+'</td>'+
+      '<td class="text-sm" style="white-space:nowrap">'+fmt(o.time)+'</td>'+
+      '<td class="fw-600">'+o.name+'</td>'+
+      '<td><a href="tel:'+o.phone+'" style="color:var(--neon);text-decoration:none;font-size:13px">'+o.phone+'</a></td>'+
+      '<td class="text-sm text-muted">'+(o.type||'—')+'</td>'+
+      '<td><span class="badge badge-purple">'+(o.plan||'—')+'</span></td>'+
+      '<td><span class="badge '+bc+'">'+bt+'</span></td>'+
+      '<td style="white-space:nowrap">'+
+        '<button class="action-btn" onclick="markOrder('+o.id+')">Ko&#39;rildi</button> '+
+        '<button class="action-btn del" onclick="deleteOrder('+o.id+')">✕</button>'+
+      '</td></tr>';
+  }).join('');
+}
+function markOrder(id){
+  var idx=orders.findIndex(function(o){return o.id==id;});
+  if(idx>=0){orders[idx].status='korildi';localStorage.setItem('bos_orders',JSON.stringify(orders));renderOrders();updateStats();}
+}
+function deleteOrder(id){
+  if(!confirm("O&#39;chirasizmi?"))return;
+  orders=orders.filter(function(o){return o.id!=id;});
+  localStorage.setItem('bos_orders',JSON.stringify(orders));renderOrders();updateStats();
+}
+
+function renderCharts(){
+  var days=[];for(var i=6;i>=0;i--){var d=new Date();d.setDate(d.getDate()-i);days.push(d);}
+  var counts=days.map(function(d){return visits.filter(function(v){return new Date(v.time).toDateString()===d.toDateString();}).length;});
+  var maxC=Math.max.apply(null,counts)||1;
+  var dn=['Yak','Du','Se','Cho','Pay','Ju','Sha'];
+  document.getElementById('c-bars').innerHTML=counts.map(function(c,i){
+    return '<div class="chart-bar-col"><div class="text-xs text-muted">'+(c||'')+'</div>'+
+      '<div class="chart-bar" style="height:'+(Math.max(c/maxC*100,3))+'%;background:'+(i===6?'var(--neon)':'var(--purple)');+'"></div></div>';
+  }).join('');
+  document.getElementById('c-labels').innerHTML=counts.map(function(c,i){
+    return '<div style="flex:1;text-align:center;font-size:10px;color:var(--muted)">'+dn[days[i].getDay()]+'</div>';
+  }).join('');
+  document.getElementById('chart-tot').textContent='Jami '+visits.length+' tashrif';
+  var pc={};visits.forEach(function(v){pc[v.page]=(pc[v.page]||0)+1;});
+  var sorted=Object.entries(pc).sort(function(a,b){return b[1]-a[1];});
+  var tot=visits.length||1;
+  document.getElementById('pages-dist').innerHTML=sorted.length?sorted.map(function(p){
+    var pct=Math.round(p[1]/tot*100);
+    return '<div class="prog-row"><div class="flex-between text-sm"><span>'+p[0]+'</span><span class="text-muted">'+p[1]+' ('+pct+'%)</span></div>'+
+      '<div class="prog-bar"><div class="prog-fill" style="width:'+pct+'%"></div></div></div>';
+  }).join(''):'<p class="text-sm text-muted">Ma&#39;lumot yo&#39;q</p>';
+}
+function showTab(n){
+  ['visits','investments','stats','orders'].forEach(function(t){
+    document.getElementById('tab-'+t).style.display=t===n?'block':'none';
+    var el=document.getElementById('nav-'+t);
+    el.className='sb-item'+(t===n?' active':'');
+  });
+  document.getElementById('page-title').textContent={visits:'Tashriflar',investments:'Sarmoyachilar',stats:'Statistika',orders:'Buyurtmalar'}[n];
+}
+function clearData(){
+  if(!confirm('Tashriflarni o&#39;chirasizmi?'))return;
+  localStorage.removeItem('bos_visits');visits=[];renderVisits();updateStats();renderCharts();
+}
+function doLogout(){BOS.clearSession();navigate('home');}
+setInterval(function(){
+  var nv=JSON.parse(localStorage.getItem('bos_visits')||'[]');
+  var ni=JSON.parse(localStorage.getItem('bos_investments')||'[]');
+  var no=JSON.parse(localStorage.getItem('bos_orders')||'[]');
+  if(nv.length!==visits.length||ni.length!==investments.length||no.length!==orders.length){visits=nv;investments=ni;orders=no;updateStats();renderVisits();renderInvestments();renderOrders();renderCharts();}
+},5000);
+loadAll();
+}
+</script>
+<script>
+(function(){
+  var obs = new IntersectionObserver(function(entries){
+    entries.forEach(function(e){ if(e.isIntersecting) e.target.classList.add('in'); });
+  },{threshold:0.08});
+  function watchReveal(){
+    document.querySelectorAll('.page.active .reveal').forEach(function(el){ obs.observe(el); });
+  }
+  window.addEventListener('scroll',function(){
+    var nav=document.getElementById('main-nav');
+    if(nav) nav.classList.toggle('stuck',scrollY>30);
+  },{passive:true});
+  var hash = location.hash.replace('#','');
+  navigate(PAGES.includes(hash)?hash:'home');
+  setTimeout(watchReveal,200);
+
+  /* logo click */
+  var logo = document.getElementById('nav-logo');
+  if(logo){
+    logo.addEventListener('dblclick',function(e){
+      e.preventDefault();
+      window.openLoginModal && window.openLoginModal();
+    });
+  }
+
+  /* Home page JS */
+  /* ── Barcha page JS — DOM to'liq yuklanganidan keyin ── */
+(function(){
+
+/* LOGIN MODAL */
+var loginModal  = document.getElementById('login-modal');
+var loginClose  = document.getElementById('modal-close');
+var loginSubmit = document.getElementById('m-submit');
+var loginErr    = document.getElementById('m-error');
+
+function openLoginModal(){
+  if(!loginModal) return;
+  loginModal.classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeLoginModal(){
+  if(!loginModal) return;
+  loginModal.classList.remove('open');
+  document.body.style.overflow = '';
+  if(loginErr){ loginErr.style.display='none'; }
+  var em = document.getElementById('m-email');
+  var ps = document.getElementById('m-pass');
+  if(em) em.value = '';
+  if(ps) ps.value = '';
+}
+window.openLoginModal  = openLoginModal;
+window.closeLoginModal = closeLoginModal;
+
+if(loginClose)  loginClose.addEventListener('click', closeLoginModal);
+if(loginModal)  loginModal.addEventListener('click', function(e){ if(e.target===loginModal) closeLoginModal(); });
+
+if(loginSubmit) loginSubmit.addEventListener('click', function(){
+  var email = (document.getElementById('m-email').value || '').trim();
+  var pass  = document.getElementById('m-pass').value || '';
+  if(loginErr) loginErr.style.display = 'none';
+
+  if(!email || !pass){
+    loginErr.textContent = 'Email va parolni kiriting';
+    loginErr.style.display = 'block';
+    return;
+  }
+  loginSubmit.disabled     = true;
+  loginSubmit.textContent  = 'Yuklanmoqda...';
+
+  var DEMO = [
+    {email:'admin@gmail.com', pass:'admin123', name:'Admin', role:'owner'},
+    {email:'demo@biznes.uz',  pass:'demo123',  name:'Demo',  role:'admin'}
+  ];
+  var matched = DEMO.find(function(u){ return u.email===email && u.pass===pass; });
+  if(matched){
+    localStorage.setItem('bos_token', 'demo-'+Date.now());
+    localStorage.setItem('bos_user', JSON.stringify({id:1,name:matched.name,email:matched.email,role:matched.role}));
+    loginSubmit.textContent = 'Kirish ✓';
+    setTimeout(function(){ navigate('admin'); }, 400);
+    return;
+  }
+
+  fetchSafe('/api/auth/login',{method:'POST',headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({email:email,password:pass})})
+  .then(function(r){return r.json();})
+  .then(function(d){
+    if(d.success){
+      localStorage.setItem('bos_token', d.data.token);
+      navigate('admin');
+    } else {
+      loginErr.textContent   = d.message || "Email yoki parol noto'g'ri";
+      loginErr.style.display = 'block';
+      loginSubmit.disabled   = false;
+      loginSubmit.textContent = 'Kirish';
+    }
+  })
+  .catch(function(){
+    loginErr.textContent   = "Email yoki parol noto'g'ri";
+    loginErr.style.display = 'block';
+    loginSubmit.disabled   = false;
+    loginSubmit.textContent = 'Kirish';
+  });
+});
+
+var mpass = document.getElementById('m-pass');
+if(mpass) mpass.addEventListener('keydown', function(e){ if(e.key==='Enter' && loginSubmit) loginSubmit.click(); });
+
+/* SARMOYA MODAL */
+var invModal  = document.getElementById('invest-modal');
+var invBtn    = document.getElementById('invest-btn');
+var invClose  = document.getElementById('inv-close');
+var invSubmit = document.getElementById('inv-submit');
+
+function openInvest(){
+  if(!invModal) return;
+  invModal.classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeInvest(){
+  if(!invModal) return;
+  invModal.classList.remove('open');
+  document.body.style.overflow = '';
+  var err = document.getElementById('inv-error');
+  var suc = document.getElementById('inv-success');
+  if(err) err.style.display = 'none';
+  if(suc) suc.style.display = 'none';
+}
+
+if(invBtn)   invBtn.addEventListener('click', openInvest);
+if(invClose) invClose.addEventListener('click', closeInvest);
+if(invModal) invModal.addEventListener('click', function(e){ if(e.target===invModal) closeInvest(); });
+
+document.addEventListener('keydown', function(e){ if(e.key==='Escape'){ closeLoginModal(); closeInvest(); } });
+
+if(invSubmit) invSubmit.addEventListener('click', function(){
+  var name   = (document.getElementById('inv-name').value   || '').trim();
+  var phone  = (document.getElementById('inv-phone').value  || '').trim();
+  var amount = (document.getElementById('inv-amount').value || '').trim();
+  var note   = (document.getElementById('inv-note').value   || '').trim();
+  var errEl  = document.getElementById('inv-error');
+  var sucEl  = document.getElementById('inv-success');
+
+  if(errEl) errEl.style.display = 'none';
+  if(sucEl) sucEl.style.display = 'none';
+
+  if(!name || !phone){
+    if(errEl){ errEl.textContent='Ism va telefon kiritilishi shart'; errEl.style.display='block'; }
+    return;
+  }
+
+  var list = JSON.parse(localStorage.getItem('bos_investments') || '[]');
+  list.unshift({ id:Date.now(), time:new Date().toISOString(),
+    name:name, phone:phone, amount:amount?parseFloat(amount):null, note:note, status:'yangi' });
+  localStorage.setItem('bos_investments', JSON.stringify(list));
+
+  fetchSafe('/api/investments',{method:'POST',headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({name:name,phone:phone,amount:amount,note:note})}).catch(function(){});
+
+  if(sucEl){ sucEl.textContent="Ma'lumotlaringiz yuborildi! Tez orada bog'lanamiz."; sucEl.style.display='block'; }
+  ['inv-name','inv-phone','inv-amount','inv-note'].forEach(function(id){
+    var el = document.getElementById(id);
+    if(el) el.value = '';
+  });
+  setTimeout(closeInvest, 2500);
+});
+
+/* LOGO DOUBLE-CLICK → ADMIN LOGIN */
+var navLogo = document.getElementById('nav-logo');
+if(navLogo){
+  navLogo.addEventListener('dblclick', function(e){ e.preventDefault(); openLoginModal(); });
+  navLogo.addEventListener('click', function(){
+    var self = this;
+    self.style.transition = 'color .12s';
+    self.style.color = 'var(--neon)';
+    setTimeout(function(){ self.style.color=''; }, 180);
+  });
+}
+
+/* NAV SCROLL */
+var mainNav = document.getElementById('main-nav');
+window.addEventListener('scroll', function(){
+  if(mainNav) mainNav.classList.toggle('stuck', scrollY > 30);
+}, {passive:true});
+
+/* TASHRIF TRACKER */
+(function(){
+  var pages = {'':'Bosh sahifa','#features':'Imkoniyatlar','#pricing':'Narxlar','#steps':'Qanday ishlaydi','#start':'CTA'};
+  function save(){
+    var v = JSON.parse(localStorage.getItem('bos_visits')||'[]');
+    v.unshift({id:Date.now(),time:new Date().toISOString(),
+      page:pages[location.hash]||location.hash||'Bosh sahifa',
+      lang:navigator.language||'nomalum',ref:document.referrer||"To'g'ridan",
+      screen:screen.width+'x'+screen.height});
+    if(v.length>300) v=v.slice(0,300);
+    localStorage.setItem('bos_visits',JSON.stringify(v));
+  }
+  save();
+  window.addEventListener('hashchange', save);
+})();
+
+/* NAV AUTH */
+BOS.navAuth(document.getElementById('nav-auth'));
+
+/* REVEAL */
+var obs = new IntersectionObserver(function(e){
+  e.forEach(function(x){ if(x.isIntersecting) x.target.classList.add('in'); });
+},{threshold:0.08});
+document.querySelectorAll('.reveal').forEach(function(el){ obs.observe(el); });
+setTimeout(function(){
+  document.querySelectorAll('.reveal').forEach(function(el){
+    if(el.getBoundingClientRect().top < innerHeight) el.classList.add('in');
+  });
+},60);
+
+BOS.trackVisit('Bosh sahifa');
+
+})(); /* IIFE end */
+
+/* ── BUYURTMA MODAL JS ── */
+(function(){
+  var modal   = document.getElementById('order-modal');
+  var closeBtn = document.getElementById('order-close');
+  var submitBtn = document.getElementById('order-submit');
+  if(!modal) return;
+
+  window.openOrderModal = function(){
+    modal.classList.add('open');
+    document.body.style.overflow = 'hidden';
+  };
+  window.closeOrderModal = function(){
+    modal.classList.remove('open');
+    document.body.style.overflow = '';
+    var suc = document.getElementById('order-success');
+    var err = document.getElementById('order-error');
+    if(suc) suc.style.display = 'none';
+    if(err) err.style.display = 'none';
+  };
+  window.selectOrderPlan = function(el){
+    document.querySelectorAll('.order-plan').forEach(function(p){ p.classList.remove('order-plan-active'); });
+    el.classList.add('order-plan-active');
+  };
+
+  closeBtn.addEventListener('click', window.closeOrderModal);
+  modal.addEventListener('click', function(e){ if(e.target===modal) window.closeOrderModal(); });
+
+  submitBtn.addEventListener('click', function(){
+    var name  = (document.getElementById('order-name').value  || '').trim();
+    var phone = (document.getElementById('order-phone').value || '').trim();
+    var type  = (document.getElementById('order-type').value  || '').trim();
+    var plan  = (document.querySelector('.order-plan-active') || {}).dataset && document.querySelector('.order-plan-active').dataset.plan || 'business';
+    var errEl = document.getElementById('order-error');
+    var sucEl = document.getElementById('order-success');
+    errEl.style.display = 'none';
+
+    if(!name || !phone){
+      errEl.textContent   = 'Ism va telefon kiritilishi shart';
+      errEl.style.display = 'block';
+      return;
+    }
+
+    submitBtn.disabled     = true;
+    submitBtn.textContent  = 'Yuborilmoqda...';
+
+    /* LocalStorage ga saqlash */
+    var orders = JSON.parse(localStorage.getItem('bos_orders') || '[]');
+    orders.unshift({
+      id: Date.now(), time: new Date().toISOString(),
+      name: name, phone: phone, type: type, plan: plan, status: 'yangi'
+    });
+    localStorage.setItem('bos_orders', JSON.stringify(orders));
+
+    /* Serverga yuborish */
+    fetchSafe('/api/orders', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({name:name, phone:phone, type:type, plan:plan})
+    }).catch(function(){});
+
+    sucEl.style.display = 'block';
+    document.getElementById('order-name').value  = '';
+    document.getElementById('order-phone').value = '';
+    document.getElementById('order-type').value  = '';
+    submitBtn.textContent = 'Yuborildi ✓';
+
+    /* Admin panelga xabar */
+    var ev = new CustomEvent('bos:new-order', {detail:{name:name,phone:phone,plan:plan}});
+    window.dispatchEvent(ev);
+
+    setTimeout(window.closeOrderModal, 2000);
+    setTimeout(function(){
+      submitBtn.disabled    = false;
+      submitBtn.textContent = 'Buyurtma berish →';
+    }, 2200);
+  });
+
+  document.addEventListener('keydown', function(e){
+    if(e.key==='Escape') window.closeOrderModal && window.closeOrderModal();
+  });
+})();
+})();
+</script>
+</body>
+</html>

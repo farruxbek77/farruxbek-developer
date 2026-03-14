@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DevFlow Ultra | Farruxbek</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;700&display=swap');
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background: #0b0f1a; color: #f8fafc; }
+        .glass { background: rgba(30, 41, 59, 0.4); backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.05); }
+        .sidebar-active { background: linear-gradient(90deg, rgba(59, 130, 246, 0.2) 0%, transparent 100%); color: #60a5fa; border-left: 4px solid #3b82f6; }
+        .page { display: none; }
+        .page.active { display: block; animation: slideUp 0.4s ease-out; }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        /* Mobile Menu */
+        #mobile-menu.open { transform: translateX(0); }
+    </style>
+</head>
+<body class="h-screen flex overflow-hidden">
+
+    <div id="loginPage" class="fixed inset-0 z-[200] bg-[#0b0f1a] flex items-center justify-center p-4">
+        <div class="glass p-8 md:p-12 rounded-[3rem] w-full max-w-md text-center shadow-2xl border-t border-blue-500/30">
+            <div class="w-20 h-20 bg-gradient-to-tr from-blue-600 to-purple-600 rounded-3xl flex items-center justify-center mx-auto mb-6 rotate-12 shadow-blue-500/20 shadow-2xl">
+                <i class="fas fa-cubes text-white text-3xl -rotate-12"></i>
+            </div>
+            <h1 class="text-3xl font-black mb-2">DevFlow <span class="text-blue-500">Ultra</span></h1>
+            <p class="text-gray-400 mb-8 text-sm">Xush kelibsiz, Farruxbek!</p>
+            <input type="password" id="passInput" placeholder="Parolni kiriting (1234)" class="w-full p-4 rounded-2xl bg-slate-900/50 border border-white/10 mb-4 focus:border-blue-500 outline-none text-center tracking-[1em]">
+            <button onclick="checkAuth()" class="w-full bg-blue-600 hover:bg-blue-700 py-4 rounded-2xl font-bold shadow-lg shadow-blue-500/30 transition-all">Tizimga kirish</button>
+        </div>
+    </div>
+
+    <aside id="sidebar" class="w-72 glass m-4 rounded-[2.5rem] hidden lg:flex flex-col p-6 overflow-y-auto">
+        <div class="flex items-center space-x-3 mb-10 px-2">
+            <div class="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center shadow-lg"><i class="fas fa-bolt text-white"></i></div>
+            <span class="text-xl font-bold">DevFlow <small class="text-[10px] bg-blue-500/20 text-blue-400 px-2 py-1 rounded-full">PRO</small></span>
+        </div>
+        
+        <nav class="flex-1 space-y-2 text-sm font-semibold">
+            <button onclick="showSection('dashboard')" class="nav-item w-full flex items-center space-x-4 p-4 rounded-xl text-gray-400 hover:text-white transition sidebar-active" id="btn-dashboard"><i class="fas fa-home w-5"></i> <span>Dashboard</span></button>
+            <button onclick="showSection('tasks')" class="nav-item w-full flex items-center space-x-4 p-4 rounded-xl text-gray-400 hover:text-white transition" id="btn-tasks"><i class="fas fa-tasks w-5"></i> <span>Vazifalar</span></button>
+            <button onclick="showSection('finance')" class="nav-item w-full flex items-center space-x-4 p-4 rounded-xl text-gray-400 hover:text-white transition" id="btn-finance"><i class="fas fa-wallet w-5"></i> <span>Moliya</span></button>
+            <button onclick="showSection('notes')" class="nav-item w-full flex items-center space-x-4 p-4 rounded-xl text-gray-400 hover:text-white transition" id="btn-notes"><i class="fas fa-sticky-note w-5"></i> <span>Eslatmalar</span></button>
+            <div class="pt-4 pb-2 px-4 text-[10px] text-gray-500 uppercase tracking-widest">Boshqaruv</div>
+            <button onclick="showSection('settings')" class="nav-item w-full flex items-center space-x-4 p-4 rounded-xl text-gray-400 hover:text-white transition" id="btn-settings"><i class="fas fa-cog w-5"></i> <span>Sozlamalar</span></button>
+        </nav>
+
+        <div class="mt-auto p-4 glass rounded-2xl border-blue-500/20">
+            <div class="flex items-center space-x-3">
+                <img src="https://ui-avatars.com/api/?name=Farrux+Bek&background=0D8ABC&color=fff" class="w-10 h-10 rounded-full border-2 border-blue-500">
+                <div class="overflow-hidden">
+                    <p class="text-xs font-bold truncate">Farruxbek</p>
+                    <p class="text-[10px] text-gray-500">Developer</p>
+                </div>
+                <button onclick="location.reload()" class="text-gray-500 hover:text-red-500"><i class="fas fa-power-off"></i></button>
+            </div>
+        </div>
+    </aside>
+
+    <div id="mobile-menu" class="fixed inset-0 bg-slate-950 z-[150] transition-transform -translate-x-full lg:hidden flex flex-col p-8">
+        <button onclick="toggleMobileMenu()" class="absolute top-6 right-6 text-2xl text-gray-400"><i class="fas fa-times"></i></button>
+        <div class="mb-12"><h1 class="text-2xl font-bold">DevFlow</h1></div>
+        <nav class="space-y-6 text-xl">
+            <a href="#" onclick="showSection('dashboard'); toggleMobileMenu()" class="block">Dashboard</a>
+            <a href="#" onclick="showSection('tasks'); toggleMobileMenu()" class="block">Vazifalar</a>
+            <a href="#" onclick="showSection('finance'); toggleMobileMenu()" class="block">Moliya</a>
+            <a href="#" onclick="showSection('notes'); toggleMobileMenu()" class="block">Eslatmalar</a>
+        </nav>
+    </div>
+
+    <main class="flex-1 h-full overflow-y-auto p-4 md:p-8 relative">
+        
+        <header class="flex lg:hidden justify-between items-center mb-6">
+            <button onclick="toggleMobileMenu()" class="text-2xl"><i class="fas fa-bars"></i></button>
+            <h1 class="text-xl font-bold">DevFlow</h1>
+            <div class="w-10 h-10 bg-blue-600 rounded-full"></div>
+        </header>
+
+        <section id="dashboard" class="page active">
+            <div class="flex flex-col md:flex-row justify-between md:items-center gap-4 mb-8">
+                <div>
+                    <h2 class="text-3xl font-extrabold">Xayrli kun!</h2>
+                    <p class="text-gray-400">Bugungi loyihalar ko'rinishi</p>
+                </div>
+                <button onclick="openModal()" class="bg-blue-600 px-8 py-3 rounded-2xl font-bold shadow-xl shadow-blue-600/20 hover:scale-105 transition">+ Yangi Loyiha</button>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+                <div class="glass p-5 rounded-[2rem]">
+                    <div class="w-10 h-10 bg-blue-500/20 text-blue-500 rounded-xl flex items-center justify-center mb-4"><i class="fas fa-briefcase"></i></div>
+                    <p class="text-gray-400 text-xs uppercase">Jami</p>
+                    <h3 id="count-total" class="text-2xl font-bold">0</h3>
+                </div>
+                <div class="glass p-5 rounded-[2rem]">
+                    <div class="w-10 h-10 bg-yellow-500/20 text-yellow-500 rounded-xl flex items-center justify-center mb-4"><i class="fas fa-clock"></i></div>
+                    <p class="text-gray-400 text-xs uppercase">Faol</p>
+                    <h3 id="count-active" class="text-2xl font-bold">0</h3>
+                </div>
+                <div class="glass p-5 rounded-[2rem]">
+                    <div class="w-10 h-10 bg-green-500/20 text-green-500 rounded-xl flex items-center justify-center mb-4"><i class="fas fa-check-circle"></i></div>
+                    <p class="text-gray-400 text-xs uppercase">Budjet</p>
+                    <h3 id="count-revenue" class="text-2xl font-bold">$0</h3>
+                </div>
+                <div class="glass p-5 rounded-[2rem]">
+                    <div class="w-10 h-10 bg-purple-500/20 text-purple-500 rounded-xl flex items-center justify-center mb-4"><i class="fas fa-users"></i></div>
+                    <p class="text-gray-400 text-xs uppercase">Mijozlar</p>
+                    <h3 id="count-clients" class="text-2xl font-bold">0</h3>
+                </div>
+            </div>
+
+            <div class="glass rounded-[2.5rem] overflow-hidden">
+                <div class="p-6 border-b border-white/5 flex justify-between items-center">
+                    <h3 class="font-bold">Oxirgi loyihalar</h3>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse">
+                        <thead class="bg-white/5 text-gray-500 text-[10px] uppercase tracking-widest">
+                            <tr>
+                                <th class="p-6 font-semibold">Mijoz</th>
+                                <th class="p-6 font-semibold">Loyiha nomi</th>
+                                <th class="p-6 font-semibold">Budjet</th>
+                                <th class="p-6 font-semibold">Status</th>
+                                <th class="p-6 font-semibold">Amal</th>
+                            </tr>
+                        </thead>
+                        <tbody id="dash-project-list" class="divide-y divide-white/5 text-sm"></tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <section id="tasks" class="page">
+            <h2 class="text-3xl font-bold mb-6">Task Manager</h2>
+            <div class="flex gap-4 mb-6">
+                <input type="text" id="taskInput" placeholder="Yangi vazifa yozing..." class="flex-1 bg-slate-900 p-4 rounded-2xl border border-white/10 outline-none">
+                <button onclick="addTask()" class="bg-blue-600 px-6 rounded-2xl font-bold"><i class="fas fa-plus"></i></button>
+            </div>
+            <div id="taskList" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+        </section>
+
+        <section id="finance" class="page">
+            <h2 class="text-3xl font-bold mb-8 text-green-400">Moliyaviy Hisobot</h2>
+            <div class="glass p-8 rounded-[2.5rem] mb-8 bg-gradient-to-br from-green-600/10 to-transparent">
+                <p class="text-gray-400 mb-2">Umumiy Balans</p>
+                <h1 id="totalBalans" class="text-6xl font-black">$0</h1>
+            </div>
+            <div class="glass rounded-[2rem] p-6">
+                <h3 class="mb-4 font-bold">To'lovlar tarixi</h3>
+                <div id="financeList" class="space-y-4"></div>
+            </div>
+        </section>
+
+        <section id="notes" class="page">
+            <h2 class="text-3xl font-bold mb-6">Quick Notes</h2>
+            <textarea id="notesArea" class="w-full h-96 glass p-8 rounded-[2.5rem] outline-none focus:border-blue-500 transition border border-white/5" placeholder="G'oyalaringizni shu yerga yozing..."></textarea>
+            <button onclick="saveNotes()" class="mt-4 bg-purple-600 px-8 py-3 rounded-xl font-bold">Saqlash</button>
+        </section>
+
+        <section id="settings" class="page">
+            <h2 class="text-3xl font-bold mb-8">Sozlamalar</h2>
+            <div class="glass p-8 rounded-[2.5rem] max-w-xl space-y-6">
+                <div class="flex items-center justify-between">
+                    <div><p class="font-bold">Dark Mode</p><p class="text-xs text-gray-500">Doimiy yoqilgan</p></div>
+                    <div class="w-12 h-6 bg-blue-600 rounded-full relative"><div class="absolute right-1 top-1 w-4 h-4 bg-white rounded-full"></div></div>
+                </div>
+                <div class="flex items-center justify-between">
+                    <div><p class="font-bold">Email xabarnomalar</p><p class="text-xs text-gray-500">Haftalik hisobot</p></div>
+                    <input type="checkbox" checked class="w-6 h-6 accent-blue-600">
+                </div>
+                <hr class="border-white/5">
+                <button class="w-full bg-red-500/10 text-red-500 py-3 rounded-xl font-bold hover:bg-red-500 hover:text-white transition">Keshni tozalash</button>
+            </div>
+        </section>
+
+    </main>
+
+    <div id="modal" class="hidden fixed inset-0 bg-black/90 backdrop-blur-md z-[250] flex items-center justify-center p-4">
+        <div class="glass p-8 rounded-[2.5rem] w-full max-w-md scale-in shadow-2xl">
+            <h3 class="text-2xl font-bold mb-6">Yangi Loyiha</h3>
+            <div class="space-y-4">
+                <input type="text" id="mName" placeholder="Mijoz ismi" class="w-full p-4 rounded-2xl bg-slate-900 outline-none border border-white/10 focus:border-blue-500">
+                <input type="text" id="lName" placeholder="Loyiha nomi" class="w-full p-4 rounded-2xl bg-slate-900 outline-none border border-white/10 focus:border-blue-500">
+                <input type="number" id="bAmount" placeholder="Budjet ($)" class="w-full p-4 rounded-2xl bg-slate-900 outline-none border border-white/10 focus:border-blue-500">
+                <div class="flex gap-4 pt-4">
+                    <button onclick="closeModal()" class="flex-1 py-3 text-gray-400 font-bold">Bekor qilish</button>
+                    <button onclick="saveNewProject()" class="flex-1 bg-blue-600 py-3 rounded-2xl font-bold shadow-lg">Saqlash</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let appData = JSON.parse(localStorage.getItem('devflow_v2')) || { projects: [], tasks: [], notes: '' };
+
+        // AUTH
+        function checkAuth() {
+            if(document.getElementById('passInput').value === '1234') {
+                document.getElementById('loginPage').classList.add('hidden');
+                init();
+            } else { alert('Xato parol!'); }
+        }
+
+        // NAVIGATION
+        function showSection(id) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+            
+            document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('sidebar-active'));
+            document.getElementById('btn-' + id).classList.add('sidebar-active');
+            
+            if(id === 'dashboard') renderDashboard();
+            if(id === 'tasks') renderTasks();
+            if(id === 'finance') renderFinance();
+            if(id === 'notes') document.getElementById('notesArea').value = appData.notes;
+        }
+
+        function toggleMobileMenu() { document.getElementById('mobile-menu').classList.toggle('-translate-x-full'); }
+
+        // CORE LOGIC
+        function openModal() { document.getElementById('modal').classList.remove('hidden'); }
+        function closeModal() { document.getElementById('modal').classList.add('hidden'); }
+
+        function saveNewProject() {
+            const m = document.getElementById('mName').value;
+            const l = document.getElementById('lName').value;
+            const b = document.getElementById('bAmount').value;
+            if(m && l) {
+                appData.projects.unshift({ id: Date.now(), client: m, title: l, budget: b || 0, status: 'Active' });
+                syncData();
+                closeModal();
+                renderDashboard();
+            }
+        }
+
+        function renderDashboard() {
+            const list = document.getElementById('dash-project-list');
+            list.innerHTML = '';
+            let totalB = 0;
+            
+            appData.projects.forEach(p => {
+                totalB += Number(p.budget);
+                list.innerHTML += `
+                    <tr class="hover:bg-white/5 transition group">
+                        <td class="p-6 flex items-center space-x-3">
+                            <div class="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center text-[10px] font-bold">${p.client[0]}</div>
+                            <span class="font-bold">${p.client}</span>
+                        </td>
+                        <td class="p-6 text-gray-400">${p.title}</td>
+                        <td class="p-6 font-mono text-green-400">$${p.budget}</td>
+                        <td class="p-6"><span class="bg-blue-500/10 text-blue-500 px-3 py-1 rounded-full text-[10px] font-bold">Active</span></td>
+                        <td class="p-6">
+                            <button onclick="delProj(${p.id})" class="text-gray-600 hover:text-red-500 transition"><i class="fas fa-trash"></i></button>
+                        </td>
+                    </tr>
+                `;
+            });
+
+            document.getElementById('count-total').innerText = appData.projects.length;
+            document.getElementById('count-active').innerText = appData.projects.length;
+            document.getElementById('count-revenue').innerText = '$' + totalB.toLocaleString();
+            document.getElementById('count-clients').innerText = [...new Set(appData.projects.map(p => p.client))].length;
+        }
+
+        function delProj(id) {
+            appData.projects = appData.projects.filter(p => p.id !== id);
+            syncData();
+            renderDashboard();
+        }
+
+        // TASK LOGIC
+        function addTask() {
+            const txt = document.getElementById('taskInput').value;
+            if(txt) {
+                appData.tasks.unshift({ id: Date.now(), text: txt, done: false });
+                syncData();
+                renderTasks();
+                document.getElementById('taskInput').value = '';
+            }
+        }
+
+        function renderTasks() {
+            const list = document.getElementById('taskList');
+            list.innerHTML = '';
+            appData.tasks.forEach(t => {
+                list.innerHTML += `
+                    <div class="glass p-5 rounded-2xl flex items-center justify-between group">
+                        <span class="text-sm font-semibold">${t.text}</span>
+                        <button onclick="delTask(${t.id})" class="text-gray-500 hover:text-red-500 transition"><i class="fas fa-check-circle"></i></button>
+                    </div>
+                `;
+            });
+        }
+
+        function delTask(id) {
+            appData.tasks = appData.tasks.filter(t => t.id !== id);
+            syncData();
+            renderTasks();
+        }
+
+        // FINANCE
+        function renderFinance() {
+            const total = appData.projects.reduce((s, p) => s + Number(p.budget), 0);
+            document.getElementById('totalBalans').innerText = '$' + total.toLocaleString();
+            const flist = document.getElementById('financeList');
+            flist.innerHTML = '';
+            appData.projects.forEach(p => {
+                flist.innerHTML += `
+                    <div class="flex justify-between items-center p-4 bg-white/5 rounded-xl">
+                        <div><p class="font-bold">${p.title}</p><p class="text-[10px] text-gray-500">${p.client}</p></div>
+                        <div class="text-green-500 font-bold">+$${p.budget}</div>
+                    </div>
+                `;
+            });
+        }
+
+        // NOTES
+        function saveNotes() {
+            appData.notes = document.getElementById('notesArea').value;
+            syncData();
+            alert('Saqlandi!');
+        }
+
+        function syncData() {
+            localStorage.setItem('devflow_v2', JSON.stringify(appData));
+        }
+
+        function init() {
+            renderDashboard();
+        }
+    </script>
+</body>
+</html>

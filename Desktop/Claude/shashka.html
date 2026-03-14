@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="uz">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manga Shashka O'yini</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Courier New', Courier, monospace;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            padding: 30px;
+            max-width: 600px;
+            width: 100%;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 28px;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+
+        .board {
+            display: grid;
+            grid-template-columns: repeat(8, 1fr);
+            gap: 0;
+            margin-bottom: 25px;
+            border: 3px solid #333;
+            background: #fff;
+        }
+
+        .square {
+            aspect-ratio: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 24px;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: 1px solid #ddd;
+            position: relative;
+        }
+
+        .square.white {
+            background: #f5f5f5;
+        }
+
+        .square.black {
+            background: #333;
+        }
+
+        .square.playable {
+            background: #ffd700;
+        }
+
+        .square:hover {
+            opacity: 0.8;
+        }
+
+        .piece {
+            cursor: move;
+            transition: transform 0.1s;
+        }
+
+        .piece:hover {
+            transform: scale(1.15);
+        }
+
+        .player-red {
+            color: #ff4444;
+            font-weight: bold;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+        }
+
+        .player-blue {
+            color: #4444ff;
+            font-weight: bold;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+        }
+
+        .info {
+            background: #f9f9f9;
+            border-left: 4px solid #667eea;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-radius: 5px;
+        }
+
+        .info-title {
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .info-content {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .controls {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        button {
+            flex: 1;
+            padding: 12px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+
+        button:hover {
+            background: #764ba2;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .stat-box {
+            background: #f0f0f0;
+            padding: 12px;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 3px;
+        }
+
+        .stat-value {
+            font-size: 18px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .game-status {
+            text-align: center;
+            font-size: 16px;
+            font-weight: bold;
+            padding: 15px;
+            background: #fffacd;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            display: none;
+        }
+
+        .game-status.show {
+            display: block;
+        }
+
+        .game-status.winner {
+            background: #90EE90;
+            color: #228B22;
+        }
+
+        .instructions {
+            background: #e8f4f8;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+            font-size: 13px;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .instructions h3 {
+            margin-bottom: 8px;
+            color: #667eea;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>🎮 Manga Shashka O'yini</h1>
+        <p class="subtitle">Uzbek Draughts / Checkers Game</p>
+
+        <div class="info">
+            <div class="info-title">Joriy holat:</div>
+            <div class="info-content" id="status">Oq qadami - O'yin boshlanadi!</div>
+        </div>
+
+        <div class="game-status" id="gameStatus"></div>
+
+        <div class="controls">
+            <button onclick="newGame()">Yangi O'yin</button>
+            <button onclick="undoMove()">Qaytarish</button>
+        </div>
+
+        <div class="board" id="board"></div>
+
+        <div class="stats">
+            <div class="stat-box">
+                <div class="stat-label">Oq qadamning donalari</div>
+                <div class="stat-value" id="whitePieces">12</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-label">Qora qadamning donalari</div>
+                <div class="stat-value" id="blackPieces">12</div>
+            </div>
+        </div>
+
+        <div class="instructions">
+            <h3>📋 Qoidalar:</h3>
+            <ul>
+                <li>Donalar diagonalda oldinga harakat qiladi</li>
+                <li>Dushman donasini "tuladi" (jump) bo'lsangiz, u olib tashlanadi</li>
+                <li>Damka (qo'rg'on) barchasiga diagonalda harakat qila oladi</li>
+                <li>Birinchi qator yoki oxirgi qatorga yetib borsangiz damka bo'lasiz</li>
+                <li>Tugri ko'rsating va oynang!</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        const BOARD_SIZE = 8;
+        const EMPTY = 0;
+        const WHITE = 1;
+        const BLACK = 2;
+        const WHITE_KING = 3;
+        const BLACK_KING = 4;
+
+        let board = [];
+        let selectedPiece = null;
+        let validMoves = [];
+        let moveHistory = [];
+        let currentPlayer = WHITE;
+
+        function initBoard() {
+            board = Array(BOARD_SIZE).fill(null).map(() => Array(BOARD_SIZE).fill(EMPTY));
+
+            // Place white pieces (bottom)
+            for (let r = 0; r < 3; r++) {
+                for (let c = 0; c < BOARD_SIZE; c++) {
+                    if ((r + c) % 2 === 1) {
+                        board[r][c] = WHITE;
+                    }
+                }
+            }
+
+            // Place black pieces (top)
+            for (let r = BOARD_SIZE - 3; r < BOARD_SIZE; r++) {
+                for (let c = 0; c < BOARD_SIZE; c++) {
+                    if ((r + c) % 2 === 1) {
+                        board[r][c] = BLACK;
+                    }
+                }
+            }
+
+            moveHistory = [];
+            currentPlayer = WHITE;
+            selectedPiece = null;
+            validMoves = [];
+        }
+
+        function renderBoard() {
+            const boardElement = document.getElementById('board');
+            boardElement.innerHTML = '';
+
+            for (let r = 0; r < BOARD_SIZE; r++) {
+                for (let c = 0; c < BOARD_SIZE; c++) {
+                    const square = document.createElement('div');
+                    square.className = 'square ' + ((r + c) % 2 === 0 ? 'white' : 'black');
+                    square.id = `square-${r}-${c}`;
+
+                    if (validMoves.some(m => m.r === r && m.c === c)) {
+                        square.classList.add('playable');
+                    }
+
+                    const piece = board[r][c];
+                    if (piece !== EMPTY) {
+                        const pieceElement = document.createElement('div');
+                        pieceElement.className = 'piece ' + (piece === WHITE || piece === WHITE_KING ? 'player-red' : 'player-blue');
+
+                        if (piece === WHITE) {
+                            pieceElement.textContent = '●';
+                        } else if (piece === BLACK) {
+                            pieceElement.textContent = '●';
+                        } else if (piece === WHITE_KING) {
+                            pieceElement.textContent = '♔';
+                        } else if (piece === BLACK_KING) {
+                            pieceElement.textContent = '♔';
+                        }
+
+                        square.appendChild(pieceElement);
+                    }
+
+                    square.onclick = () => handleSquareClick(r, c);
+                    boardElement.appendChild(square);
+                }
+            }
+
+            updateStatus();
+            updatePieceCount();
+        }
+
+        function handleSquareClick(r, c) {
+            if (validMoves.length > 0) {
+                const move = validMoves.find(m => m.r === r && m.c === c);
+                if (move) {
+                    makeMove(selectedPiece, r, c, move);
+                    selectedPiece = null;
+                    validMoves = [];
+                    renderBoard();
+                    return;
+                }
+            }
+
+            const piece = board[r][c];
+            if (piece !== EMPTY) {
+                const piecePlayer = piece === WHITE || piece === WHITE_KING ? WHITE : BLACK;
+                if (piecePlayer === currentPlayer) {
+                    selectedPiece = { r, c };
+                    validMoves = getValidMoves(r, c);
+                    renderBoard();
+                }
+            }
+        }
+
+        function getValidMoves(r, c) {
+            const piece = board[r][c];
+            if (piece === EMPTY) return [];
+
+            const moves = [];
+            const directions = [
+                [-1, -1], [-1, 1], [1, -1], [1, 1]
+            ];
+
+            const isKing = piece === WHITE_KING || piece === BLACK_KING;
+            const isWhite = piece === WHITE || piece === WHITE_KING;
+
+            // Normal moves
+            for (const [dr, dc] of directions) {
+                if (!isKing && isWhite && dr > 0) continue;
+                if (!isKing && !isWhite && dr < 0) continue;
+
+                const nr = r + dr;
+                const nc = c + dc;
+
+                if (isValidPosition(nr, nc) && board[nr][nc] === EMPTY) {
+                    moves.push({ r: nr, c: nc, isJump: false });
+                }
+            }
+
+            // Jump moves
+            for (const [dr, dc] of directions) {
+                if (!isKing && isWhite && dr > 0) continue;
+                if (!isKing && !isWhite && dr < 0) continue;
+
+                const nr = r + 2 * dr;
+                const nc = c + 2 * dc;
+                const jr = r + dr;
+                const jc = c + dc;
+
+                if (isValidPosition(nr, nc) && board[nr][nc] === EMPTY) {
+                    const capturedPiece = board[jr][jc];
+                    const capturedPlayer = capturedPiece === WHITE || capturedPiece === WHITE_KING ? WHITE : BLACK;
+
+                    if (capturedPiece !== EMPTY && capturedPlayer !== (isWhite ? WHITE : BLACK)) {
+                        moves.push({ r: nr, c: nc, isJump: true, jr, jc });
+                    }
+                }
+            }
+
+            return moves;
+        }
+
+        function makeMove(from, toR, toC, moveInfo) {
+            moveHistory.push(JSON.parse(JSON.stringify(board)));
+
+            board[toR][toC] = board[from.r][from.c];
+            board[from.r][from.c] = EMPTY;
+
+            // Promote to king
+            if (board[toR][toC] === WHITE && toR === BOARD_SIZE - 1) {
+                board[toR][toC] = WHITE_KING;
+            } else if (board[toR][toC] === BLACK && toR === 0) {
+                board[toR][toC] = BLACK_KING;
+            }
+
+            // Remove captured piece
+            if (moveInfo.isJump) {
+                board[moveInfo.jr][moveInfo.jc] = EMPTY;
+            }
+
+            currentPlayer = currentPlayer === WHITE ? BLACK : WHITE;
+        }
+
+        function undoMove() {
+            if (moveHistory.length > 0) {
+                board = moveHistory.pop();
+                currentPlayer = currentPlayer === WHITE ? BLACK : WHITE;
+                selectedPiece = null;
+                validMoves = [];
+                renderBoard();
+            }
+        }
+
+        function newGame() {
+            initBoard();
+            renderBoard();
+        }
+
+        function isValidPosition(r, c) {
+            return r >= 0 && r < BOARD_SIZE && c >= 0 && c < BOARD_SIZE;
+        }
+
+        function updateStatus() {
+            const statusDiv = document.getElementById('status');
+            const playerName = currentPlayer === WHITE ? 'Oq qadami' : 'Qora qadami';
+            statusDiv.textContent = `${playerName} - O'yin davom etmoqda...`;
+
+            if (canMove()) {
+                return;
+            }
+
+            if (currentPlayer === WHITE) {
+                showGameEnd('Qora qadami YUTDI! 🎉');
+            } else {
+                showGameEnd('Oq qadami YUTDI! 🎉');
+            }
+        }
+
+        function canMove() {
+            for (let r = 0; r < BOARD_SIZE; r++) {
+                for (let c = 0; c < BOARD_SIZE; c++) {
+                    const piece = board[r][c];
+                    if (piece === EMPTY) continue;
+
+                    const piecePlayer = piece === WHITE || piece === WHITE_KING ? WHITE : BLACK;
+                    if (piecePlayer === currentPlayer) {
+                        const moves = getValidMoves(r, c);
+                        if (moves.length > 0) return true;
+                    }
+                }
+            }
+            return false;
+        }
+
+        function updatePieceCount() {
+            let white = 0, black = 0;
+            for (let r = 0; r < BOARD_SIZE; r++) {
+                for (let c = 0; c < BOARD_SIZE; c++) {
+                    const piece = board[r][c];
+                    if (piece === WHITE || piece === WHITE_KING) white++;
+                    if (piece === BLACK || piece === BLACK_KING) black++;
+                }
+            }
+            document.getElementById('whitePieces').textContent = white;
+            document.getElementById('blackPieces').textContent = black;
+        }
+
+        function showGameEnd(message) {
+            const gameStatus = document.getElementById('gameStatus');
+            gameStatus.textContent = message;
+            gameStatus.classList.add('show', 'winner');
+        }
+
+        // Initialize game on load
+        window.onload = () => {
+            newGame();
+        };
+    </script>
+</body>
+
+</html>

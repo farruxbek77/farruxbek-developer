@@ -1,0 +1,785 @@
+<!DOCTYPE html>
+<html lang="uz">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QR Code Generator</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f5f5f7;
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .icon {
+            width: 70px;
+            height: 70px;
+            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+            border-radius: 16px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        .icon svg {
+            width: 35px;
+            height: 35px;
+            fill: white;
+        }
+
+        h1 {
+            color: #6366f1;
+            font-size: 32px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .subtitle {
+            color: #6b7280;
+            font-size: 15px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            padding: 0;
+            overflow: hidden;
+        }
+
+        .tabs {
+            display: flex;
+            border-bottom: 1px solid #e5e7eb;
+            background: #fafafa;
+        }
+
+        .tab {
+            flex: 1;
+            padding: 16px 12px;
+            background: none;
+            border: none;
+            color: #9ca3af;
+            font-size: 14px;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+
+        .tab.active {
+            color: #6366f1;
+            border-bottom-color: #6366f1;
+            background: white;
+        }
+
+        .tab:hover {
+            color: #6366f1;
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        .section-title {
+            color: #111827;
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .input-group {
+            margin-bottom: 25px;
+        }
+
+        label {
+            display: block;
+            color: #374151;
+            font-weight: 600;
+            margin-bottom: 10px;
+            font-size: 14px;
+        }
+
+        input {
+            width: 100%;
+            padding: 14px 16px;
+            border: 1px solid #d1d5db;
+            border-radius: 10px;
+            font-size: 15px;
+            transition: all 0.2s;
+            background: white;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #6366f1;
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+        }
+
+        input::placeholder {
+            color: #9ca3af;
+        }
+
+        .hint {
+            color: #9ca3af;
+            font-size: 13px;
+            margin-top: 8px;
+        }
+
+        .clear-btn {
+            width: 100%;
+            padding: 12px;
+            background: #f9fafb;
+            border: 1px solid #e5e7eb;
+            border-radius: 10px;
+            color: #6b7280;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-bottom: 35px;
+        }
+
+        .clear-btn:hover {
+            background: #f3f4f6;
+            border-color: #d1d5db;
+        }
+
+        .qr-section {
+            text-align: center;
+        }
+
+        .qr-section h2 {
+            color: #111827;
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 25px;
+        }
+
+        #qrcode {
+            display: flex;
+            padding: 20px;
+            background: #f9fafb;
+            border-radius: 12px;
+            margin: 0 auto 20px;
+            width: 280px;
+            height: 280px;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        #qrcode img,
+        #qrcode canvas {
+            max-width: 240px !important;
+            max-height: 240px !important;
+            width: 240px !important;
+            height: 240px !important;
+            object-fit: contain;
+        }
+
+        .qr-placeholder {
+            color: #d1d5db;
+            font-size: 14px;
+        }
+
+        .qr-placeholder-icon {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 15px;
+            opacity: 0.3;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            margin-top: 25px;
+        }
+
+        .btn {
+            padding: 12px 28px;
+            border: none;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 8px 16px rgba(99, 102, 241, 0.3);
+        }
+
+        .btn-secondary {
+            background: white;
+            color: #6b7280;
+            border: 1px solid #e5e7eb;
+        }
+
+        .btn-secondary:hover {
+            background: #f9fafb;
+        }
+
+        .footer {
+            text-align: center;
+            color: #9ca3af;
+            font-size: 13px;
+            margin-top: 30px;
+        }
+
+        textarea {
+            width: 100%;
+            padding: 14px 16px;
+            border: 1px solid #d1d5db;
+            border-radius: 10px;
+            font-size: 15px;
+            font-family: inherit;
+            transition: all 0.2s;
+            background: white;
+            resize: vertical;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: #6366f1;
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+        }
+
+        .customize-section {
+            margin-bottom: 25px;
+        }
+
+        .upload-area {
+            border: 2px dashed #d1d5db;
+            border-radius: 10px;
+            padding: 40px 20px;
+            text-align: center;
+            background: #fafafa;
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+
+        .upload-area:hover {
+            border-color: #6366f1;
+            background: #f9fafb;
+        }
+
+        .upload-icon {
+            width: 48px;
+            height: 48px;
+            color: #9ca3af;
+            margin-bottom: 15px;
+        }
+
+        .upload-btn {
+            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+            color: white;
+            padding: 10px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            margin-bottom: 10px;
+        }
+
+        .upload-hint {
+            color: #9ca3af;
+            font-size: 13px;
+        }
+
+        .color-inputs {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .color-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .color-label {
+            font-size: 13px;
+            color: #6b7280;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+
+        .color-input-wrapper {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .color-input-wrapper input[type="color"] {
+            width: 50px;
+            height: 42px;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            cursor: pointer;
+            padding: 2px;
+        }
+
+        .color-input-wrapper input[type="text"] {
+            flex: 1;
+            padding: 10px 12px;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            font-size: 14px;
+            font-family: monospace;
+        }
+
+        .shape-select {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid #d1d5db;
+            border-radius: 10px;
+            font-size: 15px;
+            background: white;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .shape-select:focus {
+            outline: none;
+            border-color: #6366f1;
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+        }
+
+        .qr-data-section {
+            background: #f9fafb;
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 20px;
+            text-align: left;
+        }
+
+        .qr-data-label {
+            color: #9ca3af;
+            font-size: 12px;
+            margin-bottom: 8px;
+        }
+
+        .qr-data-value {
+            color: #4a5568;
+            font-family: monospace;
+            font-size: 13px;
+            word-break: break-all;
+        }
+
+        .contact-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 0;
+        }
+
+        .contact-grid .input-group {
+            margin-bottom: 0;
+        }
+
+        @media print {
+            body {
+                background: white;
+            }
+
+            .header,
+            .tabs,
+            .content>*:not(.qr-section),
+            .footer {
+                display: none !important;
+            }
+
+            .card {
+                box-shadow: none;
+            }
+
+            #qrcode {
+                background: white;
+                padding: 0;
+            }
+
+            #qrcode img {
+                width: 5cm !important;
+                height: 5cm !important;
+            }
+        }
+    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+</head>
+
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="icon">
+                <svg viewBox="0 0 24 24">
+                    <path
+                        d="M3 11h8V3H3v8zm2-6h4v4H5V5zm-2 8h8v8H3v-8zm2 2v4h4v-4H5zm8-12v8h8V3h-8zm2 2h4v4h-4V5zm4 8h-2v2h2v-2zm-2 2h-2v2h2v-2zm2 2h-2v2h2v-2zm0-4h2v2h-2v-2zm0 4h2v2h-2v-2zm2-6v2h2v-2h-2z" />
+                </svg>
+            </div>
+            <h1>QR Code Generator</h1>
+            <p class="subtitle">Generate QR codes for URLs, text, and contact information</p>
+        </div>
+
+        <div class="card">
+            <div class="tabs">
+                <button class="tab active" data-tab="url">
+                    <span>🔗</span> URL
+                </button>
+                <button class="tab" data-tab="text">
+                    <span>📝</span> Text
+                </button>
+                <button class="tab" data-tab="contact">
+                    <span>👤</span> Contact
+                </button>
+                <button class="tab" data-tab="customize">
+                    <span>⚙️</span> Customize
+                </button>
+            </div>
+
+            <div class="content">
+                <div class="section-title" id="sectionTitle">Enter URL</div>
+
+                <!-- URL Tab Content -->
+                <div class="tab-content" id="urlContent">
+                    <div class="input-group">
+                        <label for="qrInput">Website URL</label>
+                        <input type="url" id="qrInput" placeholder="example.com or https://example.com">
+                        <p class="hint">Enter a website URL. If you don't include http://, we'll add https://
+                            automatically.</p>
+                    </div>
+                </div>
+
+                <!-- Text Tab Content -->
+                <div class="tab-content" id="textContent" style="display: none;">
+                    <div class="input-group">
+                        <label for="textInput">Text Content</label>
+                        <textarea id="textInput" placeholder="Enter any text to generate QR code..."
+                            rows="6"></textarea>
+                    </div>
+                </div>
+
+                <!-- Contact Tab Content -->
+                <div class="tab-content" id="contactContent" style="display: none;">
+                    <div class="contact-grid">
+                        <div class="input-group">
+                            <label for="firstName">First Name</label>
+                            <input type="text" id="firstName" placeholder="John">
+                        </div>
+                        <div class="input-group">
+                            <label for="lastName">Last Name</label>
+                            <input type="text" id="lastName" placeholder="Doe">
+                        </div>
+                    </div>
+                    <div class="input-group">
+                        <label for="phoneNumber">Phone Number</label>
+                        <input type="tel" id="phoneNumber" placeholder="+1 (555) 123-4567">
+                    </div>
+                    <div class="input-group">
+                        <label for="emailAddress">Email Address</label>
+                        <input type="email" id="emailAddress" placeholder="john.doe@example.com">
+                    </div>
+                    <div class="input-group">
+                        <label for="organization">Organization</label>
+                        <input type="text" id="organization" placeholder="Company Name">
+                    </div>
+                    <div class="input-group">
+                        <label for="website">Website</label>
+                        <input type="url" id="website" placeholder="https://example.com">
+                    </div>
+                </div>
+
+                <!-- Customize Tab Content -->
+                <div class="tab-content" id="customizeContent" style="display: none;">
+                    <div class="customize-section">
+                        <label>Center Image</label>
+                        <div class="upload-area" id="uploadArea">
+                            <svg class="upload-icon" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M9 16h6v-6h4l-7-7-7 7h4zm-4 2h14v2H5z" />
+                            </svg>
+                            <button type="button" class="upload-btn">Choose File</button>
+                            <input type="file" id="imageUpload" accept="image/*" style="display: none;">
+                            <p class="upload-hint">or drag and drop an image here</p>
+                        </div>
+                    </div>
+
+                    <div class="customize-section">
+                        <label>🎨 Color Scheme</label>
+                        <div class="color-inputs">
+                            <div class="color-group">
+                                <label class="color-label">Foreground</label>
+                                <div class="color-input-wrapper">
+                                    <input type="color" id="fgColor" value="#000000">
+                                    <input type="text" id="fgColorText" value="#000000">
+                                </div>
+                            </div>
+                            <div class="color-group">
+                                <label class="color-label">Background</label>
+                                <div class="color-input-wrapper">
+                                    <input type="color" id="bgColor" value="#ffffff">
+                                    <input type="text" id="bgColorText" value="#ffffff">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="customize-section">
+                        <label>QR Shape</label>
+                        <select id="qrShape" class="shape-select">
+                            <option value="square">Square</option>
+                            <option value="rounded">Rounded</option>
+                            <option value="dots">Dots</option>
+                        </select>
+                    </div>
+                </div>
+
+                <button class="clear-btn" onclick="clearFields()">Clear All Fields</button>
+
+                <div class="qr-section">
+                    <h2>Generated QR Code</h2>
+                    <div id="qrcode">
+                        <div class="qr-placeholder">
+                            <svg class="qr-placeholder-icon" viewBox="0 0 24 24" fill="currentColor">
+                                <path
+                                    d="M3 11h8V3H3v8zm2-6h4v4H5V5zm-2 8h8v8H3v-8zm2 2v4h4v-4H5zm8-12v8h8V3h-8zm2 2h4v4h-4V5zm4 8h-2v2h2v-2zm-2 2h-2v2h2v-2zm2 2h-2v2h2v-2zm0-4h2v2h-2v-2zm0 4h2v2h-2v-2zm2-6v2h2v-2h-2z" />
+                            </svg>
+                            <div>Fill in the form to generate your QR code</div>
+                        </div>
+                    </div>
+                    <div class="action-buttons" style="display: none;" id="actionButtons">
+                        <button type="button" class="btn btn-primary" onclick="downloadQR()">⬇️ Finalize Image</button>
+                        <button type="button" class="btn btn-secondary" onclick="copyData()">� Copy Data</button>
+                    </div>
+                    <div class="qr-data-section" id="qrDataSection" style="display: none;">
+                        <div class="qr-data-label">QR Code Data:</div>
+                        <div class="qr-data-value" id="qrDataValue">https://example.com</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer">
+            Generate QR codes instantly • No data stored • Free to use
+        </div>
+    </div>
+
+    <script>
+        let qrcode = null;
+
+        function generateQR(text) {
+            if (!text) return;
+
+            const qrcodeDiv = document.getElementById('qrcode');
+            const actionButtons = document.getElementById('actionButtons');
+
+            qrcodeDiv.innerHTML = '';
+
+            qrcode = new QRCode(qrcodeDiv, {
+                text: text,
+                width: 590,
+                height: 590,
+                colorDark: "#000000",
+                colorLight: "#ffffff",
+                correctLevel: QRCode.CorrectLevel.H
+            });
+
+            setTimeout(() => {
+                const img = qrcodeDiv.querySelector('img');
+                if (img) {
+                    img.style.width = '240px';
+                    img.style.height = '240px';
+                    img.style.borderRadius = '8px';
+                    actionButtons.style.display = 'flex';
+                    document.getElementById('qrDataSection').style.display = 'block';
+                }
+            }, 100);
+        }
+
+        function clearFields() {
+            document.getElementById('qrInput').value = '';
+            document.getElementById('qrcode').innerHTML = `
+                <div class="qr-placeholder">
+                    <svg class="qr-placeholder-icon" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M3 11h8V3H3v8zm2-6h4v4H5V5zm-2 8h8v8H3v-8zm2 2v4h4v-4H5zm8-12v8h8V3h-8zm2 2h4v4h-4V5zm4 8h-2v2h2v-2zm-2 2h-2v2h2v-2zm2 2h-2v2h2v-2zm0-4h2v2h-2v-2zm0 4h2v2h-2v-2zm2-6v2h2v-2h-2z"/>
+                    </svg>
+                    <div>Fill in the form to generate your QR code</div>
+                </div>
+            `;
+            document.getElementById('actionButtons').style.display = 'none';
+            document.getElementById('qrDataSection').style.display = 'none';
+        }
+
+        function downloadQR() {
+            const canvas = document.querySelector('#qrcode canvas');
+            if (canvas) {
+                const url = canvas.toDataURL('image/png');
+                const link = document.createElement('a');
+                link.download = 'qrcode.png';
+                link.href = url;
+                link.click();
+            }
+        }
+
+        // Tab switching
+        document.querySelectorAll('.tab').forEach(tab => {
+            tab.addEventListener('click', function () {
+                const tabName = this.getAttribute('data-tab');
+
+                // Update active tab
+                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                this.classList.add('active');
+
+                // Hide all tab contents
+                document.querySelectorAll('.tab-content').forEach(content => {
+                    content.style.display = 'none';
+                });
+
+                // Show selected tab content
+                const contentMap = {
+                    'url': 'urlContent',
+                    'text': 'textContent',
+                    'contact': 'contactContent',
+                    'customize': 'customizeContent'
+                };
+
+                const titleMap = {
+                    'url': 'Enter URL',
+                    'text': 'Enter Text',
+                    'contact': 'Enter Contact',
+                    'customize': 'Customize Appearance'
+                };
+
+                document.getElementById(contentMap[tabName]).style.display = 'block';
+                document.getElementById('sectionTitle').textContent = titleMap[tabName];
+            });
+        });
+
+        // Upload area click
+        document.getElementById('uploadArea').addEventListener('click', function () {
+            document.getElementById('imageUpload').click();
+        });
+
+        document.querySelector('.upload-btn').addEventListener('click', function (e) {
+            e.stopPropagation();
+            document.getElementById('imageUpload').click();
+        });
+
+        // Color inputs sync
+        document.getElementById('fgColor').addEventListener('input', function () {
+            document.getElementById('fgColorText').value = this.value;
+        });
+
+        document.getElementById('fgColorText').addEventListener('input', function () {
+            document.getElementById('fgColor').value = this.value;
+        });
+
+        document.getElementById('bgColor').addEventListener('input', function () {
+            document.getElementById('bgColorText').value = this.value;
+        });
+
+        document.getElementById('bgColorText').addEventListener('input', function () {
+            document.getElementById('bgColor').value = this.value;
+        });
+
+        // Copy data function
+        function copyData() {
+            const dataValue = document.getElementById('qrDataValue').textContent;
+            navigator.clipboard.writeText(dataValue).then(() => {
+                alert('QR code data copied to clipboard!');
+            });
+        }
+
+        // Auto-generate on input
+        document.getElementById('qrInput').addEventListener('input', function () {
+            if (this.value.trim()) {
+                let url = this.value.trim();
+                if (!url.startsWith('http://') && !url.startsWith('https://')) {
+                    url = 'https://' + url;
+                }
+                generateQR(url);
+                document.getElementById('qrDataValue').textContent = url;
+            } else {
+                clearFields();
+            }
+        });
+
+        document.getElementById('textInput').addEventListener('input', function () {
+            if (this.value.trim()) {
+                generateQR(this.value.trim());
+                document.getElementById('qrDataValue').textContent = this.value.trim();
+            } else {
+                clearFields();
+            }
+        });
+
+        // Contact form auto-generate
+        function updateContactQR() {
+            const firstName = document.getElementById('firstName').value.trim();
+            const lastName = document.getElementById('lastName').value.trim();
+            const phone = document.getElementById('phoneNumber').value.trim();
+            const email = document.getElementById('emailAddress').value.trim();
+            const org = document.getElementById('organization').value.trim();
+            const web = document.getElementById('website').value.trim();
+
+            if (firstName || lastName || phone || email || org || web) {
+                // Create vCard format
+                let vcard = 'BEGIN:VCARD\nVERSION:3.0\n';
+                if (firstName || lastName) {
+                    vcard += `FN:${firstName} ${lastName}\n`;
+                    vcard += `N:${lastName};${firstName};;;\n`;
+                }
+                if (phone) vcard += `TEL:${phone}\n`;
+                if (email) vcard += `EMAIL:${email}\n`;
+                if (org) vcard += `ORG:${org}\n`;
+                if (web) vcard += `URL:${web}\n`;
+                vcard += 'END:VCARD';
+
+                generateQR(vcard);
+                document.getElementById('qrDataValue').textContent = vcard;
+            } else {
+                clearFields();
+            }
+        }
+
+        document.getElementById('firstName').addEventListener('input', updateContactQR);
+        document.getElementById('lastName').addEventListener('input', updateContactQR);
+        document.getElementById('phoneNumber').addEventListener('input', updateContactQR);
+        document.getElementById('emailAddress').addEventListener('input', updateContactQR);
+        document.getElementById('organization').addEventListener('input', updateContactQR);
+        document.getElementById('website').addEventListener('input', updateContactQR);
+    </script>
+</body>
+
+</html>

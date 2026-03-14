@@ -1,0 +1,2091 @@
+<!DOCTYPE html>
+<html lang="uz">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fayoz Market Admin</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #f8f9fc;
+            color: #1e293b;
+            font-size: 14px
+        }
+
+        #LP {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #0c0a1a, #1a1640, #0c0a1a);
+            padding: 20px
+        }
+
+        .lbox {
+            background: rgba(255, 255, 255, .07);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, .13);
+            border-radius: 24px;
+            padding: 42px 38px;
+            width: 100%;
+            max-width: 410px
+        }
+
+        .lmark {
+            width: 62px;
+            height: 62px;
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            border-radius: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 12px;
+            font-size: 32px
+        }
+
+        .llogo {
+            text-align: center;
+            margin-bottom: 30px
+        }
+
+        .llogo h1 {
+            color: #fff;
+            font-size: 23px;
+            font-weight: 800
+        }
+
+        .llogo p {
+            color: rgba(255, 255, 255, .32);
+            font-size: 13px;
+            margin-top: 3px
+        }
+
+        .lg {
+            margin-bottom: 15px
+        }
+
+        .lg label {
+            display: block;
+            color: rgba(255, 255, 255, .42);
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            margin-bottom: 6px
+        }
+
+        .lg input {
+            width: 100%;
+            padding: 12px 14px;
+            background: rgba(255, 255, 255, .08);
+            border: 1.5px solid rgba(255, 255, 255, .1);
+            border-radius: 10px;
+            color: #fff;
+            font-size: 14px;
+            outline: none
+        }
+
+        .lbtn {
+            width: 100%;
+            padding: 13px;
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            color: #fff;
+            border: none;
+            border-radius: 10px;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            margin-top: 4px
+        }
+
+        .lhint {
+            text-align: center;
+            color: rgba(255, 255, 255, .2);
+            font-size: 11.5px;
+            margin-top: 14px
+        }
+
+        #AP {
+            display: none;
+            min-height: 100vh
+        }
+
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 240px;
+            height: 100vh;
+            background: #1e1b2e;
+            padding: 20px 0;
+            overflow-y: auto
+        }
+
+        .logo {
+            padding: 0 20px 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px
+        }
+
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px
+        }
+
+        .logo-text h3 {
+            color: #fff;
+            font-size: 15px;
+            font-weight: 700
+        }
+
+        .logo-text p {
+            color: rgba(255, 255, 255, .4);
+            font-size: 11px
+        }
+
+        .menu-section {
+            padding: 0 12px;
+            margin-bottom: 20px
+        }
+
+        .menu-title {
+            color: rgba(255, 255, 255, .3);
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+            padding: 8px 12px;
+            letter-spacing: 1px
+        }
+
+        .menu-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 12px;
+            color: rgba(255, 255, 255, .6);
+            border-radius: 8px;
+            cursor: pointer;
+            margin-bottom: 2px;
+            transition: .2s
+        }
+
+        .menu-item:hover {
+            background: rgba(255, 255, 255, .05);
+            color: #fff
+        }
+
+        .menu-item.active {
+            background: linear-gradient(135deg, rgba(99, 102, 241, .2), rgba(139, 92, 246, .1));
+            color: #a5b4fc
+        }
+
+        .menu-icon {
+            font-size: 18px;
+            width: 20px;
+            text-align: center
+        }
+
+        .main {
+            margin-left: 240px;
+            padding: 20px
+        }
+
+        .topbar {
+            background: #fff;
+            border-radius: 12px;
+            padding: 16px 20px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 16px
+        }
+
+        .search {
+            flex: 1;
+            max-width: 400px;
+            position: relative
+        }
+
+        .search input {
+            width: 100%;
+            padding: 10px 16px 10px 40px;
+            background: #f8f9fc;
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            font-size: 13px;
+            outline: none
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 16px;
+            color: #94a3b8
+        }
+
+        .topbar-right {
+            margin-left: auto;
+            display: flex;
+            align-items: center;
+            gap: 12px
+        }
+
+        .topbar-btn {
+            width: 40px;
+            height: 40px;
+            background: #f8f9fc;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            font-weight: 700;
+            cursor: pointer
+        }
+
+        .page-header {
+            margin-bottom: 24px
+        }
+
+        .page-title {
+            font-size: 24px;
+            font-weight: 800;
+            margin-bottom: 4px
+        }
+
+        .page-subtitle {
+            color: #64748b;
+            font-size: 13px
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+            margin-bottom: 24px
+        }
+
+        .stat-card {
+            background: #fff;
+            border-radius: 12px;
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            gap: 16px
+        }
+
+        .stat-icon {
+            width: 56px;
+            height: 56px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            flex-shrink: 0
+        }
+
+        .stat-icon.blue {
+            background: rgba(59, 130, 246, .1);
+            color: #3b82f6
+        }
+
+        .stat-icon.green {
+            background: rgba(16, 185, 129, .1);
+            color: #10b981
+        }
+
+        .stat-icon.purple {
+            background: rgba(139, 92, 246, .1);
+            color: #8b5cf6
+        }
+
+        .stat-icon.orange {
+            background: rgba(245, 158, 11, .1);
+            color: #f59e0b
+        }
+
+        .stat-value {
+            font-size: 28px;
+            font-weight: 800;
+            line-height: 1
+        }
+
+        .stat-label {
+            color: #64748b;
+            font-size: 13px;
+            margin-top: 4px
+        }
+
+        .stat-change {
+            font-size: 12px;
+            font-weight: 600;
+            margin-top: 4px;
+            color: #10b981
+        }
+
+        .card {
+            background: #fff;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px
+        }
+
+        .card-title {
+            font-size: 16px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 8px
+        }
+
+        .card-link {
+            color: #6366f1;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none
+        }
+
+        .chart-container {
+            height: 200px;
+            display: flex;
+            align-items: flex-end;
+            gap: 8px;
+            padding: 10px 0
+        }
+
+        .chart-bar {
+            flex: 1;
+            background: linear-gradient(180deg, #6366f1, #8b5cf6);
+            border-radius: 6px 6px 0 0;
+            position: relative;
+            cursor: pointer;
+            transition: .3s
+        }
+
+        .chart-bar:hover {
+            opacity: .8
+        }
+
+        .chart-label {
+            text-align: center;
+            font-size: 11px;
+            color: #94a3b8;
+            margin-top: 8px
+        }
+
+        .chart-value {
+            position: absolute;
+            top: -20px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 11px;
+            font-weight: 700;
+            color: #1e293b
+        }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px
+        }
+
+        .table {
+            width: 100%;
+            border-collapse: collapse
+        }
+
+        .table th {
+            text-align: left;
+            padding: 12px;
+            font-size: 11px;
+            font-weight: 700;
+            color: #64748b;
+            text-transform: uppercase;
+            border-bottom: 2px solid #f1f5f9
+        }
+
+        .table td {
+            padding: 12px;
+            border-bottom: 1px solid #f8f9fc;
+            font-size: 13px
+        }
+
+        .table tr:hover {
+            background: #f8f9fc
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600
+        }
+
+        .badge.green {
+            background: rgba(16, 185, 129, .1);
+            color: #10b981
+        }
+
+        .badge.blue {
+            background: rgba(59, 130, 246, .1);
+            color: #3b82f6
+        }
+
+        .badge.orange {
+            background: rgba(245, 158, 11, .1);
+            color: #f59e0b
+        }
+
+        .badge.red {
+            background: rgba(239, 68, 68, .1);
+            color: #ef4444
+        }
+
+        .product-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 0;
+            border-bottom: 1px solid #f8f9fc
+        }
+
+        .product-rank {
+            font-size: 16px;
+            font-weight: 800;
+            color: #cbd5e1;
+            width: 24px
+        }
+
+        .product-img {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            object-fit: cover;
+            background: #f1f5f9
+        }
+
+        .product-name {
+            flex: 1;
+            font-size: 13px;
+            font-weight: 600
+        }
+
+        .product-views {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            color: #6366f1;
+            font-weight: 700;
+            font-size: 13px
+        }
+
+        .filter-bar {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 20px;
+            flex-wrap: wrap
+        }
+
+        .filter-input {
+            flex: 1;
+            min-width: 200px;
+            padding: 10px 16px;
+            background: #fff;
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            font-size: 13px;
+            outline: none
+        }
+
+        .filter-select {
+            padding: 10px 16px;
+            background: #fff;
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            font-size: 13px;
+            outline: none;
+            cursor: pointer
+        }
+
+        .btn-primary {
+            padding: 10px 20px;
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            color: #fff;
+            border: none;
+            border-radius: 10px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px
+        }
+
+        .btn-primary:hover {
+            opacity: .9
+        }
+
+        .user-cell {
+            display: flex;
+            align-items: center;
+            gap: 12px
+        }
+
+        .user-avatar-sm {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            font-weight: 700;
+            font-size: 14px;
+            flex-shrink: 0
+        }
+
+        .user-info h4 {
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: 2px
+        }
+
+        .user-info p {
+            font-size: 12px;
+            color: #94a3b8
+        }
+
+        .action-btns {
+            display: flex;
+            gap: 6px
+        }
+
+        .action-btn {
+            width: 32px;
+            height: 32px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: .2s
+        }
+
+        .action-btn.view {
+            background: rgba(59, 130, 246, .1);
+            color: #3b82f6
+        }
+
+        .action-btn.edit {
+            background: rgba(245, 158, 11, .1);
+            color: #f59e0b
+        }
+
+        .action-btn.delete {
+            background: rgba(239, 68, 68, .1);
+            color: #ef4444
+        }
+
+        .action-btn:hover {
+            opacity: .8
+        }
+
+        .menu-toggle {
+            display: none;
+            font-size: 20px;
+            cursor: pointer
+        }
+
+        @media(max-width:768px) {
+            .menu-toggle {
+                display: block
+            }
+
+            .sidebar {
+                width: 70px
+            }
+
+            .sidebar .logo-text,
+            .sidebar .menu-title,
+            .sidebar .menu-item span {
+                display: none
+            }
+
+            .main {
+                margin-left: 70px
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr 1fr
+            }
+
+            .grid-2 {
+                grid-template-columns: 1fr
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div id="LP">
+        <div class="lbox">
+            <div class="llogo">
+                <div class="lmark">🛒</div>
+                <h1>Fayoz Market</h1>
+                <p>Boshqaruv tizimiga xush kelibsiz</p>
+            </div>
+            <div class="lg"><label>Email</label><input type="email" id="lemail" value="admin@admin.com"></div>
+            <div class="lg"><label>Parol</label><input type="password" id="lpass" value="admin123"></div>
+            <button class="lbtn" id="lbtn">🔒 Kirish</button>
+        </div>
+    </div>
+    <div id="AP"></div>
+    <script>
+        var TODAY = new Date().toISOString().split('T')[0];
+
+        function doLogin() {
+            var email = document.getElementById('lemail').value;
+            var pass = document.getElementById('lpass').value;
+            if (email === 'admin@admin.com' && pass === 'admin123') {
+                document.getElementById('LP').style.display = 'none';
+                document.getElementById('AP').style.display = 'block';
+                loadDashboard();
+            } else {
+                alert('Email yoki parol noto\'g\'ri!');
+            }
+        }
+
+        document.getElementById('lbtn').onclick = doLogin;
+
+        // Enter tugmasi bilan kirish
+        document.getElementById('lemail').addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') doLogin();
+        });
+        document.getElementById('lpass').addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') doLogin();
+        });
+        function loadDashboard() {
+            document.getElementById('AP').innerHTML = `
+<div class="sidebar">
+<div class="logo">
+<div class="logo-icon">🛒</div>
+<div class="logo-text">
+<h3>Fayoz Market</h3>
+<p>Admin Panel</p>
+</div>
+</div>
+<div class="menu-section">
+<div class="menu-title">Asosiy</div>
+<div class="menu-item active" onclick="loadDashboard()">
+<span class="menu-icon">📊</span>
+<span>Dashboard</span>
+</div>
+</div>
+<div class="menu-section">
+<div class="menu-title">Boshqaruv</div>
+<div class="menu-item" onclick="loadUsers()">
+<span class="menu-icon">👥</span>
+<span>Foydalanuvchilar</span>
+</div>
+<div class="menu-item" onclick="loadProducts()">
+<span class="menu-icon">📦</span>
+<span>Mahsulotlar</span>
+</div>
+<div class="menu-item" onclick="loadOrders()">
+<span class="menu-icon">🛒</span>
+<span>Buyurtmalar</span>
+</div>
+</div>
+<div class="menu-section">
+<div class="menu-title">Tahlil</div>
+<div class="menu-item" onclick="loadReports()">
+<span class="menu-icon">📈</span>
+<span>Hisobotlar</span>
+</div>
+</div>
+<div class="menu-section">
+<div class="menu-title">Tizim</div>
+<div class="menu-item" onclick="loadRoles()">
+<span class="menu-icon">🔐</span>
+<span>Rollar & Ruxsatlar</span>
+</div>
+<div class="menu-item" onclick="loadSettings()">
+<span class="menu-icon">⚙️</span>
+<span>Sozlamalar</span>
+</div>
+</div>
+</div>
+<div class="main">
+<div class="topbar">
+<span class="menu-toggle">☰</span>
+<div class="search">
+<span class="search-icon">🔍</span>
+<input type="text" placeholder="Mahsulot, foydalanuvchi qidirish...">
+</div>
+<div class="topbar-right">
+<button class="topbar-btn">⚙️</button>
+<div class="user-avatar">F</div>
+</div>
+</div>
+<div class="page-header">
+<h1 class="page-title">📊 Dashboard</h1>
+<p class="page-subtitle">Fayoz Market — ${TODAY}</p>
+</div>
+<div class="stats-grid">
+<div class="stat-card">
+<div class="stat-icon blue">👥</div>
+<div>
+<div class="stat-value">3</div>
+<div class="stat-label">Foydalanuvchilar</div>
+<div class="stat-change">↗ 3 faol</div>
+</div>
+</div>
+<div class="stat-card">
+<div class="stat-icon green">📦</div>
+<div>
+<div class="stat-value">30</div>
+<div class="stat-label">Mahsulotlar</div>
+<div class="stat-change">↗ Jami</div>
+</div>
+</div>
+<div class="stat-card">
+<div class="stat-icon purple">🛒</div>
+<div>
+<div class="stat-value">0</div>
+<div class="stat-label">Buyurtmalar</div>
+<div class="stat-change">Hammasi bajarildi</div>
+</div>
+</div>
+<div class="stat-card">
+<div class="stat-icon orange">💰</div>
+<div>
+<div class="stat-value">0K</div>
+<div class="stat-label">Daromad (so'm)</div>
+<div class="stat-change">↗ Yetkazilgan</div>
+</div>
+</div>
+</div>
+<div class="card">
+<div class="card-header">
+<h3 class="card-title">📊 Haftalik buyurtmalar</h3>
+<span style="background:#f1f5f9;padding:4px 12px;border-radius:20px;font-size:11px;color:#64748b;font-weight:600">So'nggi 7 kun</span>
+</div>
+<div class="chart-container">
+${[14, 22, 9, 28, 18, 35, 26].map((v, i) => {
+                var days = ['Du', 'Se', 'Ch', 'Pa', 'Ju', 'Sh', 'Ya'];
+                var h = Math.round(v / 35 * 100);
+                return `<div style="flex:1;display:flex;flex-direction:column;align-items:center">
+<div class="chart-value">${v}</div>
+<div class="chart-bar" style="height:${h}%"></div>
+<div class="chart-label">${days[i]}</div>
+</div>`;
+            }).join('')}
+</div>
+</div>
+<div class="grid-2">
+<div class="card">
+<div class="card-header">
+<h3 class="card-title">🛒 So'nggi buyurtmalar</h3>
+<a href="#" class="card-link">Barchasi →</a>
+</div>
+<table class="table">
+<thead>
+<tr>
+<th>#</th>
+<th>MIJOZ</th>
+<th>SUMMA</th>
+<th>HOLAT</th>
+</tr>
+</thead>
+<tbody>
+<tr><td colspan="4" style="text-align:center;padding:40px;color:#94a3b8">Buyurtmalar yo'q</td></tr>
+</tbody>
+</table>
+</div>
+<div class="card">
+<div class="card-header">
+<h3 class="card-title">🔥 Top mahsulotlar</h3>
+<a href="#" class="card-link">Barchasi →</a>
+</div>
+<div>
+${[
+                    { n: 'Non 500g', v: 320 },
+                    { n: 'Pomidor 1kg', v: 230 },
+                    { n: 'Qatiq 500g', v: 210 },
+                    { n: 'Sut 3.2% 1L', v: 180 },
+                    { n: 'Kolbasa 300g', v: 198 }
+                ].map((p, i) => `
+<div class="product-item">
+<div class="product-rank">${i + 1}</div>
+<div class="product-img">📦</div>
+<div class="product-name">${p.n}</div>
+<div class="product-views">👁 ${p.v}</div>
+</div>
+`).join('')}
+</div>
+</div>
+</div>
+</div>
+`;
+        }
+
+        function loadUsers() {
+            var users = [
+                { id: 1, name: 'Fayoz', email: 'fayoz@admin.com', phone: '+998 90 123 45 67', role: 'Super Admin', status: 'Faol', lastLogin: '2 daqiqa oldin' },
+                { id: 2, name: 'Jahon', email: 'jahon@admin.com', phone: '+998 91 234 56 78', role: 'Admin', status: 'Faol', lastLogin: '1 soat oldin' },
+                { id: 3, name: 'Ozbek', email: 'ozbek@admin.com', phone: '+998 93 345 67 89', role: 'Admin', status: 'Faol', lastLogin: '3 soat oldin' }
+            ];
+            document.getElementById('AP').innerHTML = `
+<div class="sidebar">
+<div class="logo">
+<div class="logo-icon">🛒</div>
+<div class="logo-text">
+<h3>Fayoz Market</h3>
+<p>Admin Panel</p>
+</div>
+</div>
+<div class="menu-section">
+<div class="menu-title">Asosiy</div>
+<div class="menu-item" onclick="loadDashboard()">
+<span class="menu-icon">📊</span>
+<span>Dashboard</span>
+</div>
+</div>
+<div class="menu-section">
+<div class="menu-title">Boshqaruv</div>
+<div class="menu-item active" onclick="loadUsers()">
+<span class="menu-icon">👥</span>
+<span>Foydalanuvchilar</span>
+</div>
+<div class="menu-item" onclick="loadProducts()">
+<span class="menu-icon">📦</span>
+<span>Mahsulotlar</span>
+</div>
+<div class="menu-item" onclick="loadOrders()">
+<span class="menu-icon">🛒</span>
+<span>Buyurtmalar</span>
+</div>
+</div>
+<div class="menu-section">
+<div class="menu-title">Tahlil</div>
+<div class="menu-item" onclick="loadReports()">
+<span class="menu-icon">📈</span>
+<span>Hisobotlar</span>
+</div>
+</div>
+<div class="menu-section">
+<div class="menu-title">Tizim</div>
+<div class="menu-item" onclick="loadRoles()">
+<span class="menu-icon">🔐</span>
+<span>Rollar & Ruxsatlar</span>
+</div>
+<div class="menu-item" onclick="loadSettings()">
+<span class="menu-icon">⚙️</span>
+<span>Sozlamalar</span>
+</div>
+</div>
+</div>
+<div class="main">
+<div class="topbar">
+<span class="menu-toggle">☰</span>
+<div class="search">
+<span class="search-icon">🔍</span>
+<input type="text" placeholder="Mahsulot, foydalanuvchi qidirish...">
+</div>
+<div class="topbar-right">
+<button class="topbar-btn">⚙️</button>
+<div class="user-avatar">F</div>
+</div>
+</div>
+<div class="page-header">
+<h1 class="page-title">👥 Foydalanuvchilar</h1>
+<p class="page-subtitle">Barcha foydalanuvchilarni boshqarish</p>
+</div>
+<div class="filter-bar">
+<input type="text" class="filter-input" placeholder="🔍 Qidirish...">
+<select class="filter-select">
+<option>Barcha rollar</option>
+<option>Super Admin</option>
+<option>Admin</option>
+<option>Moderator</option>
+<option>Foydalanuvchi</option>
+</select>
+<button class="btn-primary" style="margin-left:auto" onclick="showNewUserModal()">➕ Yangi qo'shish</button>
+</div>
+<div class="card">
+<table class="table">
+<thead>
+<tr>
+<th>#</th>
+<th>FOYDALANUVCHI</th>
+<th>TELEFON</th>
+<th>ROL</th>
+<th>HOLAT</th>
+<th>OXIRGI KIRISH</th>
+<th>AMALLAR</th>
+</tr>
+</thead>
+<tbody>
+${users.map(u => `
+<tr>
+<td>${u.id}</td>
+<td>
+<div class="user-cell">
+<div class="user-avatar-sm">${u.name[0]}</div>
+<div class="user-info">
+<h4>${u.name}</h4>
+<p>${u.email}</p>
+</div>
+</div>
+</td>
+<td>${u.phone}</td>
+<td><span class="badge ${u.role === 'Super Admin' ? 'purple' : 'blue'}">${u.role}</span></td>
+<td><span class="badge green">✓ ${u.status}</span></td>
+<td style="color:#64748b">${u.lastLogin}</td>
+<td>
+<div class="action-btns">
+<button class="action-btn view" title="Ko'rish" onclick="viewUser(${u.id})">👁</button>
+<button class="action-btn edit" title="Tahrirlash" onclick="editUser(${u.id})">✏️</button>
+<button class="action-btn delete" title="O'chirish" onclick="deleteUser(${u.id})">🗑️</button>
+</div>
+</td>
+</tr>
+`).join('')}
+</tbody>
+</table>
+</div>
+</div>
+`;
+        }
+
+        function loadProducts(searchQuery, categoryFilter, statusFilter) {
+            var products = [
+                { id: 1, name: 'Basmati guruch 5kg', img: '🌾', category: 'Oziq-ovqat', price: '85,000', stock: 50, views: 124 },
+                { id: 2, name: 'Makaron 900g', img: '🍝', category: 'Oziq-ovqat', price: '18,000', stock: 120, views: 96 },
+                { id: 3, name: 'Sut 3.2% 1L', img: '🥛', category: 'Sut mahsulotlari', price: '14,000', stock: 80, views: 180 },
+                { id: 4, name: 'Sariyog\' 72.5% 200g', img: '🧈', category: 'Sut mahsulotlari', price: '28,000', stock: 40, views: 112 },
+                { id: 5, name: 'Shakar 1kg', img: '🍬', category: 'Oziq-ovqat', price: '16,000', stock: 200, views: 200 },
+                { id: 6, name: 'Tuxum 10 dona', img: '🥚', category: 'Oziq-ovqat', price: '22,000', stock: 100, views: 156 },
+                { id: 7, name: 'Non 500g', img: '🍞', category: 'Non mahsulotlari', price: '8,000', stock: 160, views: 320 },
+                { id: 8, name: 'Asal 1kg', img: '🍯', category: 'Oziq-ovqat', price: '120,000', stock: 30, views: 97 },
+                { id: 9, name: 'Pomidor 1kg', img: '🍅', category: 'Meva-sabzavot', price: '12,000', stock: 200, views: 230 },
+                { id: 10, name: 'Olma 1kg', img: '🍎', category: 'Meva-sabzavot', price: '18,000', stock: 110, views: 161 },
+                { id: 11, name: 'Kartoshka 2kg', img: '🥔', category: 'Meva-sabzavot', price: '14,000', stock: 180, views: 190 },
+                { id: 12, name: 'Sabzi 1kg', img: '🥕', category: 'Meva-sabzavot', price: '8,000', stock: 95, views: 77 },
+                { id: 13, name: 'Tovuq go\'shti 1kg', img: '🍗', category: 'Go\'sht mahsulotlari', price: '45,000', stock: 65, views: 240 },
+                { id: 14, name: 'Qatiq 500g', img: '🥛', category: 'Sut mahsulotlari', price: '12,000', stock: 75, views: 210 },
+                { id: 15, name: 'Pishloq 200g', img: '🧀', category: 'Sut mahsulotlari', price: '45,000', stock: 45, views: 134 },
+                { id: 16, name: 'Un 2kg', img: '🌾', category: 'Oziq-ovqat', price: '24,000', stock: 160, views: 167 },
+                { id: 17, name: 'Bodring 1kg', img: '🥒', category: 'Meva-sabzavot', price: '9,000', stock: 175, views: 145 },
+                { id: 18, name: 'Kefir 1% 1L', img: '🥛', category: 'Sut mahsulotlari', price: '11,000', stock: 68, views: 88 },
+                { id: 19, name: 'Kolbasa \'Varionaya\' 500g', img: '🌭', category: 'Kolbasa', price: '48,000', stock: 40, views: 175 },
+                { id: 20, name: 'Smetana 20% 400g', img: '🥫', category: 'Sut mahsulotlari', price: '22,000', stock: 55, views: 99 },
+                { id: 21, name: 'Pomidor pasta 380g', img: '🍅', category: 'Konserva', price: '19,000', stock: 70, views: 88 },
+                { id: 22, name: 'Limon 1kg', img: '🍋', category: 'Meva-sabzavot', price: '22,000', stock: 90, views: 53 },
+                { id: 23, name: 'Qovoq 1kg', img: '🎃', category: 'Meva-sabzavot', price: '7,000', stock: 130, views: 55 },
+                { id: 24, name: 'Sosiska 400g', img: '🌭', category: 'Kolbasa', price: '38,000', stock: 50, views: 92 },
+                { id: 25, name: 'Bolalar ovqati 190g', img: '🍼', category: 'Bolalar', price: '22,000', stock: 35, views: 76 },
+                { id: 26, name: 'Tvorog 5% 200g', img: '🥫', category: 'Sut mahsulotlari', price: '18,000', stock: 58, views: 83 },
+                { id: 27, name: 'Doktorskaya kolbasa 500g', img: '🌭', category: 'Kolbasa', price: '35,000', stock: 55, views: 128 },
+                { id: 28, name: 'Mol go\'shti 1kg', img: '🥩', category: 'Go\'sht mahsulotlari', price: '80,000', stock: 40, views: 142 },
+                { id: 29, name: 'Sharbat "Meva" 2L', img: '🍹', category: 'Ichimliklar', price: '28,000', stock: 90, views: 110 },
+                { id: 30, name: 'Mineral suv 1.5L', img: '💧', category: 'Ichimliklar', price: '6,000', stock: 300, views: 285 }
+            ];
+
+            // Filter products
+            var filteredProducts = products.filter(function (p) {
+                var matchSearch = !searchQuery || p.name.toLowerCase().indexOf(searchQuery.toLowerCase()) !== -1;
+                var matchCategory = !categoryFilter || categoryFilter === 'Barcha kategoriyalar' || p.category === categoryFilter;
+                var matchStatus = !statusFilter || statusFilter === 'Barcha holatlar' || statusFilter === 'Faol';
+                return matchSearch && matchCategory && matchStatus;
+            });
+
+            var currentPage = window.productsPage || 1;
+            var perPage = 8;
+            var start = (currentPage - 1) * perPage;
+            var end = start + perPage;
+            var pageProducts = filteredProducts.slice(start, end);
+            var totalPages = Math.ceil(filteredProducts.length / perPage);
+
+            // Reset to page 1 if current page exceeds total pages
+            if (currentPage > totalPages && totalPages > 0) {
+                window.productsPage = 1;
+                currentPage = 1;
+                start = 0;
+                end = perPage;
+                pageProducts = filteredProducts.slice(start, end);
+            }
+
+            document.getElementById('AP').innerHTML = `
+<div class="sidebar">
+<div class="logo">
+<div class="logo-icon">🛒</div>
+<div class="logo-text">
+<h3>Fayoz Market</h3>
+<p>Admin Panel</p>
+</div>
+</div>
+<div class="menu-section">
+<div class="menu-title">Asosiy</div>
+<div class="menu-item" onclick="loadDashboard()">
+<span class="menu-icon">�</span>
+<span>Dashboard</span>
+</div>
+</div>
+<div class="menu-section">
+<div class="menu-title">Boshqaruv</div>
+<div class="menu-item" onclick="loadUsers()">
+<span class="menu-icon">�</span>
+<span>Foydalanuvchilar</span>
+</div>
+<div class="menu-item active" onclick="loadProducts()">
+<span class="menu-icon">📦</span>
+<span>Mahsulotlar</span>
+</div>
+<div class="menu-item" onclick="loadOrders()">
+<span class="menu-icon">�</span>
+<span>Buyurtmalar</span>
+</div>
+</div>
+<div class="menu-section">
+<div class="menu-title">Tahlil</div>
+<div class="menu-item" onclick="loadReports()">
+<span class="menu-icon">📈</span>
+<span>Hisobotlar</span>
+</div>
+</div>
+<div class="menu-section">
+<div class="menu-title">Tizim</div>
+<div class="menu-item" onclick="loadRoles()">
+<span class="menu-icon">�</span>
+<span>Rollar & Ruxsatlar</span>
+</div>
+<div class="menu-item" onclick="loadSettings()">
+<span class="menu-icon">⚙️</span>
+<span>Sozlamalar</span>
+</div>
+</div>
+</div>
+<div class="main">
+<div class="topbar">
+<span class="menu-toggle">☰</span>
+<div class="search">
+<span class="search-icon">🔍</span>
+<input type="text" placeholder="Mahsulot, foydalanuvchi qidirish...">
+</div>
+<div class="topbar-right">
+<button class="topbar-btn">⚙️</button>
+<div class="user-avatar">F</div>
+</div>
+</div>
+<div class="page-header">
+<h1 class="page-title">📦 Mahsulotlar</h1>
+<p class="page-subtitle">Jami 30 ta</p>
+</div>
+<div class="filter-bar">
+<input type="text" id="productSearch" class="filter-input" placeholder="🔍 Qidirish..." oninput="window.productsPage=1;loadProducts(this.value,document.getElementById('categoryFilter').value,document.getElementById('statusFilter').value)">
+<select id="categoryFilter" class="filter-select" onchange="window.productsPage=1;loadProducts(document.getElementById('productSearch').value,this.value,document.getElementById('statusFilter').value)">
+<option>Barcha kategoriyalar</option>
+<option>Oziq-ovqat</option>
+<option>Sut mahsulotlari</option>
+<option>Non mahsulotlari</option>
+<option>Meva-sabzavot</option>
+<option>Go'sht mahsulotlari</option>
+<option>Kolbasa</option>
+<option>Konserva</option>
+<option>Bolalar</option>
+<option>Ichimliklar</option>
+</select>
+<select id="statusFilter" class="filter-select" onchange="window.productsPage=1;loadProducts(document.getElementById('productSearch').value,document.getElementById('categoryFilter').value,this.value)">
+<option>Barcha holatlar</option>
+<option>Faol</option>
+<option>Tugagan</option>
+</select>
+<input type="text" class="filter-input" placeholder="${filteredProducts.length} natija" style="max-width:120px" readonly>
+<button class="btn-primary" style="margin-left:auto" onclick="showNewProductModal()">➕ Yangi qo'shish</button>
+</div>
+<div class="card">
+<table class="table">
+<thead>
+<tr>
+<th>#</th>
+<th>MAHSULOT</th>
+<th>KATEGORIYA</th>
+<th>NARX</th>
+<th>ZAXIRA</th>
+<th>HOLAT</th>
+<th>KO'RISH</th>
+<th>AMALLAR</th>
+</tr>
+</thead>
+<tbody>
+${pageProducts.map(p => `
+<tr>
+<td>${p.id}</td>
+<td>
+<div class="user-cell">
+<div class="product-img" style="width:40px;height:40px;border-radius:8px;background:#f1f5f9;display:flex;align-items:center;justify-content:center;font-size:24px">${p.img}</div>
+<div class="user-info">
+<h4>${p.name}</h4>
+</div>
+</div>
+</td>
+<td><span class="badge blue">${p.category}</span></td>
+<td style="font-weight:600">${p.price} so'm</td>
+<td><span class="badge ${p.stock > 100 ? 'green' : p.stock > 50 ? 'orange' : 'red'}">${p.stock}</span></td>
+<td><span class="badge green">✓ Faol</span></td>
+<td style="color:#64748b">👁 ${p.views}</td>
+<td>
+<div class="action-btns">
+<button class="action-btn edit" title="Tahrirlash" onclick="editProduct(${p.id})">✏️</button>
+<button class="action-btn delete" title="O'chirish" onclick="deleteProduct(${p.id})">🗑️</button>
+</div>
+</td>
+</tr>
+`).join('')}
+</tbody>
+</table>
+<div style="display:flex;align-items:center;justify-content:center;gap:8px;padding:20px">
+<button onclick="window.productsPage=Math.max(1,${currentPage}-1);loadProducts()" style="width:36px;height:36px;border:1px solid #e2e8f0;background:#fff;border-radius:8px;cursor:pointer;color:#64748b">←</button>
+${Array.from({ length: totalPages }, (_, i) => i + 1).map(p => `
+<button onclick="window.productsPage=${p};loadProducts()" style="width:36px;height:36px;border:1px solid #e2e8f0;background:${p === currentPage ? '#6366f1' : '#fff'};border-radius:8px;cursor:pointer;font-weight:600;color:${p === currentPage ? '#fff' : '#64748b'}">${p}</button>
+`).join('')}
+<button onclick="window.productsPage=Math.min(${totalPages},${currentPage}+1);loadProducts()" style="width:36px;height:36px;border:1px solid #e2e8f0;background:#fff;border-radius:8px;cursor:pointer;color:#64748b">→</button>
+</div>
+</div>
+</div>
+`;
+        }
+
+        function loadOrders() {
+            var orders = [];
+            var stats = {
+                yangi: 0,
+                jarayonda: 0,
+                yolda: 0,
+                yetkazildi: 0,
+                bekor: 0
+            };
+
+            document.getElementById('AP').innerHTML = `
+<div class="sidebar">
+<div class="logo">
+<div class="logo-icon">🛒</div>
+<div class="logo-text">
+<h3>Fayoz Market</h3>
+<p>Admin Panel</p>
+</div>
+</div>
+<div class="menu-section">
+<div class="menu-title">Asosiy</div>
+<div class="menu-item" onclick="loadDashboard()">
+<span class="menu-icon">📊</span>
+<span>Dashboard</span>
+</div>
+</div>
+<div class="menu-section">
+<div class="menu-title">Boshqaruv</div>
+<div class="menu-item" onclick="loadUsers()">
+<span class="menu-icon">👥</span>
+<span>Foydalanuvchilar</span>
+</div>
+<div class="menu-item" onclick="loadProducts()">
+<span class="menu-icon">📦</span>
+<span>Mahsulotlar</span>
+</div>
+<div class="menu-item active" onclick="loadOrders()">
+<span class="menu-icon">🛒</span>
+<span>Buyurtmalar</span>
+</div>
+</div>
+<div class="menu-section">
+<div class="menu-title">Tahlil</div>
+<div class="menu-item" onclick="loadReports()">
+<span class="menu-icon">📈</span>
+<span>Hisobotlar</span>
+</div>
+</div>
+<div class="menu-section">
+<div class="menu-title">Tizim</div>
+<div class="menu-item" onclick="loadRoles()">
+<span class="menu-icon">🔐</span>
+<span>Rollar & Ruxsatlar</span>
+</div>
+<div class="menu-item" onclick="loadSettings()">
+<span class="menu-icon">⚙️</span>
+<span>Sozlamalar</span>
+</div>
+</div>
+</div>
+<div class="main">
+<div class="topbar">
+<span class="menu-toggle">☰</span>
+<div class="search">
+<span class="search-icon">🔍</span>
+<input type="text" placeholder="Mahsulot, foydalanuvchi qidirish...">
+</div>
+<div class="topbar-right">
+<button class="topbar-btn">⚙️</button>
+<div class="user-avatar">F</div>
+</div>
+</div>
+<div class="page-header">
+<h1 class="page-title">🛒 Buyurtmalar</h1>
+<p class="page-subtitle">Jami 0 ta</p>
+</div>
+<div style="display:flex;gap:12px;margin-bottom:20px;flex-wrap:wrap">
+<button onclick="filterOrders('Yangi')" style="padding:8px 16px;background:#fff;border:1px solid #e2e8f0;border-radius:8px;cursor:pointer;font-size:13px;font-weight:600">Yangi <span style="color:#64748b">0</span></button>
+<button onclick="filterOrders('Jarayonda')" style="padding:8px 16px;background:#fff;border:1px solid #e2e8f0;border-radius:8px;cursor:pointer;font-size:13px;font-weight:600">Jarayonda <span style="color:#64748b">0</span></button>
+<button onclick="filterOrders('Yolda')" style="padding:8px 16px;background:#fff;border:1px solid #e2e8f0;border-radius:8px;cursor:pointer;font-size:13px;font-weight:600">Yolda <span style="color:#64748b">0</span></button>
+<button onclick="filterOrders('Yetkazildi')" style="padding:8px 16px;background:#fff;border:1px solid #e2e8f0;border-radius:8px;cursor:pointer;font-size:13px;font-weight:600">Yetkazildi <span style="color:#64748b">0</span></button>
+<button onclick="filterOrders('Bekor')" style="padding:8px 16px;background:#fff;border:1px solid #e2e8f0;border-radius:8px;cursor:pointer;font-size:13px;font-weight:600">Bekor <span style="color:#64748b">0</span></button>
+</div>
+<div class="filter-bar">
+<input type="text" class="filter-input" placeholder="Mijozlarni yoki raqam...">
+<input type="text" class="filter-input" placeholder="0 natija" style="max-width:120px" readonly>
+<button class="btn-primary" style="margin-left:auto" onclick="showNewOrderModal()">➕ Yangi buyurtma</button>
+</div>
+<div class="card">
+<table class="table">
+<thead>
+<tr>
+<th>#</th>
+<th>MIJOZ</th>
+<th>MAHSULOTLAR</th>
+<th>SUMMA</th>
+<th>HOLAT</th>
+<th>SANA</th>
+<th>AMALLAR</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td colspan="7" style="text-align:center;padding:80px 20px">
+<div style="font-size:64px;margin-bottom:16px">🛒</div>
+<div style="font-size:16px;font-weight:600;color:#1e293b;margin-bottom:8px">Topilmadi</div>
+<div style="font-size:13px;color:#94a3b8">Hozircha buyurtmalar yo'q</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+
+<div id="orderModal" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.5);z-index:9999;align-items:center;justify-content:center">
+<div style="background:#fff;border-radius:16px;padding:32px;width:90%;max-width:600px;max-height:90vh;overflow-y:auto">
+<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:24px">
+<h2 style="font-size:20px;font-weight:700">➕ Yangi buyurtma</h2>
+<button onclick="closeOrderModal()" style="width:32px;height:32px;border:none;background:#f1f5f9;border-radius:8px;cursor:pointer;font-size:18px">✕</button>
+</div>
+<div style="margin-bottom:20px">
+<label style="display:block;font-size:12px;font-weight:700;color:#64748b;margin-bottom:8px;text-transform:uppercase">Mijoz ismi</label>
+<input id="customerName" type="text" style="width:100%;padding:12px;border:1px solid #e2e8f0;border-radius:10px;font-size:14px;outline:none" placeholder="Ism kiriting...">
+</div>
+<div style="margin-bottom:20px">
+<label style="display:block;font-size:12px;font-weight:700;color:#64748b;margin-bottom:8px;text-transform:uppercase">Telefon raqami</label>
+<input id="customerPhone" type="text" style="width:100%;padding:12px;border:1px solid #e2e8f0;border-radius:10px;font-size:14px;outline:none" placeholder="+998 90 123 45 67">
+</div>
+<div style="margin-bottom:20px">
+<label style="display:block;font-size:12px;font-weight:700;color:#64748b;margin-bottom:8px;text-transform:uppercase">Manzil</label>
+<textarea id="customerAddress" style="width:100%;padding:12px;border:1px solid #e2e8f0;border-radius:10px;font-size:14px;outline:none;resize:vertical;min-height:80px" placeholder="Yetkazib berish manzili..."></textarea>
+</div>
+<div style="margin-bottom:20px">
+<label style="display:block;font-size:12px;font-weight:700;color:#64748b;margin-bottom:8px;text-transform:uppercase">Mahsulotlar</label>
+<div id="orderProducts" style="margin-bottom:12px"></div>
+<button onclick="addProductToOrder()" style="width:100%;padding:10px;background:#f8f9fc;border:1px dashed #cbd5e1;border-radius:10px;color:#64748b;font-size:13px;font-weight:600;cursor:pointer">+ Mahsulot qo'shish</button>
+</div>
+<div style="display:flex;gap:12px;margin-top:24px">
+<button onclick="closeOrderModal()" style="flex:1;padding:12px;background:#f1f5f9;border:none;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer;color:#64748b">Bekor qilish</button>
+<button onclick="saveOrder()" style="flex:1;padding:12px;background:linear-gradient(135deg,#6366f1,#8b5cf6);border:none;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer;color:#fff">Saqlash</button>
+</div>
+</div>
+</div>
+`;
+        }
+
+        function showNewOrderModal() {
+            document.getElementById('orderModal').style.display = 'flex';
+            document.getElementById('orderProducts').innerHTML = '';
+            addProductToOrder();
+        }
+
+        function closeOrderModal() {
+            document.getElementById('orderModal').style.display = 'none';
+            document.getElementById('customerName').value = '';
+            document.getElementById('customerPhone').value = '';
+            document.getElementById('customerAddress').value = '';
+        }
+
+        var productCounter = 0;
+        function addProductToOrder() {
+            productCounter++;
+            var html = `
+<div id="product${productCounter}" style="display:flex;gap:8px;margin-bottom:8px;align-items:center">
+<input type="text" placeholder="Mahsulot nomi" style="flex:2;padding:10px;border:1px solid #e2e8f0;border-radius:8px;font-size:13px;outline:none">
+<input type="number" placeholder="Soni" style="flex:1;padding:10px;border:1px solid #e2e8f0;border-radius:8px;font-size:13px;outline:none">
+<input type="text" placeholder="Narx" style="flex:1;padding:10px;border:1px solid #e2e8f0;border-radius:8px;font-size:13px;outline:none">
+<button onclick="document.getElementById('product${productCounter}').remove()" style="width:36px;height:36px;background:#fee;border:none;border-radius:8px;color:#ef4444;cursor:pointer;font-size:16px">🗑️</button>
+</div>`;
+            document.getElementById('orderProducts').insertAdjacentHTML('beforeend', html);
+        }
+
+        function saveOrder() {
+            var name = document.getElementById('customerName').value;
+            var phone = document.getElementById('customerPhone').value;
+            var address = document.getElementById('customerAddress').value;
+
+            if (!name || !phone || !address) {
+                alert('Iltimos, barcha maydonlarni to\'ldiring!');
+                return;
+            }
+
+            alert('Buyurtma muvaffaqiyatli saqlandi!\\n\\nMijoz: ' + name + '\\nTelefon: ' + phone + '\\nManzil: ' + address);
+            closeOrderModal();
+        }
+
+        function filterOrders(status) {
+            alert('Filter: ' + status);
+        }
+
+        function loadReports() {
+            var categories = [
+                { name: 'Sut mahsulotlari', value: 450, percent: 45 },
+                { name: 'Oziq-ovqat', value: 380, percent: 38 },
+                { name: 'Meva-sabzavot', value: 280, percent: 28 },
+                { name: 'Go\'sht mahsulotlari', value: 220, percent: 22 },
+                { name: 'Kolbasa', value: 180, percent: 18 },
+                { name: 'Ichimliklar', value: 150, percent: 15 },
+                { name: 'Konserva', value: 120, percent: 12 },
+                { name: 'Bolalar', value: 85, percent: 8.5 }
+            ];
+
+            var topProducts = [
+                { name: 'Non 500g', img: '🍞', sales: 320 },
+                { name: 'Mineral suv 1.5L', img: '💧', sales: 285 },
+                { name: 'Tovuq go\'shti 1kg', img: '🍗', sales: 240 },
+                { name: 'Pomidor 1kg', img: '🍅', sales: 230 },
+                { name: 'Qatiq 500g', img: '🥛', sales: 210 }
+            ];
+
+            var customers = [
+                { name: 'Yangi', count: 3, color: '#10b981' },
+                { name: 'Muntazam', count: 0, color: '#3b82f6' },
+                { name: 'Yo\'qol', count: 0, color: '#ef4444' }
+            ];
+
+            document.getElementById('AP').innerHTML = `
+<div class="sidebar">
+<div class="logo">
+<div class="logo-icon">🛒</div>
+<div class="logo-text">
+<h3>Fayoz Market</h3>
+<p>Admin Panel</p>
+</div>
+</div>
+<div class="menu-section">
+<div class="menu-title">Asosiy</div>
+<div class="menu-item" onclick="loadDashboard()">
+<span class="menu-icon">📊</span>
+<span>Dashboard</span>
+</div>
+</div>
+<div class="menu-section">
+<div class="menu-title">Boshqaruv</div>
+<div class="menu-item" onclick="loadUsers()">
+<span class="menu-icon">👥</span>
+<span>Foydalanuvchilar</span>
+</div>
+<div class="menu-item" onclick="loadProducts()">
+<span class="menu-icon">📦</span>
+<span>Mahsulotlar</span>
+</div>
+<div class="menu-item" onclick="loadOrders()">
+<span class="menu-icon">🛒</span>
+<span>Buyurtmalar</span>
+</div>
+</div>
+<div class="menu-section">
+<div class="menu-title">Tahlil</div>
+<div class="menu-item active" onclick="loadReports()">
+<span class="menu-icon">📈</span>
+<span>Hisobotlar</span>
+</div>
+</div>
+<div class="menu-section">
+<div class="menu-title">Tizim</div>
+<div class="menu-item" onclick="loadRoles()">
+<span class="menu-icon">🔐</span>
+<span>Rollar & Ruxsatlar</span>
+</div>
+<div class="menu-item" onclick="loadSettings()">
+<span class="menu-icon">⚙️</span>
+<span>Sozlamalar</span>
+</div>
+</div>
+</div>
+<div class="main">
+<div class="topbar">
+<span class="menu-toggle">☰</span>
+<div class="search">
+<span class="search-icon">🔍</span>
+<input type="text" placeholder="Mahsulot, foydalanuvchi qidirish...">
+</div>
+<div class="topbar-right">
+<button class="topbar-btn">⚙️</button>
+<div class="user-avatar">F</div>
+</div>
+</div>
+<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:24px">
+<div class="page-header" style="margin-bottom:0">
+<h1 class="page-title">📊 Hisobotlar</h1>
+<p class="page-subtitle">Savdo tahlili</p>
+</div>
+<div style="display:flex;gap:8px">
+<button style="padding:8px 16px;background:#fff;border:1px solid #e2e8f0;border-radius:8px;cursor:pointer;font-size:13px;font-weight:600">📄 Export</button>
+<button style="padding:8px 16px;background:#fff;border:1px solid #e2e8f0;border-radius:8px;cursor:pointer;font-size:13px;font-weight:600">🖨️ Print</button>
+<button style="padding:8px 16px;background:#fff;border:1px solid #e2e8f0;border-radius:8px;cursor:pointer;font-size:13px;font-weight:600">📊 Chop etish</button>
+</div>
+</div>
+<div class="stats-grid" style="margin-bottom:24px">
+<div class="stat-card">
+<div style="width:48px;height:48px;border-radius:12px;background:rgba(16,185,129,0.1);display:flex;align-items:center;justify-content:center;font-size:24px">💰</div>
+<div>
+<div style="font-size:11px;color:#64748b;margin-bottom:4px">Daromad (so'm)</div>
+<div style="font-size:24px;font-weight:800">0K</div>
+<div style="font-size:12px;color:#10b981;margin-top:4px">↗ 0% o'sish</div>
+</div>
+</div>
+<div class="stat-card">
+<div style="width:48px;height:48px;border-radius:12px;background:rgba(59,130,246,0.1);display:flex;align-items:center;justify-content:center;font-size:24px">🛒</div>
+<div>
+<div style="font-size:11px;color:#64748b;margin-bottom:4px">Jami buyurtmalar</div>
+<div style="font-size:24px;font-weight:800">0</div>
+<div style="font-size:12px;color:#10b981;margin-top:4px">Bajarildi</div>
+</div>
+</div>
+<div class="stat-card">
+<div style="width:48px;height:48px;border-radius:12px;background:rgba(16,185,129,0.1);display:flex;align-items:center;justify-content:center;font-size:24px">✅</div>
+<div>
+<div style="font-size:11px;color:#64748b;margin-bottom:4px">Yetkazildi</div>
+<div style="font-size:24px;font-weight:800">0</div>
+<div style="font-size:12px;color:#10b981;margin-top:4px">0% muvaffaqiyat</div>
+</div>
+</div>
+<div class="stat-card">
+<div style="width:48px;height:48px;border-radius:12px;background:rgba(239,68,68,0.1);display:flex;align-items:center;justify-content:center;font-size:24px">❌</div>
+<div>
+<div style="font-size:11px;color:#64748b;margin-bottom:4px">Bekor qilingan</div>
+<div style="font-size:24px;font-weight:800">0</div>
+<div style="font-size:12px;color:#ef4444;margin-top:4px">Yo'qotilgan</div>
+</div>
+</div>
+</div>
+<div class="grid-2">
+<div class="card">
+<div class="card-header">
+<h3 class="card-title">📊 Kategoriyalar (Xaridlar)</h3>
+</div>
+${categories.map(c => `
+<div style="margin-bottom:16px">
+<div style="display:flex;justify-content:space-between;margin-bottom:6px">
+<span style="font-size:13px;font-weight:600">${c.name}</span>
+<span style="font-size:13px;font-weight:700;color:#6366f1">${c.value}</span>
+</div>
+<div style="width:100%;height:8px;background:#f1f5f9;border-radius:4px;overflow:hidden">
+<div style="width:${c.percent}%;height:100%;background:linear-gradient(90deg,#6366f1,#8b5cf6);border-radius:4px"></div>
+</div>
+</div>
+`).join('')}
+</div>
+<div>
+<div class="card" style="margin-bottom:20px">
+<div class="card-header">
+<h3 class="card-title">🔥 Buyurtma xolatlari</h3>
+</div>
+<div style="display:flex;flex-direction:column;gap:12px">
+${customers.map(c => `
+<div style="display:flex;align-items:center;justify-content:space-between;padding:12px;background:#f8f9fc;border-radius:10px">
+<span style="font-size:13px;font-weight:600">${c.name}</span>
+<div style="display:flex;align-items:center;gap:8px">
+<span style="font-size:16px;font-weight:800">${c.count}</span>
+<span style="font-size:12px;color:#64748b">0+0%</span>
+</div>
+</div>
+`).join('')}
+</div>
+</div>
+<div class="card">
+<div class="card-header">
+<h3 class="card-title">🏆 Top 5 mahsulotlar</h3>
+</div>
+${topProducts.map((p, i) => `
+<div style="display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid #f8f9fc">
+<div style="font-size:16px;font-weight:800;color:#cbd5e1;width:24px">${i + 1}</div>
+<div style="width:36px;height:36px;border-radius:8px;background:#f1f5f9;display:flex;align-items:center;justify-content:center;font-size:20px">${p.img}</div>
+<div style="flex:1">
+<div style="font-size:13px;font-weight:600">${p.name}</div>
+</div>
+<div style="font-size:14px;font-weight:700;color:#6366f1">👁 ${p.sales}</div>
+</div>
+`).join('')}
+</div>
+</div>
+</div>
+<div class="card">
+<div class="card-header">
+<h3 class="card-title">👥 Foydalanuvchilar</h3>
+</div>
+<div style="display:flex;gap:20px">
+<div style="flex:1;text-align:center;padding:20px;background:#f0fdf4;border-radius:12px">
+<div style="font-size:32px;font-weight:800;color:#10b981">3</div>
+<div style="font-size:13px;color:#64748b;margin-top:4px">Yangi</div>
+</div>
+<div style="flex:1;text-align:center;padding:20px;background:#f8f9fc;border-radius:12px">
+<div style="font-size:32px;font-weight:800;color:#64748b">0</div>
+<div style="font-size:13px;color:#64748b;margin-top:4px">Muntazam</div>
+</div>
+<div style="flex:1;text-align:center;padding:20px;background:#fef2f2;border-radius:12px">
+<div style="font-size:32px;font-weight:800;color:#ef4444">0</div>
+<div style="font-size:13px;color:#64748b;margin-top:4px">Bekor qildi</div>
+</div>
+</div>
+</div>
+</div>
+`;
+        }
+
+        function loadRoles() {
+            var roles = [
+                {
+                    id: 1,
+                    name: 'Super Admin',
+                    color: '#ef4444',
+                    icon: 'S',
+                    description: 'Barcha huquqlarga ega',
+                    users: 1,
+                    permissions: ['USERS_VIEW', 'USERS_CREATE', 'USERS_EDIT', 'USERS_DELETE']
+                },
+                {
+                    id: 2,
+                    name: 'Admin',
+                    color: '#3b82f6',
+                    icon: 'A',
+                    description: 'Asosiy admin huquqlari',
+                    users: 2,
+                    permissions: ['USERS_VIEW', 'USERS_CREATE', 'PRODUCTS_VIEW', 'PRODUCTS_CREATE']
+                },
+                {
+                    id: 3,
+                    name: 'Muharrir',
+                    color: '#10b981',
+                    icon: 'M',
+                    description: 'Kontent tahrirlash',
+                    users: 0,
+                    permissions: ['PRODUCTS_VIEW', 'PRODUCTS_CREATE', 'PRODUCTS_EDIT', 'ORDERS_VIEW']
+                },
+                {
+                    id: 4,
+                    name: 'Ko\'ruvchi',
+                    color: '#64748b',
+                    icon: 'K',
+                    description: 'Faqat ko\'rish',
+                    users: 0,
+                    permissions: ['PRODUCTS_VIEW', 'ORDERS_VIEW']
+                }
+            ];
+
+            document.getElementById('AP').innerHTML = `
+<div class="sidebar">
+<div class="logo">
+<div class="logo-icon">🛒</div>
+<div class="logo-text">
+<h3>Fayoz Market</h3>
+<p>Admin Panel</p>
+</div>
+</div>
+<div class="menu-section">
+<div class="menu-title">Asosiy</div>
+<div class="menu-item" onclick="loadDashboard()">
+<span class="menu-icon">📊</span>
+<span>Dashboard</span>
+</div>
+</div>
+<div class="menu-section">
+<div class="menu-title">Boshqaruv</div>
+<div class="menu-item" onclick="loadUsers()">
+<span class="menu-icon">👥</span>
+<span>Foydalanuvchilar</span>
+</div>
+<div class="menu-item" onclick="loadProducts()">
+<span class="menu-icon">📦</span>
+<span>Mahsulotlar</span>
+</div>
+<div class="menu-item" onclick="loadOrders()">
+<span class="menu-icon">🛒</span>
+<span>Buyurtmalar</span>
+</div>
+</div>
+<div class="menu-section">
+<div class="menu-title">Tahlil</div>
+<div class="menu-item" onclick="loadReports()">
+<span class="menu-icon">📈</span>
+<span>Hisobotlar</span>
+</div>
+</div>
+<div class="menu-section">
+<div class="menu-title">Tizim</div>
+<div class="menu-item active" onclick="loadRoles()">
+<span class="menu-icon">🔐</span>
+<span>Rollar & Ruxsatlar</span>
+</div>
+<div class="menu-item" onclick="loadSettings()">
+<span class="menu-icon">⚙️</span>
+<span>Sozlamalar</span>
+</div>
+</div>
+</div>
+<div class="main">
+<div class="topbar">
+<span class="menu-toggle">☰</span>
+<div class="search">
+<span class="search-icon">🔍</span>
+<input type="text" placeholder="Mahsulot, foydalanuvchi qidirish...">
+</div>
+<div class="topbar-right">
+<button class="topbar-btn">⚙️</button>
+<div class="user-avatar">F</div>
+</div>
+</div>
+<div class="page-header">
+<h1 class="page-title">🔐 Rollar & Ruxsatlar</h1>
+<p class="page-subtitle">Foydalanuvchilarni boshqarish</p>
+</div>
+<div style="display:grid;grid-template-columns:repeat(2,1fr);gap:16px;margin-bottom:24px">
+${roles.map(r => `
+<div class="card" style="position:relative">
+<div style="position:absolute;top:20px;right:20px;font-size:48px;font-weight:800;color:${r.color};opacity:0.1">${r.users}</div>
+<div style="display:flex;align-items:center;gap:16px;margin-bottom:16px">
+<div style="width:56px;height:56px;border-radius:12px;background:${r.color};display:flex;align-items:center;justify-content:center;color:#fff;font-size:24px;font-weight:800">${r.icon}</div>
+<div style="flex:1">
+<h3 style="font-size:18px;font-weight:700;margin-bottom:4px">${r.name}</h3>
+<p style="font-size:13px;color:#64748b">${r.description}</p>
+</div>
+</div>
+<div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:16px">
+${r.permissions.map(p => `<span style="padding:4px 10px;background:#f1f5f9;border-radius:6px;font-size:11px;font-weight:600;color:#64748b">${p}</span>`).join('')}
+</div>
+<div style="display:flex;align-items:center;justify-content:space-between;padding-top:12px;border-top:1px solid #f1f5f9">
+<span style="font-size:13px;color:#64748b">Foydalanuvchilar: <b style="color:#1e293b">${r.users} ta</b></span>
+<a href="#" onclick="editRole(${r.id}); return false" style="color:#6366f1;font-size:13px;font-weight:600;text-decoration:none">Tahrirlash uchun bosing →</a>
+</div>
+</div>
+`).join('')}
+</div>
+<div class="card">
+<div class="card-header">
+<h3 class="card-title">👥 Rol bo\'yicha foydalanuvchilar</h3>
+</div>
+<table class="table">
+<thead>
+<tr>
+<th>ROL</th>
+<th>TAVSIF</th>
+<th>FOYDALANUVCHILAR</th>
+<th>RUXSATLAR</th>
+<th>AMAL</th>
+</tr>
+</thead>
+<tbody>
+${roles.map(r => `
+<tr>
+<td><span style="display:inline-flex;align-items:center;gap:8px;padding:6px 12px;background:${r.color}15;color:${r.color};border-radius:8px;font-weight:600;font-size:13px">${r.name}</span></td>
+<td style="color:#64748b;font-size:13px">${r.description}</td>
+<td><span style="font-weight:700">${r.users} ta</span></td>
+<td><span style="font-size:12px;color:#64748b">${r.permissions.length} ta ruxsat</span></td>
+<td><a href="#" onclick="editRole(${r.id}); return false" style="color:#6366f1;font-size:13px;font-weight:600;text-decoration:none">📝 Tahrirlash</a></td>
+</tr>
+`).join('')}
+</tbody>
+</table>
+</div>
+</div>
+`;
+        }
+
+        function editRole(roleId) {
+            alert('Rol tahrirlash: ID ' + roleId);
+        }
+
+        function loadSettings() {
+            document.getElementById('AP').innerHTML = `
+<div class="sidebar">
+<div class="logo">
+<div class="logo-icon">🛒</div>
+<div class="logo-text">
+<h3>Fayoz Market</h3>
+<p>Admin Panel</p>
+</div>
+</div>
+<div class="menu-section">
+<div class="menu-title">Asosiy</div>
+<div class="menu-item" onclick="loadDashboard()">
+<span class="menu-icon">📊</span>
+<span>Dashboard</span>
+</div>
+</div>
+<div class="menu-section">
+<div class="menu-title">Boshqaruv</div>
+<div class="menu-item" onclick="loadUsers()">
+<span class="menu-icon">👥</span>
+<span>Foydalanuvchilar</span>
+</div>
+<div class="menu-item" onclick="loadProducts()">
+<span class="menu-icon">📦</span>
+<span>Mahsulotlar</span>
+</div>
+<div class="menu-item" onclick="loadOrders()">
+<span class="menu-icon">🛒</span>
+<span>Buyurtmalar</span>
+</div>
+</div>
+<div class="menu-section">
+<div class="menu-title">Tahlil</div>
+<div class="menu-item" onclick="loadReports()">
+<span class="menu-icon">📈</span>
+<span>Hisobotlar</span>
+</div>
+</div>
+<div class="menu-section">
+<div class="menu-title">Tizim</div>
+<div class="menu-item" onclick="loadRoles()">
+<span class="menu-icon">🔐</span>
+<span>Rollar & Ruxsatlar</span>
+</div>
+<div class="menu-item active" onclick="loadSettings()">
+<span class="menu-icon">⚙️</span>
+<span>Sozlamalar</span>
+</div>
+</div>
+</div>
+<div class="main">
+<div class="topbar">
+<span class="menu-toggle">☰</span>
+<div class="search">
+<span class="search-icon">🔍</span>
+<input type="text" placeholder="Mahsulot, foydalanuvchi qidirish...">
+</div>
+<div class="topbar-right">
+<button class="topbar-btn">⚙️</button>
+<div class="user-avatar">F</div>
+</div>
+</div>
+<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:24px">
+<div class="page-header" style="margin-bottom:0">
+<h1 class="page-title">⚙️ Sozlamalar</h1>
+<p class="page-subtitle">Tizim sozlamalari</p>
+</div>
+<button onclick="saveSettings()" class="btn-primary">💾 Saqlash</button>
+</div>
+<div class="grid-2">
+<div>
+<div class="card" style="margin-bottom:20px">
+<div style="display:flex;align-items:center;gap:12px;margin-bottom:20px">
+<div style="width:40px;height:40px;border-radius:10px;background:rgba(99,102,241,0.1);display:flex;align-items:center;justify-content:center;font-size:20px">🏪</div>
+<h3 style="font-size:16px;font-weight:700">Umumiy</h3>
+</div>
+<div style="margin-bottom:16px">
+<label style="display:block;font-size:11px;font-weight:700;color:#64748b;margin-bottom:8px;text-transform:uppercase">Sayt nomi</label>
+<input id="siteName" type="text" value="Supermarket" style="width:100%;padding:12px;border:1px solid #e2e8f0;border-radius:10px;font-size:14px;outline:none">
+</div>
+<div style="margin-bottom:16px">
+<label style="display:block;font-size:11px;font-weight:700;color:#64748b;margin-bottom:8px;text-transform:uppercase">Tavsif</label>
+<textarea id="siteDesc" style="width:100%;padding:12px;border:1px solid #e2e8f0;border-radius:10px;font-size:14px;outline:none;resize:vertical;min-height:100px">Online bozor tizimi</textarea>
+</div>
+<div style="margin-bottom:16px">
+<label style="display:block;font-size:11px;font-weight:700;color:#64748b;margin-bottom:8px;text-transform:uppercase">Valyuta</label>
+<input id="currency" type="text" value="so'm" style="width:100%;padding:12px;border:1px solid #e2e8f0;border-radius:10px;font-size:14px;outline:none">
+</div>
+</div>
+<div class="card">
+<div style="display:flex;align-items:center;gap:12px;margin-bottom:20px">
+<div style="width:40px;height:40px;border-radius:10px;background:rgba(99,102,241,0.1);display:flex;align-items:center;justify-content:center;font-size:20px">🏢</div>
+<h3 style="font-size:16px;font-weight:700">Tizim</h3>
+</div>
+<div style="margin-bottom:16px">
+<label style="display:block;font-size:11px;font-weight:700;color:#64748b;margin-bottom:8px;text-transform:uppercase">Tangilash rejimi</label>
+<select id="debugMode" style="width:100%;padding:12px;border:1px solid #e2e8f0;border-radius:10px;font-size:14px;outline:none;cursor:pointer">
+<option>O'chiq</option>
+<option>Yoniq</option>
+</select>
+</div>
+<div style="margin-bottom:16px">
+<label style="display:block;font-size:11px;font-weight:700;color:#64748b;margin-bottom:8px;text-transform:uppercase">Ko'ykatam o'tish</label>
+<select id="maintenance" style="width:100%;padding:12px;border:1px solid #e2e8f0;border-radius:10px;font-size:14px;outline:none;cursor:pointer">
+<option>O'chiq</option>
+<option>Yoniq</option>
+</select>
+</div>
+<div style="margin-bottom:16px">
+<label style="display:block;font-size:11px;font-weight:700;color:#64748b;margin-bottom:8px;text-transform:uppercase">Sahifada elementlar</label>
+<select id="perPage" style="width:100%;padding:12px;border:1px solid #e2e8f0;border-radius:10px;font-size:14px;outline:none;cursor:pointer">
+<option>10</option>
+<option>20</option>
+<option>50</option>
+<option>100</option>
+</select>
+</div>
+<div style="display:flex;gap:8px;margin-top:20px;padding-top:20px;border-top:1px solid #f1f5f9">
+<button onclick="alert('Zaxira yaratildi!')" style="flex:1;padding:10px;background:#fff;border:1px solid #e2e8f0;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;color:#ef4444">🗑️ Zaxirani qaytarish</button>
+<button onclick="alert('Backup yaratildi!')" style="flex:1;padding:10px;background:#fff;border:1px solid #e2e8f0;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;color:#3b82f6">💾 Backup</button>
+<button onclick="alert('Kesh tozalandi!')" style="flex:1;padding:10px;background:#fff;border:1px solid #e2e8f0;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;color:#10b981">🗑️ Keshni tozalash</button>
+</div>
+</div>
+</div>
+<div>
+<div class="card" style="margin-bottom:20px">
+<div style="display:flex;align-items:center;gap:12px;margin-bottom:20px">
+<div style="width:40px;height:40px;border-radius:10px;background:rgba(99,102,241,0.1);display:flex;align-items:center;justify-content:center;font-size:20px">🎨</div>
+<h3 style="font-size:16px;font-weight:700">Ko'rinish</h3>
+</div>
+<div style="margin-bottom:16px">
+<label style="display:block;font-size:11px;font-weight:700;color:#64748b;margin-bottom:8px;text-transform:uppercase">Asosiy rang</label>
+<div style="display:flex;align-items:center;gap:12px">
+<input type="color" value="#6366f1" style="width:60px;height:40px;border:1px solid #e2e8f0;border-radius:8px;cursor:pointer">
+<input type="text" value="#6366f1" style="flex:1;padding:10px;border:1px solid #e2e8f0;border-radius:8px;font-size:13px;outline:none;font-family:monospace">
+</div>
+</div>
+<div style="margin-bottom:16px">
+<label style="display:block;font-size:11px;font-weight:700;color:#64748b;margin-bottom:8px;text-transform:uppercase">Ikkinchi rang</label>
+<div style="display:flex;align-items:center;gap:12px">
+<input type="color" value="#8b5cf6" style="width:60px;height:40px;border:1px solid #e2e8f0;border-radius:8px;cursor:pointer">
+<input type="text" value="#8b5cf6" style="flex:1;padding:10px;border:1px solid #e2e8f0;border-radius:8px;font-size:13px;outline:none;font-family:monospace">
+</div>
+</div>
+<div style="margin-bottom:16px">
+<label style="display:block;font-size:11px;font-weight:700;color:#64748b;margin-bottom:8px;text-transform:uppercase">Tayyor ranglar</label>
+<div style="display:flex;gap:8px;flex-wrap:wrap">
+<button onclick="changeTheme('#6366f1')" style="width:40px;height:40px;background:#6366f1;border:2px solid #fff;border-radius:8px;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,0.1)"></button>
+<button onclick="changeTheme('#10b981')" style="width:40px;height:40px;background:#10b981;border:2px solid #fff;border-radius:8px;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,0.1)"></button>
+<button onclick="changeTheme('#f59e0b')" style="width:40px;height:40px;background:#f59e0b;border:2px solid #fff;border-radius:8px;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,0.1)"></button>
+<button onclick="changeTheme('#ef4444')" style="width:40px;height:40px;background:#ef4444;border:2px solid #fff;border-radius:8px;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,0.1)"></button>
+<button onclick="changeTheme('#ec4899')" style="width:40px;height:40px;background:#ec4899;border:2px solid #fff;border-radius:8px;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,0.1)"></button>
+<button onclick="changeTheme('#1e293b')" style="width:40px;height:40px;background:#1e293b;border:2px solid #fff;border-radius:8px;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,0.1)"></button>
+</div>
+</div>
+</div>
+<div class="card">
+<div style="display:flex;align-items:center;gap:12px;margin-bottom:20px">
+<div style="width:40px;height:40px;border-radius:10px;background:rgba(99,102,241,0.1);display:flex;align-items:center;justify-content:center;font-size:20px">👤</div>
+<h3 style="font-size:16px;font-weight:700">Admin profil</h3>
+</div>
+<div style="display:flex;align-items:center;gap:16px;padding:16px;background:#f8f9fc;border-radius:12px">
+<div style="width:56px;height:56px;border-radius:12px;background:linear-gradient(135deg,#6366f1,#8b5cf6);display:flex;align-items:center;justify-content:center;color:#fff;font-size:24px;font-weight:700">F</div>
+<div style="flex:1">
+<div style="font-size:16px;font-weight:700;margin-bottom:2px">Fayoz</div>
+<div style="font-size:13px;color:#64748b">admin@admin.com</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+`;
+        }
+
+        function saveSettings() {
+            alert('Sozlamalar saqlandi!');
+        }
+
+        function changeTheme(color) {
+            alert('Rang o\'zgartirildi: ' + color);
+        }
+
+        // Foydalanuvchi qo'shish modal
+        function showNewUserModal() {
+            var modal = document.createElement('div');
+            modal.id = 'userModal';
+            modal.style.cssText = 'position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.5);z-index:9999;display:flex;align-items:center;justify-content:center';
+            modal.innerHTML = `
+<div style="background:#fff;border-radius:16px;padding:32px;width:90%;max-width:500px">
+<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:24px">
+<h2 style="font-size:20px;font-weight:700">➕ Yangi foydalanuvchi</h2>
+<button onclick="document.getElementById('userModal').remove()" style="width:32px;height:32px;border:none;background:#f1f5f9;border-radius:8px;cursor:pointer;font-size:18px">✕</button>
+</div>
+<div style="margin-bottom:16px">
+<label style="display:block;font-size:12px;font-weight:700;color:#64748b;margin-bottom:8px;text-transform:uppercase">Ism</label>
+<input id="userName" type="text" style="width:100%;padding:12px;border:1px solid #e2e8f0;border-radius:10px;font-size:14px;outline:none" placeholder="Ism kiriting...">
+</div>
+<div style="margin-bottom:16px">
+<label style="display:block;font-size:12px;font-weight:700;color:#64748b;margin-bottom:8px;text-transform:uppercase">Email</label>
+<input id="userEmail" type="email" style="width:100%;padding:12px;border:1px solid #e2e8f0;border-radius:10px;font-size:14px;outline:none" placeholder="email@example.com">
+</div>
+<div style="margin-bottom:16px">
+<label style="display:block;font-size:12px;font-weight:700;color:#64748b;margin-bottom:8px;text-transform:uppercase">Telefon</label>
+<input id="userPhone" type="text" style="width:100%;padding:12px;border:1px solid #e2e8f0;border-radius:10px;font-size:14px;outline:none" placeholder="+998 90 123 45 67">
+</div>
+<div style="margin-bottom:16px">
+<label style="display:block;font-size:12px;font-weight:700;color:#64748b;margin-bottom:8px;text-transform:uppercase">Rol</label>
+<select id="userRole" style="width:100%;padding:12px;border:1px solid #e2e8f0;border-radius:10px;font-size:14px;outline:none;cursor:pointer">
+<option>Admin</option>
+<option>Moderator</option>
+<option>Foydalanuvchi</option>
+</select>
+</div>
+<div style="display:flex;gap:12px;margin-top:24px">
+<button onclick="document.getElementById('userModal').remove()" style="flex:1;padding:12px;background:#f1f5f9;border:none;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer;color:#64748b">Bekor qilish</button>
+<button onclick="saveUser()" style="flex:1;padding:12px;background:linear-gradient(135deg,#6366f1,#8b5cf6);border:none;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer;color:#fff">Saqlash</button>
+</div>
+</div>`;
+            document.body.appendChild(modal);
+        }
+
+        function saveUser() {
+            var name = document.getElementById('userName').value;
+            var email = document.getElementById('userEmail').value;
+            var phone = document.getElementById('userPhone').value;
+            var role = document.getElementById('userRole').value;
+            if (!name || !email || !phone) {
+                alert('Iltimos, barcha maydonlarni to\'ldiring!');
+                return;
+            }
+            alert('Foydalanuvchi muvaffaqiyatli qo\'shildi!\\n\\nIsm: ' + name + '\\nEmail: ' + email + '\\nTelefon: ' + phone + '\\nRol: ' + role);
+            document.getElementById('userModal').remove();
+            loadUsers();
+        }
+
+        // Mahsulot qo'shish modal
+        function showNewProductModal() {
+            var modal = document.createElement('div');
+            modal.id = 'productModal';
+            modal.style.cssText = 'position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.5);z-index:9999;display:flex;align-items:center;justify-content:center';
+            modal.innerHTML = `
+<div style="background:#fff;border-radius:16px;padding:32px;width:90%;max-width:500px;max-height:90vh;overflow-y:auto">
+<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:24px">
+<h2 style="font-size:20px;font-weight:700">➕ Yangi mahsulot</h2>
+<button onclick="document.getElementById('productModal').remove()" style="width:32px;height:32px;border:none;background:#f1f5f9;border-radius:8px;cursor:pointer;font-size:18px">✕</button>
+</div>
+<div style="margin-bottom:16px">
+<label style="display:block;font-size:12px;font-weight:700;color:#64748b;margin-bottom:8px;text-transform:uppercase">Mahsulot nomi</label>
+<input id="productName" type="text" style="width:100%;padding:12px;border:1px solid #e2e8f0;border-radius:10px;font-size:14px;outline:none" placeholder="Mahsulot nomini kiriting...">
+</div>
+<div style="margin-bottom:16px">
+<label style="display:block;font-size:12px;font-weight:700;color:#64748b;margin-bottom:8px;text-transform:uppercase">Kategoriya</label>
+<select id="productCategory" style="width:100%;padding:12px;border:1px solid #e2e8f0;border-radius:10px;font-size:14px;outline:none;cursor:pointer">
+<option>Oziq-ovqat</option>
+<option>Sut mahsulotlari</option>
+<option>Non mahsulotlari</option>
+<option>Meva-sabzavot</option>
+<option>Go'sht mahsulotlari</option>
+<option>Kolbasa</option>
+<option>Konserva</option>
+<option>Bolalar</option>
+<option>Ichimliklar</option>
+</select>
+</div>
+<div style="margin-bottom:16px">
+<label style="display:block;font-size:12px;font-weight:700;color:#64748b;margin-bottom:8px;text-transform:uppercase">Narx (so'm)</label>
+<input id="productPrice" type="number" style="width:100%;padding:12px;border:1px solid #e2e8f0;border-radius:10px;font-size:14px;outline:none" placeholder="0">
+</div>
+<div style="margin-bottom:16px">
+<label style="display:block;font-size:12px;font-weight:700;color:#64748b;margin-bottom:8px;text-transform:uppercase">Zaxira</label>
+<input id="productStock" type="number" style="width:100%;padding:12px;border:1px solid #e2e8f0;border-radius:10px;font-size:14px;outline:none" placeholder="0">
+</div>
+<div style="display:flex;gap:12px;margin-top:24px">
+<button onclick="document.getElementById('productModal').remove()" style="flex:1;padding:12px;background:#f1f5f9;border:none;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer;color:#64748b">Bekor qilish</button>
+<button onclick="saveProduct()" style="flex:1;padding:12px;background:linear-gradient(135deg,#6366f1,#8b5cf6);border:none;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer;color:#fff">Saqlash</button>
+</div>
+</div>`;
+            document.body.appendChild(modal);
+        }
+
+        function saveProduct() {
+            var name = document.getElementById('productName').value;
+            var category = document.getElementById('productCategory').value;
+            var price = document.getElementById('productPrice').value;
+            var stock = document.getElementById('productStock').value;
+            if (!name || !price || !stock) {
+                alert('Iltimos, barcha maydonlarni to\'ldiring!');
+                return;
+            }
+            alert('Mahsulot muvaffaqiyatli qo\'shildi!\\n\\nNomi: ' + name + '\\nKategoriya: ' + category + '\\nNarx: ' + price + ' so\'m\\nZaxira: ' + stock);
+            document.getElementById('productModal').remove();
+            window.productsPage = 1;
+            loadProducts();
+        }
+
+
+        // Foydalanuvchi amallar funksiyalari
+        window.viewUser = function (userId) {
+            alert('Foydalanuvchi ma\'lumotlari ko\'rish: ID ' + userId);
+        };
+
+        window.editUser = function (userId) {
+            alert('Foydalanuvchini tahrirlash: ID ' + userId);
+        };
+
+        window.deleteUser = function (userId) {
+            if (confirm('Foydalanuvchini o\'chirmoqchimisiz?')) {
+                alert('Foydalanuvchi o\'chirildi: ID ' + userId);
+                loadUsers();
+            }
+        };
+
+        // Mahsulot amallar funksiyalari
+        window.editProduct = function (productId) {
+            alert('Mahsulotni tahrirlash: ID ' + productId);
+        };
+
+        window.deleteProduct = function (productId) {
+            if (confirm('Mahsulotni o\'chirmoqchimisiz?')) {
+                alert('Mahsulot o\'chirildi: ID ' + productId);
+                loadProducts();
+            }
+        };
+    </script>
+</body>
+
+</html>
