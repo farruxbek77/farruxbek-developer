@@ -95,10 +95,14 @@ export default function Home() {
 
         // Modalni yopish
         setShowSmsModal(false);
-        setSelectedIds([]);
 
-        // Muvaffaqiyatli xabar
-        alert(`SMS yuborildi: ${selectedContacts.length} ta kontaktga`);
+        // Android SMS ilovasini ochish
+        const phoneNumbers = selectedContacts.map(c => c.phone).join(';');
+        const smsUrl = `sms:${phoneNumbers}?body=${encodeURIComponent(message)}`;
+        window.location.href = smsUrl;
+
+        // Tanlangan kontaktlarni tozalash
+        setSelectedIds([]);
     };
 
     const handleSendToGroup = (groupId, message) => {
