@@ -96,10 +96,28 @@ export default function Home() {
         // Modalni yopish
         setShowSmsModal(false);
 
-        // Android SMS ilovasini ochish
-        const phoneNumbers = selectedContacts.map(c => c.phone).join(';');
-        const smsUrl = `sms:${phoneNumbers}?body=${encodeURIComponent(message)}`;
-        window.location.href = smsUrl;
+        // Har bir kontaktga alohida SMS yuborish
+        if (selectedContacts.length === 1) {
+            // Bitta kontakt bo'lsa oddiy SMS
+            const smsUrl = `sms:${selectedContacts[0].phone}?body=${encodeURIComponent(message)}`;
+            window.location.href = smsUrl;
+        } else {
+            // Ko'p kontakt bo'lsa - foydalanuvchiga tanlash imkoniyati
+            const confirmMsg = `${selectedContacts.length} ta kontaktga xabar yuboriladi. Davom ettirasizmi?`;
+            if (confirm(confirmMsg)) {
+                // Birinchi kontaktga SMS ochish
+                const firstContact = selectedContacts[0];
+                const smsUrl = `sms:${firstContact.phone}?body=${encodeURIComponent(message)}`;
+
+                // Qolgan kontaktlar haqida ma'lumot
+                const remainingContacts = selectedContacts.slice(1);
+                const contactNames = remainingContacts.map(c => c.name).join(', ');
+
+                alert(`Birinchi SMS: ${firstContact.name}\n\nQolgan kontaktlar uchun SMS ilovasida "+" tugmasini bosib, xabarni nusxalang:\n${contactNames}`);
+
+                window.location.href = smsUrl;
+            }
+        }
 
         // Tanlangan kontaktlarni tozalash
         setSelectedIds([]);
