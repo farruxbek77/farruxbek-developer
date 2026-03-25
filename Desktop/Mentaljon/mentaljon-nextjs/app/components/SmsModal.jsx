@@ -14,15 +14,16 @@ export default function SmsModal({ contacts, message, onClose, onSend }) {
         }
     };
 
-    const handleSend = () => {
-        const selected = contacts.filter(c => selectedRecipients.includes(c.id));
-        onSend(selected, smsMessage);
-    };
-
     const handleSendToContact = (contact) => {
-        // Bitta kontaktga SMS yuborish
-        const smsUrl = `sms:${contact.phone}?body=${encodeURIComponent(smsMessage)}`;
-        window.open(smsUrl, '_blank');
+        // Bitta kontaktga xabar yuborish - Android Xabarlar ilovasini ochadi
+        const encodedMessage = encodeURIComponent(smsMessage);
+        const phoneNumber = contact.phone.replace(/[^0-9+]/g, ''); // Faqat raqamlar
+
+        // sms: protokoli Android Xabarlar ilovasini ochadi
+        const smsUrl = `sms:${phoneNumber}?body=${encodedMessage}`;
+
+        // Xabarlar ilovasini ochish
+        window.location.href = smsUrl;
     };
 
     const handleSendToAll = () => {
@@ -32,32 +33,27 @@ export default function SmsModal({ contacts, message, onClose, onSend }) {
             return;
         }
 
-        // Har bir kontaktga ketma-ket SMS yuborish
-        let index = 0;
-        const sendNext = () => {
-            if (index < selected.length) {
-                const contact = selected[index];
-                const smsUrl = `sms:${contact.phone}?body=${encodeURIComponent(smsMessage)}`;
+        const confirmMsg = `${selected.length} ta kontaktga xabar yuboriladi.\n\nHar bir kontakt uchun Xabarlar ilovasi ochiladi.\n\nDavom ettirasizmi?`;
 
-                if (index === 0) {
-                    // Birinchi SMS
-                    window.location.href = smsUrl;
-                } else {
-                    // Keyingi SMSlar uchun yangi oyna
-                    setTimeout(() => {
-                        window.open(smsUrl, '_blank');
-                    }, 1000);
-                }
-                index++;
-                if (index < selected.length) {
-                    setTimeout(sendNext, 2000);
-                }
-            }
-        };
-
-        if (confirm(`${selected.length} ta kontaktga xabar yuboriladi. Har bir kontakt uchun SMS oynasi ochiladi. Davom ettirasizmi?`)) {
+        if (confirm(confirmMsg)) {
             onClose();
-            sendNext();
+
+            // Birinchi kontaktga xabar yuborish
+            if (selected.length > 0) {
+                const encodedMessage = encodeURIComponent(smsMessage);
+                const phoneNumber = selected[0].phone.replace(/[^0-9+]/g, '');
+                const smsUrl = `sms:${phoneNumber}?body=${encodedMessage}`;
+
+                // Qolgan kontaktlar haqida ma'lumot
+                if (selected.length > 1) {
+                    const remainingNames = selected.slice(1).map(c => `${c.name} (${c.phone})`).join('\n');
+                    setTimeout(() => {
+                        alert(`Birinchi xabar: ${selected[0].name}\n\nQolgan ${selected.length - 1} ta kontakt:\n${remainingNames}\n\nHar biriga alohida xabar yuborish uchun "Xabar" tugmasini bosing.`);
+                    }, 500);
+                }
+
+                window.location.href = smsUrl;
+            }
         }
     };
 
@@ -65,7 +61,7 @@ export default function SmsModal({ contacts, message, onClose, onSend }) {
         <div className="modal-overlay" onClick={onClose}>
             <div className="modal sms-send-modal" onClick={(e) => e.stopPropagation()}>
                 <div className="sms-modal-header">
-                    <h2>SMS Yuborish</h2>
+                    <h2>Xabar Yuborish</h2>
                     <button type="button" onClick={onClose} className="close-btn">×</button>
                 </div>
 
@@ -89,9 +85,9 @@ export default function SmsModal({ contacts, message, onClose, onSend }) {
                                     type="button"
                                     onClick={() => handleSendToContact(contact)}
                                     className="btn-send-individual"
-                                    title="Bu kontaktga SMS yuborish"
+                                    title="Bu kontaktga xabar yuborish"
                                 >
-                                    SMS
+                                    Xabar
                                 </button>
                             </div>
                         ))}
@@ -99,7 +95,7 @@ export default function SmsModal({ contacts, message, onClose, onSend }) {
                 </div>
 
                 <div className="sms-message-area">
-                    <h3>Xabar</h3>
+                    <h3>Xabar matni</h3>
                     <textarea
                         value={smsMessage}
                         onChange={(e) => setSmsMessage(e.target.value)}
@@ -116,7 +112,7 @@ export default function SmsModal({ contacts, message, onClose, onSend }) {
                         className="btn-primary btn-send-sms"
                         disabled={selectedRecipients.length === 0 || !smsMessage.trim()}
                     >
-                        Hammasiga yuborish ({selectedRecipients.length})
+                        Birinchisiga yuborish ({selectedRecipients.length})
                     </button>
                     <button type="button" onClick={onClose} className="btn-secondary">
                         Bekor qilish
