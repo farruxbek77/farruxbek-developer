@@ -1,0 +1,35 @@
+{
+    "name": "facevoice-ai-bot",
+    "version": "1.0.0",
+    "description": "Talking Avatar Bot - AI-powered lip-sync video generator",
+    "main": "dist/index.js",
+    "scripts": {
+        "dev": "tsx watch src/index.ts",
+        "build": "tsc",
+        "start": "node dist/index.js",
+        "db:migrate": "node dist/database/migrate.js",
+        "setup": "bash scripts/setup.sh",
+        "check-env": "node scripts/check-env.js",
+        "predev": "npm run check-env"
+    },
+    "keywords": [
+        "telegram-bot",
+        "ai",
+        "lip-sync",
+        "avatar"
+    ],
+    "author": "",
+    "license": "MIT",
+    "dependencies": {
+        "@gradio/client": "^1.0.0",
+        "axios": "^1.7.2",
+        "dotenv": "^16.4.5",
+        "postgres": "^3.4.4",
+        "telegraf": "^4.16.3"
+    },
+    "devDependencies": {
+        "@types/node": "^20.12.7",
+        "tsx": "^4.21.0",
+        "typescript": "^5.4.5"
+    }
+}
