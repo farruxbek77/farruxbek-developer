@@ -38,7 +38,7 @@ const bot = new Telegraf(config.bot.token);
 
 // Initialize Services
 AIService.initialize().catch(console.error);
-NotificationService.initialize(bot).catch(console.error);
+// NotificationService.initialize(bot).catch(console.error); // Disabled for Railway free plan
 
 // Session storage for broadcast
 const sessions = new Map<number, any>();
@@ -256,12 +256,12 @@ bot.on('text', async (ctx) => {
 bot.on('voice', handleTextOrAudio);
 
 // Error handling
-bot.catch((err, ctx) => {
-    console.error('Bot error:', err.message);
+bot.catch((err: any, ctx) => {
+    console.error('Bot error:', (err as Error).message);
     try {
         ctx.reply('❌ Xatolik yuz berdi. Iltimos qayta urinib ko\'ring.');
     } catch (e) {
-        console.error('Failed to send error message:', e.message);
+        console.error('Failed to send error message:', (e as Error).message);
     }
 });
 

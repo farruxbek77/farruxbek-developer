@@ -75,7 +75,7 @@ export async function usersCommandHandler(ctx: Context) {
 
     let message = '👥 TOP 10 FOYDALANUVCHILAR\n\n';
 
-    topUsers.forEach((user, index) => {
+    topUsers.forEach((user: any, index: number) => {
         const premiumBadge = user.is_premium ? '💎' : '';
         message += `${index + 1}. ${user.first_name} ${premiumBadge}\n`;
         message += `   @${user.username || 'no_username'}\n`;
@@ -110,7 +110,7 @@ export async function queueCommandHandler(ctx: Context) {
     message += `Bo'sh: ${queueStats.available}\n\n`;
     message += `Navbatdagi 10 ta:\n\n`;
 
-    pendingGenerations.forEach((gen, index) => {
+    pendingGenerations.forEach((gen: any, index: number) => {
         message += `${index + 1}. ${gen.first_name} (ID: ${gen.user_id})\n`;
         message += `   Pozitsiya: ${gen.queue_position}\n`;
         message += `   Vaqt: ${new Date(gen.created_at).toLocaleString('uz-UZ')}\n\n`;
@@ -257,7 +257,7 @@ export async function acceptOrderHandler(ctx: Context) {
     const userId = ctx.from?.id;
     if (!userId || userId !== config.bot.adminId) return;
 
-    const callbackData = ctx.callbackQuery?.data;
+    const callbackData = (ctx.callbackQuery as any)?.data;
     if (!callbackData || !callbackData.startsWith('accept_')) return;
 
     const orderId = parseInt(callbackData.replace('accept_', ''));
@@ -307,7 +307,7 @@ export async function rejectOrderHandler(ctx: Context) {
     const userId = ctx.from?.id;
     if (!userId || userId !== config.bot.adminId) return;
 
-    const callbackData = ctx.callbackQuery?.data;
+    const callbackData = (ctx.callbackQuery as any)?.data;
     if (!callbackData || !callbackData.startsWith('reject_')) return;
 
     const orderId = parseInt(callbackData.replace('reject_', ''));
@@ -353,7 +353,7 @@ export async function confirmPaymentHandler(ctx: Context) {
     const userId = ctx.from?.id;
     if (!userId || userId !== config.bot.adminId) return;
 
-    const args = ctx.message?.text?.split(' ');
+    const args = (ctx.message as any)?.text?.split(' ');
     if (!args || args.length !== 2) {
         await ctx.reply('❌ Format: /confirm USERID');
         return;
@@ -402,7 +402,7 @@ export async function rejectPaymentHandler(ctx: Context) {
     const userId = ctx.from?.id;
     if (!userId || userId !== config.bot.adminId) return;
 
-    const args = ctx.message?.text?.split(' ');
+    const args = (ctx.message as any)?.text?.split(' ');
     if (!args || args.length !== 2) {
         await ctx.reply('❌ Format: /reject USERID');
         return;
@@ -442,7 +442,7 @@ export async function rejectPaymentHandler(ctx: Context) {
 }
 
 export async function confirmVideoHandler(ctx: Context) {
-    const callbackData = ctx.callbackQuery?.data;
+    const callbackData = (ctx.callbackQuery as any)?.data;
     if (!callbackData || !callbackData.startsWith('confirm_video_')) return;
 
     const orderId = parseInt(callbackData.replace('confirm_video_', ''));
@@ -500,7 +500,7 @@ export async function confirmVideoHandler(ctx: Context) {
 }
 
 export async function rejectVideoHandler(ctx: Context) {
-    const callbackData = ctx.callbackQuery?.data;
+    const callbackData = (ctx.callbackQuery as any)?.data;
     if (!callbackData || !callbackData.startsWith('reject_video_')) return;
 
     const orderId = parseInt(callbackData.replace('reject_video_', ''));
@@ -525,7 +525,7 @@ export async function rejectVideoHandler(ctx: Context) {
 }
 
 export async function paymentConfirmHandler(ctx: Context) {
-    const callbackData = ctx.callbackQuery?.data;
+    const callbackData = (ctx.callbackQuery as any)?.data;
     if (!callbackData || !callbackData.startsWith('payment_confirm_')) return;
 
     const userId = parseInt(callbackData.replace('payment_confirm_', ''));
@@ -552,7 +552,7 @@ export async function paymentConfirmHandler(ctx: Context) {
 }
 
 export async function paymentRejectHandler(ctx: Context) {
-    const callbackData = ctx.callbackQuery?.data;
+    const callbackData = (ctx.callbackQuery as any)?.data;
     if (!callbackData || !callbackData.startsWith('payment_reject_')) return;
 
     try {
