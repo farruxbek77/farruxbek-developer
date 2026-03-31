@@ -1,0 +1,28 @@
+services:
+  - type: web
+    name: facevoice-ai-bot
+    env: node
+    plan: free
+    buildCommand: npm run build
+    startCommand: npm start
+    envVars:
+      - key: BOT_TOKEN
+        value: 8755256810:AAEg5XBAMSuUfHI0v2EIkm3Ye5n968k7GK0
+      - key: ADMIN_ID
+        value: 8492555919
+      - key: HUGGINGFACE_SPACE
+        value: vinthony/SadTalker
+      - key: REQUIRED_CHANNELS
+        value: ""
+      - key: PREMIUM_PRICE_UZS
+        value: 30000
+      - key: DAILY_FREE_LIMIT
+        value: 2
+      - key: WATERMARK_TEXT
+        value: "@FaceVoiceAI_bot"
+      - key: MAX_VIDEO_DURATION
+        value: 30
+      - key: PAYMENT_AMOUNT
+        value: 10000
+      - key: PAYMENT_ACCOUNT
+        value: 9860123456789012
