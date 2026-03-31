@@ -1,0 +1,27 @@
+{
+    "version": 2,
+    "builds": [
+        {
+            "src": "dist/index.js",
+            "use": "@vercel/node"
+        }
+    ],
+    "routes": [
+        {
+            "src": "/(.*)",
+            "dest": "dist/index.js"
+        }
+    ],
+    "env": {
+        "BOT_TOKEN": "@bot_token",
+        "ADMIN_ID": "@admin_id",
+        "HUGGINGFACE_SPACE": "vinthony/SadTalker",
+        "REQUIRED_CHANNELS": "",
+        "PREMIUM_PRICE_UZS": "30000",
+        "DAILY_FREE_LIMIT": "2",
+        "WATERMARK_TEXT": "@FaceVoiceAI_bot",
+        "MAX_VIDEO_DURATION": "30",
+        "PAYMENT_AMOUNT": "10000",
+        "PAYMENT_ACCOUNT": "9860123456789012"
+    }
+}
