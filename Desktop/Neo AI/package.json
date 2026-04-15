@@ -1,0 +1,36 @@
+{
+  "name": "neo-ai-bot",
+  "version": "1.0.0",
+  "description": "Neo AI - Telegram Bot with GPT-4o mini and DALL-E 3",
+  "main": "dist/bot.js",
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/bot.js",
+    "dev": "ts-node src/bot.ts",
+    "dev:watch": "ts-node-dev --respawn --transpile-only src/bot.ts",
+    "prisma:generate": "prisma generate",
+    "prisma:migrate": "prisma migrate dev",
+    "prisma:push": "prisma db push",
+    "prisma:studio": "prisma studio"
+  },
+  "dependencies": {
+    "@google/generative-ai": "^0.24.1",
+    "@grammyjs/conversations": "^2.0.1",
+    "@grammyjs/menu": "^1.3.0",
+    "@imgly/background-removal-node": "^1.4.5",
+    "@prisma/client": "^5.22.0",
+    "axios": "^1.7.9",
+    "dotenv": "^16.4.7",
+    "form-data": "^4.0.5",
+    "grammy": "^1.30.0",
+    "openai": "^4.77.0",
+    "sharp": "^0.34.5"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.7",
+    "prisma": "^5.22.0",
+    "ts-node": "^10.9.2",
+    "ts-node-dev": "^2.0.0",
+    "typescript": "^5.7.3"
+  }
+}

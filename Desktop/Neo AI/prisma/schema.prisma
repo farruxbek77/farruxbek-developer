@@ -1,0 +1,106 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           Int       @id @default(autoincrement())
+  telegramId   BigInt    @unique @map("telegram_id")
+  username     String?
+  firstName    String    @map("first_name")
+  lastName     String?   @map("last_name")
+  language     String    @default("uz")
+
+  // Kredit tizimi
+  credits      Int       @default(5)        // Boshlang'ich bepul kreditlar
+  totalSpent   Int       @default(0)        @map("total_spent")
+
+  // AI Chat limiti (kunlik)
+  chatCount    Int       @default(0)        @map("chat_count")
+  chatResetAt  DateTime  @default(now())    @map("chat_reset_at")
+  dailyChatLimit Int     @default(20)       @map("daily_chat_limit")
+
+  // Statistika
+  imagesGenerated Int    @default(0)        @map("images_generated")
+  messagesSent    Int    @default(0)        @map("messages_sent")
+
+  // Obuna
+  isPremium    Boolean   @default(false)    @map("is_premium")
+  premiumUntil DateTime? @map("premium_until")
+
+  // Session (bot restart dan keyin ham saqlanadi)
+  lastImageFileId String?  @map("last_image_file_id")
+  lastImagePrompt String?  @map("last_image_prompt")
+
+  // Vaqt
+  createdAt    DateTime  @default(now())    @map("created_at")
+  updatedAt    DateTime  @updatedAt         @map("updated_at")
+  lastActiveAt DateTime  @default(now())    @map("last_active_at")
+
+  // Munosabatlar
+  transactions Transaction[]
+  chatHistory  ChatHistory[]
+
+  @@map("users")
+}
+
+model Transaction {
+  id            Int       @id @default(autoincrement())
+  userId        Int       @map("user_id")
+  telegramPaymentId String? @unique @map("telegram_payment_id")
+
+  type          TransactionType
+  amount        Int             // Stars miqdori
+  creditsAdded  Int             @map("credits_added")
+  description   String
+  status        TransactionStatus @default(COMPLETED)
+
+  createdAt     DateTime  @default(now())   @map("created_at")
+
+  user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("transactions")
+}
+
+model ChatHistory {
+  id        Int      @id @default(autoincrement())
+  userId    Int      @map("user_id")
+  role      String   // "user" | "assistant"
+  content   String
+  tokens    Int?
+
+  createdAt DateTime @default(now()) @map("created_at")
+
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, createdAt])
+  @@map("chat_history")
+}
+
+model BotStats {
+  id              Int      @id @default(1)
+  totalUsers      Int      @default(0) @map("total_users")
+  totalMessages   Int      @default(0) @map("total_messages")
+  totalImages     Int      @default(0) @map("total_images")
+  totalStarsEarned Int     @default(0) @map("total_stars_earned")
+  updatedAt       DateTime @updatedAt  @map("updated_at")
+
+  @@map("bot_stats")
+}
+
+enum TransactionType {
+  PURCHASE    // Yulduz orqali xarid
+  BONUS       // Bonus kreditlar
+  REFUND      // Qaytarish
+}
+
+enum TransactionStatus {
+  PENDING
+  COMPLETED
+  FAILED
+  REFUNDED
+}
