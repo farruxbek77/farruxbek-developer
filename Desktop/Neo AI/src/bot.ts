@@ -3,6 +3,7 @@ import { Bot, session } from "grammy";
 import { MyContext, SessionData } from "./types";
 import { config } from "./config";
 import { prisma } from "./services/database";
+import * as http from "http";
 import { registerStartHandlers } from "./handlers/start";
 import { registerChatHandlers } from "./handlers/chat";
 import { registerImageHandlers } from "./handlers/image";
@@ -110,6 +111,15 @@ async function main(): Promise<void> {
 
   process.on("SIGINT", () => shutdown("SIGINT"));
   process.on("SIGTERM", () => shutdown("SIGTERM"));
+
+  // Health check server (Fly.io uchun)
+  const port = parseInt(process.env.PORT ?? "3000");
+  http.createServer((req, res) => {
+    res.writeHead(200);
+    res.end("OK");
+  }).listen(port, () => {
+    console.log(`🌐 Health check server: port ${port}`);
+  });
 
   // Polling rejimida ishga tushirish
   await bot.start({
